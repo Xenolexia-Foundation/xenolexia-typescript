@@ -16,6 +16,7 @@ import { Tokenizer, Token } from './Tokenizer';
 import { WordReplacer, ReplacerOptions } from './WordReplacer';
 import type { DynamicWordDatabase } from './DynamicWordDatabase';
 import { WordMatcher } from './WordMatcher';
+import { ParagraphWordReplacer } from './ParagraphWordReplacer';
 
 // ============================================================================
 // Translation Engine
@@ -66,6 +67,49 @@ export class TranslationEngine {
     await this.database.initialize();
     await this.wordMatcher.initialize();
     this.initialized = true;
+  }
+
+  /**
+   * Process content using only the offline dictionary (no API).
+   * Uses paragraph rules: 5-10 words per paragraph, max 25-35% per paragraph.
+   */
+  async processContentOffline(content: string): Promise<ProcessedText> {
+    await this.initialize();
+
+    const startTime = Date.now();
+    const paragraphReplacer = new ParagraphWordReplacer({
+      wordsPerParagraphMin: 5,
+      wordsPerParagraphMax: 10,
+      maxFractionPerParagraph: 0.35,
+      proficiencyLevel: this.options.proficiencyLevel,
+      excludeWords: new Set(this.options.excludeWords || []),
+    });
+
+    const offlineLookup = async (
+      words: string[],
+      _sourceLanguage: string,
+      _targetLanguage: string
+    ) => this.wordMatcher.findMatches(words, this.options.proficiencyLevel);
+
+    const result = await paragraphReplacer.process(
+      content,
+      this.options.sourceLanguage,
+      this.options.targetLanguage,
+      offlineLookup
+    );
+
+    const stats: ProcessingStats = {
+      totalWords: result.stats.totalWords,
+      eligibleWords: result.stats.eligibleWords,
+      replacedWords: result.stats.replacedWords,
+      processingTime: Date.now() - startTime,
+    };
+
+    return {
+      content: result.content,
+      foreignWords: result.foreignWords,
+      stats,
+    };
   }
 
   /**

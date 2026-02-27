@@ -86,6 +86,14 @@ export type {
   BulkImportResult,
 } from './WordDatabase';
 
+// Paragraph-based replacer (offline dictionary, 5-10 words/paragraph, 25-35% cap)
+export { ParagraphWordReplacer, createParagraphWordReplacer } from './ParagraphWordReplacer';
+export type {
+  ParagraphWordReplacerOptions,
+  ParagraphWordReplacerResult,
+  OfflineLookup,
+} from './ParagraphWordReplacer';
+
 // Types
 export type {
   TranslationOptions,

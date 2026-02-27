@@ -180,95 +180,41 @@ export const EpubJsReader = forwardRef<EpubJsReaderHandle, EpubJsReaderProps>(
             }
           });
 
-          // Post-process each section for language learning: word replacement + hover/click
-          // Use the VIEW's document (the one actually displayed); only replace the section node so we don't wipe other sections.
-          rendition.on('rendered', async (section: {document?: Document; idref?: string; index?: number; href?: string}, view: {contents?: {document?: Document}}) => {
-            const log = (msg: string, ...args: unknown[]) => console.log('[EpubJsReader]', msg, ...args);
-            log('rendered', { sectionIndex: section?.index, idref: section?.idref, hasViewDoc: !!view?.contents?.document, hasSectionDoc: !!section?.document });
-
-            // Prefer the displayed document (view.contents.document). section.document may be a different doc in scrolled-doc.
-            const doc = view?.contents?.document ?? section?.document;
-            let sectionRoot: HTMLElement | null = null;
-            let sectionRootSource = '';
-            if (doc?.body) {
-              const isViewDoc = doc === view?.contents?.document;
-              log('doc resolved', { isViewDoc, docRef: isViewDoc ? 'view.contents.document' : 'section.document' });
-              if (!isViewDoc && section?.document) {
-                // One doc per section (e.g. paginated): this doc's body is the section
-                sectionRoot = doc.body;
-                sectionRootSource = 'section.document.body';
-              } else {
-                // Single document (scrolled-doc): find the section node within it
-                const idref = section?.idref;
-                if (idref) {
-                  sectionRoot = doc.getElementById(idref) ?? doc.querySelector(`[id="${idref}"]`) as HTMLElement | null;
-                  if (sectionRoot) sectionRootSource = `idref="${idref}"`;
-                }
-                if (!sectionRoot && doc.body.children.length > 0) {
-                  const idx = typeof section?.index === 'number' ? section.index : 0;
-                  const child = doc.body.children[idx];
-                  sectionRoot = child instanceof HTMLElement ? child : doc.body;
-                  sectionRootSource = sectionRoot === doc.body ? 'doc.body fallback' : `body.children[${idx}]`;
-                }
-                if (!sectionRoot) {
-                  sectionRoot = doc.body;
-                  sectionRootSource = 'doc.body';
-                }
-              }
-            }
-            if (!sectionRoot && typeof rendition.getContents === 'function') {
+          // Post-process rendered content for language learning: word replacement + hover/click
+          // Always use the displayed document's body and replace its innerHTML (original working approach).
+          rendition.on('rendered', async (_section: {document?: Document; idref?: string; index?: number}, view: {contents?: {document?: Document}}) => {
+            // Use the document that is actually displayed (view's iframe). Fallback to getContents()[0] then section.document.
+            let doc: Document | null = view?.contents?.document ?? null;
+            if (!doc?.body && typeof rendition.getContents === 'function') {
               const contentsList = rendition.getContents();
               const first = Array.isArray(contentsList) ? contentsList[0] : contentsList;
-              const fallbackDoc = first?.document ?? undefined;
-              if (fallbackDoc?.body) {
-                sectionRoot = fallbackDoc.body;
-                sectionRootSource = 'getContents()[0].document.body';
-              }
+              doc = first?.document ?? null;
             }
-            log('sectionRoot', { found: !!sectionRoot, source: sectionRootSource, tagName: sectionRoot?.tagName, childCount: sectionRoot ? sectionRoot.childNodes.length : 0 });
+            if (!doc?.body) doc = (_section as {document?: Document})?.document ?? null;
+            const root = doc?.body ?? null;
 
-            if (!mounted) {
-              log('early return: unmounted');
-              return;
-            }
-            if (!sectionRoot) {
-              log('early return: no sectionRoot');
-              return;
-            }
-            if (!book?.languagePair) {
-              log('early return: no book.languagePair', { bookId: book?.id });
-              return;
-            }
+            if (!mounted || !root || !book?.languagePair) return;
 
             const sourceLang = book.languagePair.sourceLanguage;
             const targetLang = book.languagePair.targetLanguage;
             const density = typeof book.wordDensity === 'number' ? book.wordDensity : 0.3;
             const proficiency = book.proficiencyLevel ?? 'beginner';
-            log('options', { sourceLang, targetLang, density, proficiency });
 
             try {
-              const rawHtml = sectionRoot.innerHTML;
-              log('rawHtml', { length: rawHtml?.length ?? 0, preview: (rawHtml ?? '').slice(0, 200).replace(/\s+/g, ' ') });
-
+              const rawHtml = root.innerHTML;
               const engine = createTranslationEngine({
                 sourceLanguage: sourceLang,
                 targetLanguage: targetLang,
                 proficiencyLevel: proficiency,
                 density,
               });
-              const processed = await engine.processContent(rawHtml);
-              log('processContent result', { replacedWords: processed.stats.replacedWords, stats: processed.stats });
+              // Use offline dictionary only; 5-10 words per paragraph, max 35%
+              const processed = await engine.processContentOffline(rawHtml);
 
-              if (processed.stats.replacedWords === 0) {
-                log('no replacements; attaching listeners only');
-                attachListeners(sectionRoot, sourceLang, targetLang);
-                return;
-              }
+              // Always update the body with processed content (replaced or not) so styling/listeners apply
+              root.innerHTML = processed.content;
 
-              sectionRoot.innerHTML = processed.content;
-              log('replaced section innerHTML', { replacedWords: processed.stats.replacedWords });
-
-              const docForStyles = sectionRoot.ownerDocument;
+              const docForStyles = root.ownerDocument;
               let styleEl = docForStyles.getElementById('xenolexia-epub-foreign-word-styles');
               if (!styleEl) {
                 styleEl = docForStyles.createElement('style');
@@ -283,7 +229,7 @@ export const EpubJsReader = forwardRef<EpubJsReaderHandle, EpubJsReaderProps>(
               }
               hoveredElementRef.current = null;
 
-              attachListeners(sectionRoot, sourceLang, targetLang);
+              attachListeners(root, sourceLang, targetLang);
             } catch (err) {
               console.warn('EpubJsReader: word replacement failed', err);
             }
