@@ -68,6 +68,14 @@ module.exports = {
         'src/mocks/react-native-sqlite-storage.web.ts'
       ),
       'react-native-webview': path.resolve(appDirectory, 'src/mocks/react-native-webview.web.tsx'),
+      '@bam.tech/react-native-image-resizer': path.resolve(
+        appDirectory,
+        'src/mocks/react-native-image-resizer.web.ts'
+      ),
+      'react-native-screen-brightness': path.resolve(
+        appDirectory,
+        'src/mocks/react-native-screen-brightness.web.ts'
+      ),
       // Path aliases matching tsconfig
       '@': path.resolve(appDirectory, 'src'),
       '@app': path.resolve(appDirectory, 'src/app'),
