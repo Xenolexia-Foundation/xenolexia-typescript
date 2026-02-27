@@ -131,6 +131,8 @@ export function LibraryScreen(): React.JSX.Element {
         await updateBook(book.id, {
           progress: 0,
           currentChapter: 0,
+          currentPage: 0,
+          currentLocation: null,
           lastReadAt: null,
         });
         await refreshBooks();
