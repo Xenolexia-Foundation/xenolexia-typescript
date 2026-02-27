@@ -19,7 +19,7 @@ import './ReaderScreen.css';
 export function ReaderScreen(): React.JSX.Element {
   const {bookId} = useParams<{bookId: string}>();
   const navigate = useNavigate();
-  const {getBook} = useLibraryStore();
+  const {getBook, updateProgress: updateBookProgress} = useLibraryStore();
   const {
     currentBook,
     currentChapter,
@@ -136,6 +136,15 @@ export function ReaderScreen(): React.JSX.Element {
     setEpubLocation({current, total});
   }, []);
 
+  const handleEpubProgressSave = useCallback(
+    (progress: number, locationCfi: string | null, sectionIndex: number) => {
+      if (book?.id) {
+        updateBookProgress(book.id, progress, locationCfi, sectionIndex);
+      }
+    },
+    [book?.id, updateBookProgress]
+  );
+
   if (error) {
     return (
       <div className="reader-screen">
@@ -204,6 +213,7 @@ export function ReaderScreen(): React.JSX.Element {
             ref={epubReaderRef}
             book={book}
             onLocationChange={handleEpubLocationChange}
+            onProgressSave={handleEpubProgressSave}
             onWordClick={handleWordClick}
             onWordHover={handleWordHover}
             onWordHoverEnd={handleWordHoverEnd}
