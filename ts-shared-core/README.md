@@ -2,6 +2,8 @@
 
 Shared core logic for Xenolexia (React Native and Electron). This package contains platform-agnostic types, algorithms, and services. All I/O (file system, database, key-value store, HTTP) is provided by the host via injectable interfaces.
 
+**Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.** Licensed under the [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.html) (AGPL-3.0). See the repository LICENSE file.
+
 ## Usage
 
 1. **Install** in your app (Electron or React Native):

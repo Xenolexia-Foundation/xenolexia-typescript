@@ -1,6 +1,9 @@
 /**
  * xenolexia-typescript - Shared core logic for Xenolexia (React Native, Electron)
  * Platform-agnostic types, algorithms, and services. Host provides IFileSystem, IDataStore, IKeyValueStore.
+ *
+ * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
+ * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
  */
 
 // Types (export types only to avoid duplicate SUPPORTED_LANGUAGES with constants)

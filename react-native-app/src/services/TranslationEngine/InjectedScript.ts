@@ -1,4 +1,9 @@
 /**
+ * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
+ * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
+ */
+
+/**
  * Injected Script - JavaScript injected into WebView for foreign word interaction
  *
  * This module generates the JavaScript that runs inside the WebView to:

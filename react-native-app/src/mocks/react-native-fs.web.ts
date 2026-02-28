@@ -1,4 +1,9 @@
 /**
+ * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
+ * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
+ */
+
+/**
  * Web mock for react-native-fs
  * Uses IndexedDB for persistent file storage and browser APIs for downloads
  */

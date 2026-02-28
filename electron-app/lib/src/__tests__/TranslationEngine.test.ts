@@ -1,4 +1,9 @@
 /**
+ * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
+ * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
+ */
+
+/**
  * Unit tests for TranslationEngine (xenolexia-typescript core) - processContent returns content and foreignWords
  * Uses getCore() from jest.setup (mock adapters).
  */

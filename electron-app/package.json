@@ -2,7 +2,8 @@
   "name": "xenolexia-electron",
   "version": "0.1.0",
   "description": "Learn languages through the stories you love",
-  "author": "Xenolexia Team",
+  "author": "Husain Alamri (H4n) and Xenolexia Foundation",
+  "license": "AGPL-3.0",
   "private": true,
   "workspaces": [
     "app",

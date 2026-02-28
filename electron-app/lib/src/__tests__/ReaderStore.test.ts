@@ -1,4 +1,9 @@
 /**
+ * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
+ * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
+ */
+
+/**
  * Tests for ReaderStore - Opening ebooks and progress tracking.
  * Store uses getCore().bookParserService.getParser(); we mock getCore() here.
  */

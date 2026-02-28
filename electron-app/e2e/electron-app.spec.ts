@@ -1,4 +1,9 @@
 /**
+ * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
+ * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
+ */
+
+/**
  * UI / E2E tests for Xenolexia Electron app.
  * Requires desktop app to be built first: npm run electron:build (from app)
  * or at least: cd app && npm run build:assets

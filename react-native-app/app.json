@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "build": "1",
   "description": "Learn languages naturally through reading",
-  "author": "Xenolexia Team",
-  "license": "MIT",
+  "author": "Husain Alamri (H4n) and Xenolexia Foundation",
+  "license": "AGPL-3.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/xenolexia/xenolexia-react"

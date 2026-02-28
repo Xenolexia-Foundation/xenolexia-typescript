@@ -2,6 +2,8 @@
   "name": "xenolexia-typescript",
   "version": "0.1.0",
   "description": "Shared core logic for Xenolexia (React Native, Electron). Platform-agnostic types, algorithms, and services with injectable I/O.",
+  "author": "Husain Alamri (H4n) and Xenolexia Foundation",
+  "license": "AGPL-3.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

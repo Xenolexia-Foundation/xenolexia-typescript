@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "description": "Xenolexia monorepo: electron-app, react-native-app, ts-shared-core",
+  "author": "Husain Alamri (H4n) and Xenolexia Foundation",
+  "license": "AGPL-3.0",
   "workspaces": [
     "ts-shared-core",
     "electron-app",

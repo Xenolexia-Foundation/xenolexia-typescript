@@ -276,7 +276,9 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## 📄 License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
+Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
+
+This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0) — see [LICENSE](LICENSE) for details.
 
 ---
 

@@ -1,4 +1,9 @@
 /**
+ * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
+ * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
+ */
+
+/**
  * EPUB reader using epub.js (BSD-2-Clause, GPL-compatible).
  * Uses the open-source epub.js library instead of custom parsing for EPUB.
  * Post-processes rendered content with TranslationEngine for language learning
