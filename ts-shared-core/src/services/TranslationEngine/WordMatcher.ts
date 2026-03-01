@@ -71,9 +71,11 @@ export class WordMatcher {
       this.isInitialized = true;
     } catch (error) {
       console.warn('Database not available, using fallback word list:', error);
-      this.initializeFallback();
       this.isInitialized = true;
     }
+    // Always ensure in-memory fallback is populated so lookups work for any language
+    // even when DB is empty, IPC fails, or a new pair was never seeded
+    this.initializeFallback();
   }
 
   /**
