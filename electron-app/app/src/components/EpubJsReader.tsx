@@ -64,6 +64,8 @@ export const EpubJsReader = forwardRef<EpubJsReaderHandle, EpubJsReaderProps>(
   function EpubJsReader({book, onLocationChange, onProgressSave, onWordClick, onWordHover, onWordHoverEnd}, ref) {
     const containerRef = useRef<HTMLDivElement>(null);
     const bookRef = useRef<{destroy: () => void} | null>(null);
+    const bookPropsRef = useRef(book);
+    bookPropsRef.current = book;
     const renditionRef = useRef<{
       destroy: () => void;
       prev: () => Promise<unknown>;
@@ -200,10 +202,11 @@ export const EpubJsReader = forwardRef<EpubJsReaderHandle, EpubJsReaderProps>(
 
             if (!mounted || !root || !book?.languagePair) return;
 
-            const sourceLang = book.languagePair.sourceLanguage;
-            const targetLang = book.languagePair.targetLanguage;
-            const density = typeof book.wordDensity === 'number' ? book.wordDensity : 0.3;
-            const proficiency = book.proficiencyLevel ?? 'beginner';
+            const currentBook = bookPropsRef.current;
+            const sourceLang = currentBook?.languagePair?.sourceLanguage ?? book.languagePair.sourceLanguage;
+            const targetLang = currentBook?.languagePair?.targetLanguage ?? book.languagePair.targetLanguage;
+            const density = typeof (currentBook ?? book).wordDensity === 'number' ? (currentBook ?? book).wordDensity! : 0.3;
+            const proficiency = (currentBook ?? book).proficiencyLevel ?? 'beginner';
 
             try {
               const rawHtml = root.innerHTML;

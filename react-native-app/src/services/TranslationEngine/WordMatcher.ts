@@ -15,7 +15,7 @@
 
 import type { Language, ProficiencyLevel, WordEntry } from '@/types';
 import { WordDatabaseService, wordDatabase } from './WordDatabase';
-import { getBundledWords } from '@/data';
+import { getBundledWordsVerified } from '@/data';
 
 // ============================================================================
 // Word Matcher
@@ -66,16 +66,17 @@ export class WordMatcher {
       this.isInitialized = true;
     } catch (error) {
       console.warn('Database not available, using fallback word list:', error);
-      this.initializeFallback();
       this.isInitialized = true;
     }
+    // Always ensure in-memory fallback is populated so lookups work for any language
+    this.initializeFallback();
   }
 
   /**
    * Seed the database with bundled word data
    */
   private async seedDatabase(): Promise<void> {
-    const words = getBundledWords(this.sourceLanguage, this.targetLanguage);
+    const words = getBundledWordsVerified(this.sourceLanguage, this.targetLanguage);
     if (words && words.length > 0) {
       const result = await this.database.bulkImport(
         words,
@@ -93,7 +94,7 @@ export class WordMatcher {
    * Initialize fallback in-memory word list
    */
   private initializeFallback(): void {
-    const words = getBundledWords(this.sourceLanguage, this.targetLanguage);
+    const words = getBundledWordsVerified(this.sourceLanguage, this.targetLanguage);
     if (!words || words.length === 0) return;
 
     for (const word of words) {

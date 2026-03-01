@@ -16,5 +16,6 @@ export {
   getTotalWordCount,
   getBundledWords,
   hasBundledWords,
+  getBundledWordsVerified,
 } from 'xenolexia-typescript';
 export type { WordData } from 'xenolexia-typescript';

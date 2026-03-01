@@ -156,7 +156,6 @@ import { BookParserService } from './services/BookParser';
 import { TranslationAPIService } from './services/TranslationEngine/TranslationAPIService';
 import { FrequencyListService } from './services/TranslationEngine/FrequencyListService';
 import { DynamicWordDatabase } from './services/TranslationEngine/DynamicWordDatabase';
-import { WordDatabaseService } from './services/TranslationEngine/WordDatabase';
 import { TranslationEngine, createTranslationEngine } from './services/TranslationEngine/TranslationEngine';
 import { WordMatcher } from './services/TranslationEngine/WordMatcher';
 import { ExportService } from './services/ExportService/ExportService';
@@ -214,11 +213,11 @@ export function createXenolexiaCore(adapters: XenolexiaCoreAdapters): XenolexiaC
   const createDynamicWordDatabase = () =>
     new DynamicWordDatabase(dataStore, translationAPIService, frequencyListService);
 
-  const wordDatabaseService = new WordDatabaseService(dataStore);
-
   const createTranslationEngine = (options: TranslationOptions) => {
     const db = createDynamicWordDatabase();
-    const wordMatcher = new WordMatcher(options.sourceLanguage, options.targetLanguage, wordDatabaseService);
+    // Offline path uses only bundled data (no DB) so all languages behave the same and
+    // don't depend on DB seeding or IPC. Greek and others now have real data in words_en_XX.ts.
+    const wordMatcher = new WordMatcher(options.sourceLanguage, options.targetLanguage, null);
     return new TranslationEngine(options, db, wordMatcher);
   };
 
