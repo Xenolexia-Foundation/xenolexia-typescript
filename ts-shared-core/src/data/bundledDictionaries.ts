@@ -34,7 +34,6 @@ import { ALL_WORDS_EN_CS } from './words_en_cs';
 import { ALL_WORDS_EN_HU } from './words_en_hu';
 import { ALL_WORDS_EN_RO } from './words_en_ro';
 import { ALL_WORDS_EN_UK } from './words_en_uk';
-import { ALL_WORDS_EN_HE } from './words_en_he';
 import { ALL_WORDS_EN_HI } from './words_en_hi';
 import { ALL_WORDS_EN_TH } from './words_en_th';
 import { ALL_WORDS_EN_VI } from './words_en_vi';
@@ -65,7 +64,6 @@ const BUNDLED_EN: Record<NonEn, WordData[]> = {
   hu: ALL_WORDS_EN_HU,
   ro: ALL_WORDS_EN_RO,
   uk: ALL_WORDS_EN_UK,
-  he: ALL_WORDS_EN_HE,
   hi: ALL_WORDS_EN_HI,
   th: ALL_WORDS_EN_TH,
   vi: ALL_WORDS_EN_VI,

@@ -13,7 +13,7 @@
 
 export type Language =
   | 'en' | 'el' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ru' | 'ja' | 'zh' | 'ko' | 'ar'
-  | 'nl' | 'pl' | 'tr' | 'sv' | 'da' | 'fi' | 'no' | 'cs' | 'hu' | 'ro' | 'uk' | 'he' | 'hi' | 'th' | 'vi' | 'id';
+  | 'nl' | 'pl' | 'tr' | 'sv' | 'da' | 'fi' | 'no' | 'cs' | 'hu' | 'ro' | 'uk' | 'hi' | 'th' | 'vi' | 'id';
 
 export type ProficiencyLevel = 'beginner' | 'intermediate' | 'advanced';
 
@@ -56,7 +56,6 @@ export const SUPPORTED_LANGUAGES: LanguageInfo[] = [
   { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
   { code: 'ko', name: 'Korean', nativeName: '한국어', flag: '🇰🇵' },
   { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇵🇸', rtl: true },
-  { code: 'he', name: 'Hebrew', nativeName: 'עברית', flag: '🇮🇱', rtl: true },
   { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
   { code: 'th', name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭' },
   { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳' },

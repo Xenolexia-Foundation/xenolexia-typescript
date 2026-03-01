@@ -73,7 +73,7 @@ Perfect for:
 
 ★ SUPPORTED LANGUAGES ★
 
-English, Spanish, French, German, Italian, Portuguese, Russian, Greek, Dutch, Polish, Turkish, Swedish, Danish, Finnish, Norwegian, Czech, Hungarian, Romanian, Ukrainian, Japanese, Chinese, Korean, Arabic, Hebrew, Hindi, Thai, Vietnamese, Indonesian
+English, Spanish, French, German, Italian, Portuguese, Russian, Greek, Dutch, Polish, Turkish, Swedish, Danish, Finnish, Norwegian, Czech, Hungarian, Romanian, Ukrainian, Japanese, Chinese, Korean, Arabic, Hindi, Thai, Vietnamese, Indonesian
 
 ★ PRIVACY FIRST ★
 

@@ -590,8 +590,7 @@ CREATE TABLE word_list (
 | Chinese | zh | 🇨🇳 | - |
 | Korean | ko | 🇰🇷 | - |
 | Arabic | ar | 🇵🇸 | ✅ |
-| Hebrew | he | 🇮🇱 | ✅ |
-| + 12 more... | | | |
+| + 11 more... | | | |
 
 ---
 

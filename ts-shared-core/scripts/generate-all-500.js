@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_DIR = path.join(__dirname, '../src/data');
-const LANGS = ['el','es','fr','de','it','pt','ru','ja','zh','ko','ar','nl','pl','tr','sv','da','fi','no','cs','hu','ro','uk','he','hi','th','vi','id'];
+const LANGS = ['el','es','fr','de','it','pt','ru','ja','zh','ko','ar','nl','pl','tr','sv','da','fi','no','cs','hu','ro','uk','hi','th','vi','id'];
 
 const template = (langCode) => `/**
  * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
