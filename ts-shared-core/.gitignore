@@ -1,1 +1,4 @@
 node_modules
+
+# Generated verification report (run scripts/verify-translation-map.js)
+scripts/verification-report.json
