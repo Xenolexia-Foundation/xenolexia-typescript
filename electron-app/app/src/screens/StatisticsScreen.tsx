@@ -4,13 +4,19 @@
  */
 
 /**
- * Statistics Screen - Desktop version
+ * Statistics Screen - Desktop version with gamification
  */
 
 import React, {useMemo, useState, useCallback} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useStatisticsStore} from '@xenolexia/shared/stores/statisticsStore';
 import {Card} from '../components/ui';
+import {
+  getLevelFromXp,
+  getLevelProgress,
+  getXpToNextLevel,
+  getAllAchievementsWithProgress,
+} from 'xenolexia-typescript';
 import './StatisticsScreen.css';
 
 export function StatisticsScreen(): React.JSX.Element {
@@ -44,6 +50,12 @@ export function StatisticsScreen(): React.JSX.Element {
     const todayMinutes = Math.floor(stats.wordsRevealedToday / 10); // Rough estimate
     return Math.min(100, Math.round((todayMinutes / goalMinutes) * 100));
   }, [stats.wordsRevealedToday]);
+
+  const totalXp = stats.totalXp ?? 0;
+  const level = useMemo(() => getLevelFromXp(totalXp), [totalXp]);
+  const levelProgress = useMemo(() => getLevelProgress(totalXp), [totalXp]);
+  const xpToNext = useMemo(() => getXpToNextLevel(totalXp), [totalXp]);
+  const achievements = useMemo(() => getAllAchievementsWithProgress(stats), [stats]);
 
   if (isLoading) {
     return (
@@ -92,6 +104,21 @@ export function StatisticsScreen(): React.JSX.Element {
             <div className="statistics-streak-label">Day Streak</div>
             <div className="statistics-streak-best">Best: {stats.longestStreak} days</div>
           </div>
+        </Card>
+
+        {/* Level & XP */}
+        <Card variant="outlined" padding="lg" className="statistics-level-card">
+          <div className="statistics-level-row">
+            <span className="statistics-level-title">Level {level}</span>
+            <span className="statistics-level-xp">{totalXp} XP</span>
+          </div>
+          <div className="statistics-progress-bar">
+            <div
+              className="statistics-progress-fill"
+              style={{width: `${levelProgress}%`}}
+            />
+          </div>
+          <p className="statistics-xp-to-next">{xpToNext} XP to next level</p>
         </Card>
 
         {/* Daily Progress */}
@@ -200,6 +227,30 @@ export function StatisticsScreen(): React.JSX.Element {
               <span className="statistics-insight-value statistics-insight-success">+42</span>
             </div>
           </Card>
+        </div>
+
+        {/* Achievements */}
+        <div className="statistics-section">
+          <h2 className="statistics-section-title">Achievements</h2>
+          <div className="statistics-achievement-grid">
+            {achievements.map(({definition, progress, unlocked}) => (
+              <Card
+                key={definition.id}
+                variant="outlined"
+                padding="md"
+                className={`statistics-achievement-card ${unlocked ? 'statistics-achievement-unlocked' : ''}`}
+              >
+                <div className="statistics-achievement-icon">{definition.icon}</div>
+                <div className="statistics-achievement-name">{definition.name}</div>
+                <div className="statistics-progress-bar statistics-achievement-progress">
+                  <div
+                    className="statistics-progress-fill"
+                    style={{width: `${progress}%`}}
+                  />
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     </div>

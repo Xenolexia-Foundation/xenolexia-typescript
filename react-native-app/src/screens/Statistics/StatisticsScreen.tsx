@@ -4,7 +4,7 @@
  */
 
 /**
- * Statistics Screen - Displays reading and learning progress
+ * Statistics Screen - Displays reading and learning progress with gamification
  */
 
 import React, {useMemo} from 'react';
@@ -19,6 +19,13 @@ import {useStatisticsStore} from '@stores/statisticsStore';
 import {StatCard} from '@components/statistics/StatCard';
 import {ScreenHeader, LoadingStats} from '@components/common';
 import {Text, Card} from '@components/ui';
+
+import {
+  getLevelFromXp,
+  getLevelProgress,
+  getXpToNextLevel,
+  getAllAchievementsWithProgress,
+} from 'xenolexia-typescript';
 
 export function StatisticsScreen(): React.JSX.Element {
   const colors = useColors();
@@ -46,6 +53,12 @@ export function StatisticsScreen(): React.JSX.Element {
     const todayMinutes = Math.floor(stats.wordsRevealedToday / 10); // Rough estimate
     return Math.min(100, Math.round((todayMinutes / goalMinutes) * 100));
   }, [stats.wordsRevealedToday]);
+
+  const totalXp = stats.totalXp ?? 0;
+  const level = useMemo(() => getLevelFromXp(totalXp), [totalXp]);
+  const levelProgress = useMemo(() => getLevelProgress(totalXp), [totalXp]);
+  const xpToNext = useMemo(() => getXpToNextLevel(totalXp), [totalXp]);
+  const achievements = useMemo(() => getAllAchievementsWithProgress(stats), [stats]);
 
   if (isLoading) {
     return (
@@ -88,6 +101,27 @@ export function StatisticsScreen(): React.JSX.Element {
               Best: {stats.longestStreak} days
             </Text>
           </View>
+        </Card>
+
+        {/* Level & XP */}
+        <Card variant="outlined" padding="lg" style={styles.levelCard}>
+          <View style={styles.levelRow}>
+            <Text variant="titleMedium">Level {level}</Text>
+            <Text variant="labelLarge" color="secondary">
+              {totalXp} XP
+            </Text>
+          </View>
+          <View style={[styles.progressBar, {backgroundColor: colors.border}]}>
+            <View
+              style={[
+                styles.progressFill,
+                {width: `${levelProgress}%`, backgroundColor: colors.primary},
+              ]}
+            />
+          </View>
+          <Text variant="bodySmall" color="secondary" style={styles.xpToNext}>
+            {xpToNext} XP to next level
+          </Text>
         </Card>
 
         {/* Daily Progress */}
@@ -196,6 +230,44 @@ export function StatisticsScreen(): React.JSX.Element {
             </View>
           </Card>
         </View>
+
+        {/* Achievements */}
+        <View style={styles.section}>
+          <Text variant="titleLarge" style={styles.sectionTitle}>
+            Achievements
+          </Text>
+          <View style={styles.achievementGrid}>
+            {achievements.map(({definition, progress, unlocked}) => (
+              <Card
+                key={definition.id}
+                variant="outlined"
+                padding="md"
+                style={[
+                  styles.achievementCard,
+                  unlocked && {borderColor: colors.primary, borderWidth: 2},
+                ]}
+              >
+                <Text variant="displaySmall" style={styles.achievementIcon}>
+                  {definition.icon}
+                </Text>
+                <Text variant="labelMedium" numberOfLines={1}>
+                  {definition.name}
+                </Text>
+                <View style={[styles.progressBar, styles.achievementProgress, {backgroundColor: colors.border}]}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      {
+                        width: `${progress}%`,
+                        backgroundColor: unlocked ? colors.success : colors.primary,
+                      },
+                    ]}
+                  />
+                </View>
+              </Card>
+            ))}
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -264,5 +336,34 @@ const styles = StyleSheet.create({
   streakNumber: {
     fontWeight: '800',
     lineHeight: 60,
+  },
+  levelCard: {
+    marginTop: spacing[4],
+  },
+  levelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing[2],
+  },
+  xpToNext: {
+    marginTop: spacing[2],
+  },
+  achievementGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[3],
+  },
+  achievementCard: {
+    width: '47%',
+    minWidth: 140,
+    alignItems: 'center',
+  },
+  achievementIcon: {
+    marginBottom: spacing[2],
+  },
+  achievementProgress: {
+    marginTop: spacing[2],
+    width: '100%',
   },
 });

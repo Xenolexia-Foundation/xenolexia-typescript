@@ -117,6 +117,69 @@
   margin-top: 8px;
 }
 
+.statistics-level-card {
+  margin-bottom: 24px;
+}
+
+.statistics-level-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.statistics-level-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.statistics-level-xp {
+  font-size: 14px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.statistics-xp-to-next {
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+  margin: 8px 0 0;
+}
+
+.statistics-achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.statistics-achievement-card {
+  text-align: center;
+  min-width: 140px;
+}
+
+.statistics-achievement-card.statistics-achievement-unlocked {
+  border-color: var(--primary, #0ea5e9);
+  border-width: 2px;
+}
+
+.statistics-achievement-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.statistics-achievement-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statistics-achievement-progress {
+  margin-top: 4px;
+}
+
 .statistics-section {
   margin-top: 32px;
 }

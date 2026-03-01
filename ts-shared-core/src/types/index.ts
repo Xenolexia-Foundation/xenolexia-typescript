@@ -175,6 +175,16 @@ export interface VocabularyItem {
   status: VocabularyStatus;
 }
 
+/** Bundled dictionary word (English source + target translation) */
+export interface WordData {
+  source: string;
+  target: string;
+  rank: number;
+  pos: PartOfSpeech;
+  variants?: string[];
+  pronunciation?: string;
+}
+
 export type VocabularyStatus = 'new' | 'learning' | 'review' | 'learned';
 
 // ============================================================================
@@ -231,6 +241,26 @@ export interface ReadingStats {
   averageSessionDuration: number;
   wordsRevealedToday: number;
   wordsSavedToday: number;
+  /** Total experience points (for gamification) */
+  totalXp?: number;
+}
+
+/** Gamification: one achievement definition (data-only, serializable) */
+export interface AchievementDefinition {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  xpReward: number;
+  /** Achievement type used to compute progress */
+  type: 'books_read' | 'words_learned' | 'reading_time' | 'streak' | 'streak_longest' | 'session_streak' | 'words_today';
+  threshold: number;
+}
+
+/** Achievement with computed unlock state */
+export interface Achievement extends AchievementDefinition {
+  unlockedAt: number | null;
+  progress: number; // 0-100
 }
 
 // ============================================================================

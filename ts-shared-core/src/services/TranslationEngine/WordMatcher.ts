@@ -13,7 +13,7 @@
  * - Proficiency level filtering
  */
 
-import {ALL_WORDS_EN_EL} from '../../data/words_en_el';
+import { getBundledWordsVerified } from '../../data/bundledDictionaries';
 
 import type {WordDatabaseService} from './WordDatabase';
 import type {Language, ProficiencyLevel, WordEntry} from '../../types';
@@ -81,9 +81,10 @@ export class WordMatcher {
    */
   private async seedDatabase(): Promise<void> {
     if (!this.database) return;
-    if (this.sourceLanguage === 'en' && this.targetLanguage === 'el') {
+    const words = getBundledWordsVerified(this.sourceLanguage, this.targetLanguage);
+    if (words && words.length > 0) {
       const result = await this.database.bulkImport(
-        ALL_WORDS_EN_EL,
+        words,
         this.sourceLanguage,
         this.targetLanguage
       );
@@ -98,28 +99,29 @@ export class WordMatcher {
    * Initialize fallback in-memory word list
    */
   private initializeFallback(): void {
-    if (this.sourceLanguage === 'en' && this.targetLanguage === 'el') {
-      for (const word of ALL_WORDS_EN_EL) {
-        const entry: WordEntry = {
-          id: `${word.source}_${word.rank}`,
-          sourceWord: word.source,
-          targetWord: word.target,
-          sourceLanguage: 'en',
-          targetLanguage: 'el',
-          proficiencyLevel: this.getRankLevel(word.rank),
-          frequencyRank: word.rank,
-          partOfSpeech: word.pos,
-          variants: word.variants || [],
-          pronunciation: word.pronunciation,
-        };
+    const words = getBundledWordsVerified(this.sourceLanguage, this.targetLanguage);
+    if (!words || words.length === 0) return;
 
-        this.fallbackWordList.set(word.source.toLowerCase(), entry);
+    for (const word of words) {
+      const entry: WordEntry = {
+        id: `${word.source}_${word.rank}`,
+        sourceWord: word.source,
+        targetWord: word.target,
+        sourceLanguage: this.sourceLanguage,
+        targetLanguage: this.targetLanguage,
+        proficiencyLevel: this.getRankLevel(word.rank),
+        frequencyRank: word.rank,
+        partOfSpeech: word.pos,
+        variants: word.variants || [],
+        pronunciation: word.pronunciation,
+      };
 
-        // Add variants
-        if (word.variants) {
-          for (const variant of word.variants) {
-            this.fallbackVariants.set(variant.toLowerCase(), word.source.toLowerCase());
-          }
+      this.fallbackWordList.set(word.source.toLowerCase(), entry);
+
+      // Add variants
+      if (word.variants) {
+        for (const variant of word.variants) {
+          this.fallbackVariants.set(variant.toLowerCase(), word.source.toLowerCase());
         }
       }
     }

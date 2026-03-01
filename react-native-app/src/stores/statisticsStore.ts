@@ -11,6 +11,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {create} from 'zustand';
 import type {ReadingStats, ReadingSession} from '@types/index';
+import {
+  XP_PER_MINUTE_READING,
+  XP_PER_WORD_SAVED,
+} from 'xenolexia-typescript';
 
 const STATISTICS_KEY = '@xenolexia/statistics';
 const MAX_PERSISTED_SESSIONS = 200;
@@ -36,6 +40,7 @@ const defaultStats: ReadingStats = {
   averageSessionDuration: 0,
   wordsRevealedToday: 0,
   wordsSavedToday: 0,
+  totalXp: 0,
 };
 
 interface ReviewSessionData {
@@ -112,10 +117,12 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
       duration,
     };
 
-    // Update stats
+    // Update stats and XP
     const newTotalTime = stats.totalReadingTime + duration;
     const newSessionCount = sessions.length + 1;
     const newAverageSession = Math.floor(newTotalTime / newSessionCount);
+    const xpFromSession = Math.floor(duration / 60) * XP_PER_MINUTE_READING;
+    const totalXp = (stats.totalXp ?? 0) + xpFromSession;
 
     set({
       currentSession: null,
@@ -124,6 +131,7 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
         ...stats,
         totalReadingTime: newTotalTime,
         averageSessionDuration: newAverageSession,
+        totalXp,
       },
     });
 
@@ -144,16 +152,20 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
   },
 
   recordWordSaved: () => {
-    set(state => ({
-      stats: {
-        ...state.stats,
-        wordsSavedToday: state.stats.wordsSavedToday + 1,
-        totalWordsLearned: state.stats.totalWordsLearned + 1,
-      },
-      currentSession: state.currentSession
-        ? {...state.currentSession, wordsSaved: state.currentSession.wordsSaved + 1}
-        : null,
-    }));
+    set(state => {
+      const totalXp = (state.stats.totalXp ?? 0) + XP_PER_WORD_SAVED;
+      return {
+        stats: {
+          ...state.stats,
+          wordsSavedToday: state.stats.wordsSavedToday + 1,
+          totalWordsLearned: state.stats.totalWordsLearned + 1,
+          totalXp,
+        },
+        currentSession: state.currentSession
+          ? {...state.currentSession, wordsSaved: state.currentSession.wordsSaved + 1}
+          : null,
+      };
+    });
     get().saveStats();
   },
 

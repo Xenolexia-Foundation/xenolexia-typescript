@@ -10,6 +10,7 @@
 import {create} from 'zustand';
 import type {ReadingStats, ReadingSession} from 'xenolexia-typescript';
 import {getCore} from '../electronCore';
+import {XP_PER_MINUTE_READING, XP_PER_WORD_SAVED} from 'xenolexia-typescript';
 
 const defaultStats: ReadingStats = {
   totalBooksRead: 0,
@@ -20,6 +21,7 @@ const defaultStats: ReadingStats = {
   averageSessionDuration: 0,
   wordsRevealedToday: 0,
   wordsSavedToday: 0,
+  totalXp: 0,
 };
 
 interface ReviewSessionData {
@@ -114,7 +116,7 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
 
     // Persist to database first
     try {
-      await StorageService.endSession(completedSession.id, {
+      await getCore().storageService.endSession(completedSession.id, {
         pagesRead: completedSession.pagesRead,
         wordsRevealed: completedSession.wordsRevealed,
         wordsSaved: completedSession.wordsSaved,
@@ -123,10 +125,12 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
       console.error('Failed to persist session:', error);
     }
 
-    // Update local stats
+    // Update local stats and XP
     const newTotalTime = stats.totalReadingTime + duration;
     const newSessionCount = sessions.length + 1;
     const newAverageSession = Math.floor(newTotalTime / newSessionCount);
+    const xpFromSession = Math.floor(duration / 60) * XP_PER_MINUTE_READING;
+    const totalXp = (stats.totalXp ?? 0) + xpFromSession;
 
     set({
       currentSession: null,
@@ -135,6 +139,7 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
         ...stats,
         totalReadingTime: newTotalTime,
         averageSessionDuration: newAverageSession,
+        totalXp,
       },
     });
   },
@@ -152,16 +157,20 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
   },
 
   recordWordSaved: () => {
-    set(state => ({
-      stats: {
-        ...state.stats,
-        wordsSavedToday: state.stats.wordsSavedToday + 1,
-        totalWordsLearned: state.stats.totalWordsLearned + 1,
-      },
-      currentSession: state.currentSession
-        ? {...state.currentSession, wordsSaved: state.currentSession.wordsSaved + 1}
-        : null,
-    }));
+    set(state => {
+      const totalXp = (state.stats.totalXp ?? 0) + XP_PER_WORD_SAVED;
+      return {
+        stats: {
+          ...state.stats,
+          wordsSavedToday: state.stats.wordsSavedToday + 1,
+          totalWordsLearned: state.stats.totalWordsLearned + 1,
+          totalXp,
+        },
+        currentSession: state.currentSession
+          ? {...state.currentSession, wordsSaved: state.currentSession.wordsSaved + 1}
+          : null,
+      };
+    });
   },
 
   recordReviewSession: (data: ReviewSessionData) => {
@@ -189,7 +198,12 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
       const stats = await getCore().storageService.getReadingStats();
       // Get recent sessions (last 50)
       const recentSessions = await getCore().storageService.getSessionRepository().getRecent(50);
-      set({stats, sessions: recentSessions, isLoading: false});
+      const currentStats = get().stats;
+      set({
+        stats: {...stats, totalXp: stats.totalXp ?? currentStats.totalXp ?? 0},
+        sessions: recentSessions,
+        isLoading: false,
+      });
     } catch (error) {
       console.error('Failed to load stats:', error);
       set({isLoading: false});

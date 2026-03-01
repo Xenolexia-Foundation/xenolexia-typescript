@@ -13,5 +13,7 @@ export {
   ADVANCED_WORDS,
   getWordsByLevel,
   getTotalWordCount,
+  getBundledWords,
+  hasBundledWords,
 } from 'xenolexia-typescript';
 export type { WordData } from 'xenolexia-typescript';

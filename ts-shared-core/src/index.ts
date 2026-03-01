@@ -20,6 +20,7 @@ export type {
   ParsedBook,
   PartOfSpeech,
   WordEntry,
+  WordData,
   VocabularyItem,
   VocabularyStatus,
   ReaderTheme,
@@ -30,6 +31,8 @@ export type {
   ReadingStats,
   UserPreferences,
   AppState,
+  AchievementDefinition,
+  Achievement,
 } from './types';
 export {
   SUPPORTED_LANGUAGES,
@@ -54,6 +57,20 @@ export {
   SRS,
 } from './constants';
 export * from './data';
+
+export {
+  getLevelFromXp,
+  getXpForLevel,
+  getXpToNextLevel,
+  getLevelProgress,
+  XP_PER_MINUTE_READING,
+  XP_PER_WORD_SAVED,
+  XP_DAILY_STREAK_BONUS,
+  ACHIEVEMENT_DEFINITIONS,
+  getAchievementProgress,
+  getAllAchievementsWithProgress,
+} from './gamification';
+export type { AchievementWithProgress } from './gamification';
 
 // Storage (host provides IDataStore)
 export {
