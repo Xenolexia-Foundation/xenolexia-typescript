@@ -118,6 +118,9 @@ const LANGUAGE_CODES: Record<Language, { iso639_1: string; name: string }> = {
   th: { iso639_1: 'th', name: 'Thai' },
   vi: { iso639_1: 'vi', name: 'Vietnamese' },
   id: { iso639_1: 'id', name: 'Indonesian' },
+  arm: { iso639_1: 'arm', name: 'Aramaic' },
+  am: { iso639_1: 'am', name: 'Amharic' },
+  fa: { iso639_1: 'fa', name: 'Persian' },
 };
 
 // ============================================================================

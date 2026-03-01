@@ -95,7 +95,7 @@ The canonical English list is built from [word-freq-top5000.csv](https://github.
 
 ## Supported languages
 
-27+ languages: English, Spanish, French, German, Italian, Portuguese, Russian, Greek, Dutch, Polish, Turkish, Swedish, Danish, Finnish, Norwegian, Czech, Hungarian, Romanian, Ukrainian, Hindi, Thai, Vietnamese, Indonesian, Japanese, Chinese, Korean, Arabic.
+30+ languages: English, Spanish, French, German, Italian, Portuguese, Russian, Greek, Dutch, Polish, Turkish, Swedish, Danish, Finnish, Norwegian, Czech, Hungarian, Romanian, Ukrainian, Hindi, Thai, Vietnamese, Indonesian, Japanese, Chinese, Korean, Arabic, Aramaic, Amharic, Persian.
 
 Any source→target pair is supported via the shared core (English used as bridge when both are non-English).
 

@@ -85,6 +85,9 @@ const FREQUENCY_LIST_SOURCES: Record<Language, string | null> = {
   th: null,
   vi: null,
   id: null,
+  arm: null,
+  am: null,
+  fa: 'https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/fa/fa_50k.txt',
 };
 
 // ============================================================================

@@ -15,7 +15,7 @@ const CSV_PATH = path.join(__dirname, 'word-freq-top5000.csv');
 const LANG_MAP = {
   es: 'es', fr: 'fr', de: 'de', it: 'it', pt: 'pt', ru: 'ru', ja: 'ja', zh: 'zh-CN', ko: 'ko',
   ar: 'ar', nl: 'nl', pl: 'pl', tr: 'tr', sv: 'sv', da: 'da', fi: 'fi', no: 'nb', cs: 'cs',
-  hu: 'hu', ro: 'ro', uk: 'uk', hi: 'hi', th: 'th', vi: 'vi', id: 'id', el: 'el',
+  hu: 'hu', ro: 'ro', uk: 'uk', hi: 'hi', th: 'th', vi: 'vi', id: 'id', el: 'el', arm: 'arm', am: 'am', fa: 'fa',
 };
 
 function getEnglishWords() {

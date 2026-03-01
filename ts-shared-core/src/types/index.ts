@@ -13,7 +13,8 @@
 
 export type Language =
   | 'en' | 'el' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ru' | 'ja' | 'zh' | 'ko' | 'ar'
-  | 'nl' | 'pl' | 'tr' | 'sv' | 'da' | 'fi' | 'no' | 'cs' | 'hu' | 'ro' | 'uk' | 'hi' | 'th' | 'vi' | 'id';
+  | 'nl' | 'pl' | 'tr' | 'sv' | 'da' | 'fi' | 'no' | 'cs' | 'hu' | 'ro' | 'uk' | 'hi' | 'th' | 'vi' | 'id'
+  | 'arm' | 'am' | 'fa';
 
 export type ProficiencyLevel = 'beginner' | 'intermediate' | 'advanced';
 
@@ -60,6 +61,9 @@ export const SUPPORTED_LANGUAGES: LanguageInfo[] = [
   { code: 'th', name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭' },
   { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳' },
   { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩' },
+  { code: 'arm', name: 'Aramaic', nativeName: 'ܐܪܡܝܐ', flag: '🏛️', rtl: true },
+  { code: 'am', name: 'Amharic', nativeName: 'አማርኛ', flag: '🇪🇹' },
+  { code: 'fa', name: 'Persian', nativeName: 'فارسی', flag: '🇮🇷', rtl: true },
 ];
 
 export function getLanguageInfo(code: Language): LanguageInfo | undefined {

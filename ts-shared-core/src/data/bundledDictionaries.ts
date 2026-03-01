@@ -38,6 +38,9 @@ import { ALL_WORDS_EN_HI } from './words_en_hi';
 import { ALL_WORDS_EN_TH } from './words_en_th';
 import { ALL_WORDS_EN_VI } from './words_en_vi';
 import { ALL_WORDS_EN_ID } from './words_en_id';
+import { ALL_WORDS_EN_ARM } from './words_en_arm';
+import { ALL_WORDS_EN_AM } from './words_en_am';
+import { ALL_WORDS_EN_FA } from './words_en_fa';
 
 type NonEn = Exclude<Language, 'en'>;
 
@@ -68,6 +71,9 @@ const BUNDLED_EN: Record<NonEn, WordData[]> = {
   th: ALL_WORDS_EN_TH,
   vi: ALL_WORDS_EN_VI,
   id: ALL_WORDS_EN_ID,
+  arm: ALL_WORDS_EN_ARM,
+  am: ALL_WORDS_EN_AM,
+  fa: ALL_WORDS_EN_FA,
 };
 
 /**
