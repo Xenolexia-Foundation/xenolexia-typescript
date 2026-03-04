@@ -26,15 +26,26 @@ function escape(str) {
   return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, ' ');
 }
 
+/** If the API returned a rate-limit or error message instead of a translation, use the source word. */
+function sanitizeTarget(translated, sourceWord) {
+  if (typeof translated !== 'string' || !translated.trim()) return sourceWord;
+  const t = translated.trim().toUpperCase();
+  if (t.includes('MYMEMORY') || t.includes('USED ALL AVAILABLE FREE') || t.includes('USAGELIMITS')) {
+    return sourceWord;
+  }
+  return translated.trim();
+}
+
 function buildWordsFile(langCode) {
   const jsonPath = path.join(TRANSLATIONS_DIR, `${langCode}.json`);
   if (!fs.existsSync(jsonPath)) {
     console.warn(`Skip ${langCode}: no ${jsonPath}`);
     return;
   }
-  const targets = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  const rawTargets = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
   const english = getEnglishEntries();
-  const len = Math.min(targets.length, english.length, 500);
+  const len = Math.min(rawTargets.length, english.length, 500);
+  const targets = rawTargets.slice(0, len).map((t, i) => sanitizeTarget(t, english[i].source));
   const lines = [
     `/**`,
     ` * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.`,

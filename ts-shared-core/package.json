@@ -13,7 +13,10 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "fetch:translations": "node scripts/fetch-translations.js",
-    "build:translations": "node scripts/build-words-from-translations.js"
+    "build:translations": "node scripts/build-words-from-translations.js",
+    "find:mymemory-warning": "node scripts/find-mymemory-warning-languages.js",
+    "ensure:translations-resolved": "node scripts/ensure-translations-resolved.js",
+    "run:every-4h-until-resolved": "node scripts/run-every-4h-until-resolved.js"
   },
   "dependencies": {
     "@lingo-reader/mobi-parser": "^0.4.5",

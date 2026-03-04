@@ -32,3 +32,24 @@ npm run build:translations
 - **build:translations** – Generates `words_en_<lang>.ts` from `ENGLISH_BEGINNER_500` + `translations/<lang>.json`. Run with no args to build every language that has a JSON file.
 
 After building, run `npm run build` and use the app; word replacement will use the new bundled data for that language.
+
+## MyMemory rate-limit warning
+
+If the API returns a message like *"mymemory warning: you used all available free translations for today..."*, that text must not be stored as a translation. The **build** step replaces any such text with the source (English) word, so the app never shows the warning. To get real translations for affected languages:
+
+1. **See which languages still have the warning** in their `translations/*.json`:
+   ```bash
+   npm run find:mymemory-warning
+   ```
+2. **Run once: re-fetch and rebuild one language** (respects rate limit by fixing one per run):
+   ```bash
+   npm run ensure:translations-resolved
+   ```
+3. **Run every 4 hours until all are resolved** (background loop; one language per 4 hours):
+   ```bash
+   npm run run:every-4h-until-resolved
+   ```
+   Or with cron (e.g. at 00:00, 04:00, 08:00…):
+   ```cron
+   0 */4 * * * cd /path/to/ts-shared-core && node scripts/ensure-translations-resolved.js
+   ```

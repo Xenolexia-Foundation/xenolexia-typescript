@@ -144,7 +144,7 @@ const TARGETS: string[] = [
   'otro',
   'alto',
   'familia',
-  '',
+  'own',
   'ausencia',
   'genere  desafíos  a  mis  mayores',
   'viejo',

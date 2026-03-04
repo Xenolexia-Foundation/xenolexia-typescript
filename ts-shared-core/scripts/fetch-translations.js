@@ -44,14 +44,25 @@ function fetchTranslation(word, langCode) {
       res.on('end', () => {
         try {
           const j = JSON.parse(data);
-          const translated = j.responseData?.translatedText || word;
-          resolve(translated.trim());
+          let translated = j.responseData?.translatedText || word;
+          translated = translated.trim();
+          if (isMyMemoryWarning(translated)) {
+            resolve({ translated: word, rateLimitHit: true });
+          } else {
+            resolve({ translated, rateLimitHit: false });
+          }
         } catch (e) {
-          resolve(word);
+          resolve({ translated: word, rateLimitHit: false });
         }
       });
     }).on('error', reject);
   });
+}
+
+function isMyMemoryWarning(text) {
+  if (typeof text !== 'string' || !text) return false;
+  const u = text.toUpperCase();
+  return u.includes('MYMEMORY') || u.includes('USED ALL AVAILABLE FREE') || u.includes('USAGELIMITS');
 }
 
 async function main() {
@@ -60,11 +71,22 @@ async function main() {
   const words = getEnglishWords();
   console.log(`Translating ${words.length} words to ${langCode}...`);
   const results = [];
+  let rateLimitHitCount = 0;
   for (let i = 0; i < words.length; i++) {
-    const t = await fetchTranslation(words[i], langCode);
-    results.push(t);
+    const { translated, rateLimitHit } = await fetchTranslation(words[i], langCode);
+    results.push(translated);
+    if (rateLimitHit) {
+      rateLimitHitCount++;
+      console.warn(`Rate limit warning at word ${i + 1}/${words.length}: "${words[i]}"`);
+    }
     if ((i + 1) % 50 === 0) console.log(`  ${i + 1}/${words.length}`);
     await new Promise((r) => setTimeout(r, 300));
+  }
+  if (rateLimitHitCount > 0) {
+    console.error('');
+    console.error(`ERROR: MyMemory API returned rate-limit warning for ${rateLimitHitCount} word(s).`);
+    console.error('No translations saved. Try again after the limit resets (see message in API response).');
+    process.exit(1);
   }
   const outPath = path.join(TRANSLATIONS_DIR, `${langCode}.json`);
   fs.writeFileSync(outPath, JSON.stringify(results, null, 0));
