@@ -8,6 +8,7 @@
  */
 
 import {useVocabularyStore} from '@stores/vocabularyStore';
+
 import type {VocabularyItem} from '@types/index';
 
 // Reset store before each test

@@ -10,7 +10,7 @@
  * Only applies on native (iOS/Android); no-op on web.
  */
 
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));

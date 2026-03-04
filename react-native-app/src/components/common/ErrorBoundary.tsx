@@ -12,14 +12,9 @@
  * </ErrorBoundary>
  */
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import React, {Component, ErrorInfo, ReactNode} from 'react';
+
+import {View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
 
 // ============================================================================
 // Types
@@ -107,11 +102,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { hasError: true, error };
+    return {hasError: true, error};
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    this.setState({ errorInfo });
+    this.setState({errorInfo});
 
     // Log error to console
     console.error('ErrorBoundary caught an error:', error);
@@ -183,10 +178,10 @@ export function ScreenErrorBoundary({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#ffffff',
+    flex: 1,
+    justifyContent: 'center',
     padding: 24,
   },
   content: {

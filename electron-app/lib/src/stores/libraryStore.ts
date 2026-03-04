@@ -10,10 +10,10 @@
 import {create} from 'zustand';
 import {persist, createJSONStorage} from 'zustand/middleware';
 
-import type {Book} from 'xenolexia-typescript';
-import type {BookFilter, BookSort} from 'xenolexia-typescript';
 import {getCore} from '../electronCore';
-import { Platform } from '../utils/platform.electron';
+import {Platform} from '../utils/platform.electron';
+
+import type {Book, BookFilter, BookSort} from 'xenolexia-typescript';
 
 // Check if we're on web (Electron is not web)
 const IS_WEB = false; // Electron is desktop, not web
@@ -65,7 +65,7 @@ interface LibraryState {
     progress: number,
     location: string | null,
     chapter?: number,
-    page?: number,
+    page?: number
   ) => Promise<void>;
   updateReadingTime: (bookId: string, minutes: number) => Promise<void>;
 
@@ -136,7 +136,9 @@ const createLibraryStore = () => {
         // On web, books are loaded from localStorage via persist middleware
         // On native, load from database
         if (!IS_WEB) {
-          const books = await getCore().storageService.getBookRepository().getAll(state.currentSort);
+          const books = await getCore()
+            .storageService.getBookRepository()
+            .getAll(state.currentSort);
           set({
             books,
             isLoading: false,
@@ -194,7 +196,7 @@ const createLibraryStore = () => {
 
         // Delete the book files
         try {
-          const { ImportService } = await import('../services/ImportService');
+          const {ImportService} = await import('../services/ImportService');
           await ImportService.deleteBook(bookId);
         } catch (deleteError) {
           console.warn('[LibraryStore] Failed to delete book files:', deleteError);
@@ -222,9 +224,7 @@ const createLibraryStore = () => {
         }
 
         set((state: LibraryState) => ({
-          books: state.books.map(book =>
-            book.id === bookId ? {...book, ...updates} : book,
-          ),
+          books: state.books.map(book => (book.id === bookId ? {...book, ...updates} : book)),
         }));
       } catch (error) {
         console.error('[LibraryStore] Failed to update book:', error);
@@ -245,7 +245,7 @@ const createLibraryStore = () => {
 
     refreshBooks: async () => {
       const state = get();
-      
+
       // On web, books are already in state from localStorage
       if (IS_WEB) {
         return;
@@ -257,10 +257,9 @@ const createLibraryStore = () => {
         let books: Book[];
 
         if (state.currentFilter) {
-          books = await getCore().storageService.getBookRepository().getFiltered(
-            state.currentFilter,
-            state.currentSort,
-          );
+          books = await getCore()
+            .storageService.getBookRepository()
+            .getFiltered(state.currentFilter, state.currentSort);
         } else {
           books = await getCore().storageService.getBookRepository().getAll(state.currentSort);
         }
@@ -290,7 +289,9 @@ const createLibraryStore = () => {
         let books: Book[];
 
         if (filter) {
-          books = await getCore().storageService.getBookRepository().getFiltered(filter, currentSort);
+          books = await getCore()
+            .storageService.getBookRepository()
+            .getFiltered(filter, currentSort);
         } else {
           books = await getCore().storageService.getBookRepository().getAll(currentSort);
         }
@@ -338,11 +339,13 @@ const createLibraryStore = () => {
       progress: number,
       location: string | null,
       chapter?: number,
-      page?: number,
+      page?: number
     ) => {
       try {
         if (!IS_WEB) {
-          await getCore().storageService.getBookRepository().updateProgress(bookId, progress, location, chapter, page);
+          await getCore()
+            .storageService.getBookRepository()
+            .updateProgress(bookId, progress, location, chapter, page);
         }
 
         set((state: LibraryState) => ({
@@ -356,7 +359,7 @@ const createLibraryStore = () => {
                   currentPage: page ?? book.currentPage,
                   lastReadAt: new Date(),
                 }
-              : book,
+              : book
           ),
         }));
       } catch (error) {
@@ -378,7 +381,7 @@ const createLibraryStore = () => {
                   readingTimeMinutes: book.readingTimeMinutes + minutes,
                   lastReadAt: new Date(),
                 }
-              : book,
+              : book
           ),
         }));
       } catch (error) {
@@ -449,11 +452,11 @@ const createLibraryStore = () => {
       persist(storeLogic, {
         name: 'xenolexia-library',
         storage: createJSONStorage(() => webStorage),
-        partialize: (state) => ({
+        partialize: state => ({
           books: state.books.map(serializeBook),
           currentSort: state.currentSort,
         }),
-        onRehydrateStorage: () => (state) => {
+        onRehydrateStorage: () => state => {
           if (state) {
             // Deserialize dates in books
             state.books = state.books.map(deserializeBook);
@@ -490,9 +493,7 @@ export const selectCompletedBooks = (state: LibraryState) =>
  * Get recently added books
  */
 export const selectRecentlyAdded = (state: LibraryState, limit: number = 5) =>
-  [...state.books]
-    .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime())
-    .slice(0, limit);
+  [...state.books].sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime()).slice(0, limit);
 
 /**
  * Get recently read books

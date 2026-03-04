@@ -50,7 +50,7 @@ export const pick = async (options?: PickOptions): Promise<DocumentPickerRespons
       input.accept = acceptValues.join(',');
     }
 
-    input.onchange = async (e) => {
+    input.onchange = async e => {
       const files = (e.target as HTMLInputElement).files;
       if (!files || files.length === 0) {
         reject(new Error('User cancelled document picker'));
@@ -59,7 +59,7 @@ export const pick = async (options?: PickOptions): Promise<DocumentPickerRespons
 
       try {
         const results: DocumentPickerResponse[] = await Promise.all(
-          Array.from(files).map(async (file) => {
+          Array.from(files).map(async file => {
             // Create a blob URL for the file
             const blobUrl = URL.createObjectURL(file);
 
@@ -105,9 +105,7 @@ export const pickSingle = async (options?: PickOptions): Promise<DocumentPickerR
 };
 
 export const isCancel = (err: unknown): boolean => {
-  return (
-    err instanceof Error && err.message.includes('User cancelled document picker')
-  );
+  return err instanceof Error && err.message.includes('User cancelled document picker');
 };
 
 export default {

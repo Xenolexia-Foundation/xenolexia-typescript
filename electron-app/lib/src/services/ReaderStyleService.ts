@@ -21,4 +21,4 @@ export {
   resetSettings,
   resetBookSettings,
 } from 'xenolexia-typescript';
-export type { ReaderStyleConfig, ThemeColors } from 'xenolexia-typescript';
+export type {ReaderStyleConfig, ThemeColors} from 'xenolexia-typescript';

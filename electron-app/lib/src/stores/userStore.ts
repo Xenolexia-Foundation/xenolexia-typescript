@@ -8,8 +8,10 @@
  */
 
 import {create} from 'zustand';
-import type {UserPreferences, ReaderSettings} from 'xenolexia-typescript';
+
 import {getCore} from '../electronCore';
+
+import type {UserPreferences, ReaderSettings} from 'xenolexia-typescript';
 
 const defaultReaderSettings: ReaderSettings = {
   theme: 'light',

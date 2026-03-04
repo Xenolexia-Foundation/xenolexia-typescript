@@ -7,8 +7,8 @@
  * Utility Functions
  */
 
-import {v4 as uuidv4} from 'uuid';
 import {format, formatDistanceToNow, differenceInDays} from 'date-fns';
+import {v4 as uuidv4} from 'uuid';
 
 /**
  * Generate a unique ID
@@ -20,7 +20,10 @@ export function generateId(): string {
 /**
  * Format a date for display
  */
-export function formatDate(date: Date | string | number, formatStr: string = 'MMM d, yyyy'): string {
+export function formatDate(
+  date: Date | string | number,
+  formatStr: string = 'MMM d, yyyy'
+): string {
   const d = new Date(date);
   return format(d, formatStr);
 }
@@ -102,7 +105,7 @@ export function titleCase(str: string): string {
  */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
-  wait: number,
+  wait: number
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout | null = null;
 
@@ -121,7 +124,7 @@ export function debounce<T extends (...args: any[]) => any>(
  */
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
-  limit: number,
+  limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle = false;
 
@@ -182,9 +185,7 @@ export function formatFileSize(bytes: number): string {
 export function calculateStreak(dates: Date[]): {current: number; longest: number} {
   if (dates.length === 0) return {current: 0, longest: 0};
 
-  const sortedDates = dates
-    .map(d => new Date(d))
-    .sort((a, b) => b.getTime() - a.getTime());
+  const sortedDates = dates.map(d => new Date(d)).sort((a, b) => b.getTime() - a.getTime());
 
   let currentStreak = 1;
   let longestStreak = 1;

@@ -8,14 +8,17 @@
  */
 
 import React from 'react';
+
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
+
 import {Text} from '@components/ui';
-import type {Book} from '@/types';
 
 import {BookCover} from './BookCover';
+
+import type {Book} from '@/types';
 
 // ============================================================================
 // Types
@@ -50,11 +53,7 @@ const LANGUAGE_FLAGS: Record<string, string> = {
 // Component
 // ============================================================================
 
-export function BookListItem({
-  book,
-  onPress,
-  onLongPress,
-}: BookListItemProps): React.JSX.Element {
+export function BookListItem({book, onPress, onLongPress}: BookListItemProps): React.JSX.Element {
   const colors = useColors();
 
   const languageFlag = LANGUAGE_FLAGS[book.languagePair.targetLanguage] || '🌐';
@@ -134,9 +133,7 @@ export function BookListItem({
         {/* Progress Bar */}
         {hasProgress && (
           <View style={styles.progressRow}>
-            <View
-              style={[styles.progressTrack, {backgroundColor: colors.surfaceHover}]}
-            >
+            <View style={[styles.progressTrack, {backgroundColor: colors.surfaceHover}]}>
               <View
                 style={[
                   styles.progressFill,

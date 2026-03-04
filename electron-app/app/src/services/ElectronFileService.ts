@@ -22,9 +22,9 @@ export async function openFileDialog(): Promise<ElectronFile | null> {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.epub,.mobi,.txt';
-    
-    return new Promise((resolve) => {
-      input.onchange = (e) => {
+
+    return new Promise(resolve => {
+      input.onchange = e => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (file) {
           resolve({

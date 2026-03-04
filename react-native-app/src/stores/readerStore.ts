@@ -7,7 +7,12 @@
  * Reader Store - Manages reading state, content loading, and progress tracking
  */
 
-import { create } from 'zustand';
+import {create} from 'zustand';
+
+import {BookParserService, bookParserService, chapterContentService} from '@services/BookParser';
+import {BrightnessService} from '@services/BrightnessService';
+import {ReaderStyleService} from '@services/ReaderStyleService';
+
 import type {
   Book,
   Chapter,
@@ -16,14 +21,7 @@ import type {
   ProcessedChapter,
   TableOfContentsItem,
 } from '@types/index';
-import {
-  BookParserService,
-  bookParserService,
-  chapterContentService,
-} from '@services/BookParser';
-import type { IBookParser, ChapterContentService } from 'xenolexia-typescript';
-import { ReaderStyleService } from '@services/ReaderStyleService';
-import { BrightnessService } from '@services/BrightnessService';
+import type {IBookParser, ChapterContentService} from 'xenolexia-typescript';
 
 // ============================================================================
 // Types
@@ -118,7 +116,7 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
    * Load a book and parse its content (EPUB, FB2, MOBI, TXT via BookParserService)
    */
   loadBook: async (book: Book) => {
-    set({ isLoading: true, error: null, currentBook: book });
+    set({isLoading: true, error: null, currentBook: book});
 
     try {
       const parser = bookParserService.getParser(book.filePath, book.format);
@@ -164,13 +162,13 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
    * Navigate to a specific chapter
    */
   goToChapter: async (index: number) => {
-    const { chapters, settings, contentService } = get();
+    const {chapters, settings, contentService} = get();
 
     if (index < 0 || index >= chapters.length) {
       return;
     }
 
-    set({ isLoadingChapter: true, scrollPosition: 0, chapterProgress: 0 });
+    set({isLoadingChapter: true, scrollPosition: 0, chapterProgress: 0});
 
     try {
       const chapter = chapters[index];
@@ -210,7 +208,7 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
    * Go to next chapter
    */
   goToNextChapter: async () => {
-    const { currentChapterIndex, chapters } = get();
+    const {currentChapterIndex, chapters} = get();
     if (currentChapterIndex < chapters.length - 1) {
       await get().goToChapter(currentChapterIndex + 1);
     }
@@ -220,7 +218,7 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
    * Go to previous chapter
    */
   goToPreviousChapter: async () => {
-    const { currentChapterIndex } = get();
+    const {currentChapterIndex} = get();
     if (currentChapterIndex > 0) {
       await get().goToChapter(currentChapterIndex - 1);
     }
@@ -230,8 +228,8 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
    * Update reader settings
    */
   updateSettings: (newSettings: Partial<ReaderState['settings']>) => {
-    set((state) => ({
-      settings: { ...state.settings, ...newSettings },
+    set(state => ({
+      settings: {...state.settings, ...newSettings},
     }));
   },
 
@@ -239,13 +237,12 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
    * Update reading progress within current chapter
    */
   updateProgress: (chapterProgress: number) => {
-    const { currentChapterIndex, chapters } = get();
+    const {currentChapterIndex, chapters} = get();
 
     // Calculate overall book progress
     const chapterWeight = 1 / chapters.length;
     const overallProgress =
-      currentChapterIndex * chapterWeight * 100 +
-      chapterProgress * chapterWeight;
+      currentChapterIndex * chapterWeight * 100 + chapterProgress * chapterWeight;
 
     set({
       chapterProgress,
@@ -257,14 +254,14 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
    * Update scroll position for restoring later
    */
   updateScrollPosition: (scrollY: number) => {
-    set({ scrollPosition: scrollY });
+    set({scrollPosition: scrollY});
   },
 
   /**
    * Close the current book and clean up
    */
   closeBook: () => {
-    const { parser, contentService, currentBook } = get();
+    const {parser, contentService, currentBook} = get();
 
     parser?.dispose();
     if (currentBook?.filePath) {
@@ -293,14 +290,11 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
 // Selectors
 // ============================================================================
 
-export const selectCurrentChapterTitle = (state: ReaderState) =>
-  state.currentChapter?.title || '';
+export const selectCurrentChapterTitle = (state: ReaderState) => state.currentChapter?.title || '';
 
 export const selectHasNextChapter = (state: ReaderState) =>
   state.currentChapterIndex < state.chapters.length - 1;
 
-export const selectHasPreviousChapter = (state: ReaderState) =>
-  state.currentChapterIndex > 0;
+export const selectHasPreviousChapter = (state: ReaderState) => state.currentChapterIndex > 0;
 
-export const selectChapterCount = (state: ReaderState) =>
-  state.chapters.length;
+export const selectChapterCount = (state: ReaderState) => state.chapters.length;

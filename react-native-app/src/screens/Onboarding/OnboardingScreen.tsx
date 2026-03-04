@@ -15,7 +15,8 @@
  * 6. Complete - Summary and start
  */
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, {useState, useCallback, useRef, useEffect} from 'react';
+
 import {
   View,
   StyleSheet,
@@ -26,15 +27,20 @@ import {
   FlatList,
   TextInput,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 
-import { useTheme } from '@theme/index';
-import type { Language, ProficiencyLevel } from '@types/index';
-import { SUPPORTED_LANGUAGES, getLanguageInfo } from '@types/index';
-import { useUserStore } from '@stores/userStore';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import {useNavigation} from '@react-navigation/native';
+
+import {useUserStore} from '@stores/userStore';
+
+import {SUPPORTED_LANGUAGES, getLanguageInfo} from '@types/index';
+
+import {useTheme} from '@theme/index';
+
+import type {Language, ProficiencyLevel} from '@types/index';
+
+const {width: SCREEN_WIDTH} = Dimensions.get('window');
 
 // ============================================================================
 // Types
@@ -82,8 +88,8 @@ const LEVEL_OPTIONS: LevelOption[] = [
 
 export function OnboardingScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const { colors, isDark } = useTheme();
-  const { updatePreferences } = useUserStore();
+  const {colors, isDark} = useTheme();
+  const {updatePreferences} = useUserStore();
 
   // State
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
@@ -100,43 +106,49 @@ export function OnboardingScreen(): React.JSX.Element {
   const currentStepIndex = STEPS.indexOf(currentStep);
 
   // Animate step transitions
-  const animateTransition = useCallback((direction: 'forward' | 'back', callback: () => void) => {
-    const toValue = direction === 'forward' ? -50 : 50;
-    
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      callback();
-      slideAnim.setValue(direction === 'forward' ? 50 : -50);
+  const animateTransition = useCallback(
+    (direction: 'forward' | 'back', callback: () => void) => {
+      const toValue = direction === 'forward' ? -50 : 50;
+
       Animated.parallel([
         Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 200,
+          toValue: 0,
+          duration: 150,
           useNativeDriver: true,
         }),
         Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 200,
+          toValue,
+          duration: 150,
           useNativeDriver: true,
         }),
-      ]).start();
-    });
-  }, [fadeAnim, slideAnim]);
+      ]).start(() => {
+        callback();
+        slideAnim.setValue(direction === 'forward' ? 50 : -50);
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      });
+    },
+    [fadeAnim, slideAnim]
+  );
 
-  const goToStep = useCallback((step: OnboardingStep) => {
-    const newIndex = STEPS.indexOf(step);
-    const direction = newIndex > currentStepIndex ? 'forward' : 'back';
-    animateTransition(direction, () => setCurrentStep(step));
-  }, [currentStepIndex, animateTransition]);
+  const goToStep = useCallback(
+    (step: OnboardingStep) => {
+      const newIndex = STEPS.indexOf(step);
+      const direction = newIndex > currentStepIndex ? 'forward' : 'back';
+      animateTransition(direction, () => setCurrentStep(step));
+    },
+    [currentStepIndex, animateTransition]
+  );
 
   const goNext = useCallback(() => {
     const nextIndex = currentStepIndex + 1;
@@ -162,29 +174,37 @@ export function OnboardingScreen(): React.JSX.Element {
     });
     navigation.reset({
       index: 0,
-      routes: [{ name: 'MainTabs' as never }],
+      routes: [{name: 'MainTabs' as never}],
     });
-  }, [navigation, updatePreferences, sourceLanguage, targetLanguage, proficiencyLevel, wordDensity]);
+  }, [
+    navigation,
+    updatePreferences,
+    sourceLanguage,
+    targetLanguage,
+    proficiencyLevel,
+    wordDensity,
+  ]);
 
   // Filter languages for search
-  const filteredLanguages = SUPPORTED_LANGUAGES.filter(lang =>
-    lang.name.toLowerCase().includes(languageSearch.toLowerCase()) ||
-    lang.nativeName.toLowerCase().includes(languageSearch.toLowerCase())
+  const filteredLanguages = SUPPORTED_LANGUAGES.filter(
+    lang =>
+      lang.name.toLowerCase().includes(languageSearch.toLowerCase()) ||
+      lang.nativeName.toLowerCase().includes(languageSearch.toLowerCase())
   );
 
   // Dynamic styles based on theme
   const dynamicStyles = {
-    container: { backgroundColor: colors.background.primary },
-    title: { color: colors.text.primary },
-    subtitle: { color: colors.text.secondary },
-    description: { color: colors.text.tertiary },
-    card: { backgroundColor: colors.background.secondary },
-    cardSelected: { 
+    container: {backgroundColor: colors.background.primary},
+    title: {color: colors.text.primary},
+    subtitle: {color: colors.text.secondary},
+    description: {color: colors.text.tertiary},
+    card: {backgroundColor: colors.background.secondary},
+    cardSelected: {
       backgroundColor: colors.primary[500] + '15',
       borderColor: colors.primary[500],
     },
-    primaryButton: { backgroundColor: colors.primary[500] },
-    secondaryButton: { 
+    primaryButton: {backgroundColor: colors.primary[500]},
+    secondaryButton: {
       backgroundColor: colors.background.secondary,
       borderColor: colors.border.primary,
     },
@@ -203,9 +223,7 @@ export function OnboardingScreen(): React.JSX.Element {
             styles.stepDot,
             {
               backgroundColor:
-                index <= currentStepIndex
-                  ? colors.primary[500]
-                  : colors.background.tertiary,
+                index <= currentStepIndex ? colors.primary[500] : colors.background.tertiary,
             },
             index === currentStepIndex && styles.stepDotActive,
           ]}
@@ -259,12 +277,12 @@ export function OnboardingScreen(): React.JSX.Element {
   ) => (
     <View style={styles.stepContent}>
       <TextDisplay text={title} style={[styles.stepTitle, dynamicStyles.title]} />
-      
+
       {/* Search */}
-      <View style={[styles.searchContainer, { backgroundColor: colors.background.secondary }]}>
+      <View style={[styles.searchContainer, {backgroundColor: colors.background.secondary}]}>
         <TextDisplay text="🔍" style={styles.searchIcon} />
         <TextInput
-          style={[styles.searchInput, { color: colors.text.primary }]}
+          style={[styles.searchInput, {color: colors.text.primary}]}
           placeholder="Search languages..."
           placeholderTextColor={colors.text.tertiary}
           value={languageSearch}
@@ -274,10 +292,10 @@ export function OnboardingScreen(): React.JSX.Element {
 
       <FlatList
         data={filteredLanguages.filter(l => l.code !== excludeLang)}
-        keyExtractor={(item) => item.code}
+        keyExtractor={item => item.code}
         style={styles.languageList}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => (
+        renderItem={({item}) => (
           <TouchableOpacity
             style={[
               styles.languageItem,
@@ -293,7 +311,7 @@ export function OnboardingScreen(): React.JSX.Element {
                 text={item.name}
                 style={[
                   styles.languageName,
-                  { color: selectedLang === item.code ? colors.primary[500] : colors.text.primary },
+                  {color: selectedLang === item.code ? colors.primary[500] : colors.text.primary},
                 ]}
               />
               <TextDisplay
@@ -302,7 +320,7 @@ export function OnboardingScreen(): React.JSX.Element {
               />
             </View>
             {selectedLang === item.code && (
-              <View style={[styles.checkBadge, { backgroundColor: colors.primary[500] }]}>
+              <View style={[styles.checkBadge, {backgroundColor: colors.primary[500]}]}>
                 <TextDisplay text="✓" style={styles.checkText} />
               </View>
             )}
@@ -318,9 +336,9 @@ export function OnboardingScreen(): React.JSX.Element {
         text={`What's your level in ${getLanguageInfo(targetLanguage)?.name || 'the target language'}?`}
         style={[styles.stepTitle, dynamicStyles.title]}
       />
-      
+
       <View style={styles.levelList}>
-        {LEVEL_OPTIONS.map((option) => (
+        {LEVEL_OPTIONS.map(option => (
           <TouchableOpacity
             key={option.level}
             style={[
@@ -336,13 +354,16 @@ export function OnboardingScreen(): React.JSX.Element {
                 text={option.title}
                 style={[
                   styles.levelTitle,
-                  { color: proficiencyLevel === option.level ? colors.primary[500] : colors.text.primary },
+                  {
+                    color:
+                      proficiencyLevel === option.level ? colors.primary[500] : colors.text.primary,
+                  },
                 ]}
               />
-              <View style={[styles.cefrBadge, { backgroundColor: colors.primary[500] + '20' }]}>
+              <View style={[styles.cefrBadge, {backgroundColor: colors.primary[500] + '20'}]}>
                 <TextDisplay
                   text={option.cefr}
-                  style={[styles.cefrText, { color: colors.primary[500] }]}
+                  style={[styles.cefrText, {color: colors.primary[500]}]}
                 />
               </View>
             </View>
@@ -354,11 +375,11 @@ export function OnboardingScreen(): React.JSX.Element {
               {option.examples.map((word, i) => (
                 <View
                   key={word}
-                  style={[styles.exampleBadge, { backgroundColor: colors.background.tertiary }]}
+                  style={[styles.exampleBadge, {backgroundColor: colors.background.tertiary}]}
                 >
                   <TextDisplay
                     text={word}
-                    style={[styles.exampleText, { color: colors.text.secondary }]}
+                    style={[styles.exampleText, {color: colors.text.secondary}]}
                   />
                 </View>
               ))}
@@ -371,7 +392,7 @@ export function OnboardingScreen(): React.JSX.Element {
 
   const renderDensitySelection = () => {
     const densityPercentage = Math.round(wordDensity * 100);
-    
+
     return (
       <View style={styles.stepContent}>
         <TextDisplay
@@ -384,10 +405,10 @@ export function OnboardingScreen(): React.JSX.Element {
         />
 
         {/* Density Value Display */}
-        <View style={[styles.densityDisplay, { backgroundColor: colors.primary[500] + '15' }]}>
+        <View style={[styles.densityDisplay, {backgroundColor: colors.primary[500] + '15'}]}>
           <TextDisplay
             text={`${densityPercentage}%`}
-            style={[styles.densityValue, { color: colors.primary[500] }]}
+            style={[styles.densityValue, {color: colors.primary[500]}]}
           />
           <TextDisplay
             text="of eligible words"
@@ -398,7 +419,7 @@ export function OnboardingScreen(): React.JSX.Element {
         {/* Density Slider */}
         <View style={styles.sliderContainer}>
           <TextDisplay text="10%" style={[styles.sliderLabel, dynamicStyles.description]} />
-          <View style={[styles.sliderTrack, { backgroundColor: colors.background.tertiary }]}>
+          <View style={[styles.sliderTrack, {backgroundColor: colors.background.tertiary}]}>
             <View
               style={[
                 styles.sliderFill,
@@ -425,12 +446,12 @@ export function OnboardingScreen(): React.JSX.Element {
         {/* Preset Buttons */}
         <View style={styles.presetButtons}>
           {[
-            { value: 0.1, label: 'Gentle', desc: 'A few words per page' },
-            { value: 0.2, label: 'Light', desc: 'Comfortable learning' },
-            { value: 0.3, label: 'Moderate', desc: 'Active learning' },
-            { value: 0.4, label: 'Intense', desc: 'Challenge mode' },
-            { value: 0.5, label: 'Immersive', desc: 'Maximum exposure' },
-          ].map((preset) => (
+            {value: 0.1, label: 'Gentle', desc: 'A few words per page'},
+            {value: 0.2, label: 'Light', desc: 'Comfortable learning'},
+            {value: 0.3, label: 'Moderate', desc: 'Active learning'},
+            {value: 0.4, label: 'Intense', desc: 'Challenge mode'},
+            {value: 0.5, label: 'Immersive', desc: 'Maximum exposure'},
+          ].map(preset => (
             <TouchableOpacity
               key={preset.value}
               style={[
@@ -444,7 +465,7 @@ export function OnboardingScreen(): React.JSX.Element {
                 text={preset.label}
                 style={[
                   styles.presetLabel,
-                  { color: wordDensity === preset.value ? colors.primary[500] : colors.text.primary },
+                  {color: wordDensity === preset.value ? colors.primary[500] : colors.text.primary},
                 ]}
               />
               <TextDisplay
@@ -473,12 +494,18 @@ export function OnboardingScreen(): React.JSX.Element {
             text="Your Learning Setup"
             style={[styles.summaryTitle, dynamicStyles.subtitle]}
           />
-          
+
           <View style={styles.summaryRow}>
-            <TextDisplay text="Reading in" style={[styles.summaryLabel, dynamicStyles.description]} />
+            <TextDisplay
+              text="Reading in"
+              style={[styles.summaryLabel, dynamicStyles.description]}
+            />
             <View style={styles.summaryValueRow}>
               <TextDisplay text={sourceLang?.flag || ''} style={styles.summaryFlag} />
-              <TextDisplay text={sourceLang?.name || ''} style={[styles.summaryValue, dynamicStyles.title]} />
+              <TextDisplay
+                text={sourceLang?.name || ''}
+                style={[styles.summaryValue, dynamicStyles.title]}
+              />
             </View>
           </View>
 
@@ -486,13 +513,19 @@ export function OnboardingScreen(): React.JSX.Element {
             <TextDisplay text="Learning" style={[styles.summaryLabel, dynamicStyles.description]} />
             <View style={styles.summaryValueRow}>
               <TextDisplay text={targetLang?.flag || ''} style={styles.summaryFlag} />
-              <TextDisplay text={targetLang?.name || ''} style={[styles.summaryValue, dynamicStyles.title]} />
+              <TextDisplay
+                text={targetLang?.name || ''}
+                style={[styles.summaryValue, dynamicStyles.title]}
+              />
             </View>
           </View>
 
           <View style={styles.summaryRow}>
             <TextDisplay text="Level" style={[styles.summaryLabel, dynamicStyles.description]} />
-            <TextDisplay text={level?.title || ''} style={[styles.summaryValue, dynamicStyles.title]} />
+            <TextDisplay
+              text={level?.title || ''}
+              style={[styles.summaryValue, dynamicStyles.title]}
+            />
           </View>
 
           <View style={styles.summaryRow}>
@@ -526,7 +559,7 @@ export function OnboardingScreen(): React.JSX.Element {
         return renderLanguageSelection(
           'Which language do you want to learn?',
           targetLanguage,
-          (lang) => {
+          lang => {
             setTargetLanguage(lang);
             setLanguageSearch('');
           },
@@ -547,7 +580,7 @@ export function OnboardingScreen(): React.JSX.Element {
       <View style={styles.header}>
         {currentStep !== 'welcome' ? (
           <TouchableOpacity onPress={goBack} style={styles.backButton}>
-            <TextDisplay text="←" style={[styles.backText, { color: colors.primary[500] }]} />
+            <TextDisplay text="←" style={[styles.backText, {color: colors.primary[500]}]} />
           </TouchableOpacity>
         ) : (
           <View style={styles.backButton} />
@@ -562,7 +595,7 @@ export function OnboardingScreen(): React.JSX.Element {
           styles.contentContainer,
           {
             opacity: fadeAnim,
-            transform: [{ translateX: slideAnim }],
+            transform: [{translateX: slideAnim}],
           },
         ]}
       >
@@ -594,14 +627,17 @@ export function OnboardingScreen(): React.JSX.Element {
           <TouchableOpacity
             style={styles.skipButton}
             onPress={() => {
-              updatePreferences({ hasCompletedOnboarding: true });
+              updatePreferences({hasCompletedOnboarding: true});
               navigation.reset({
                 index: 0,
-                routes: [{ name: 'MainTabs' as never }],
+                routes: [{name: 'MainTabs' as never}],
               });
             }}
           >
-            <TextDisplay text="Skip for now" style={[styles.skipText, { color: colors.text.tertiary }]} />
+            <TextDisplay
+              text="Skip for now"
+              style={[styles.skipText, {color: colors.text.tertiary}]}
+            />
           </TouchableOpacity>
         )}
       </View>
@@ -610,8 +646,8 @@ export function OnboardingScreen(): React.JSX.Element {
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 
@@ -736,9 +772,9 @@ const styles = StyleSheet.create({
   },
   languageItem: {
     alignItems: 'center',
+    borderColor: 'transparent',
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: 'transparent',
     flexDirection: 'row',
     marginBottom: 8,
     padding: 14,
@@ -766,9 +802,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   levelItem: {
+    borderColor: 'transparent',
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: 'transparent',
     marginBottom: 12,
     padding: 16,
   },
@@ -781,9 +817,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   presetButton: {
+    borderColor: 'transparent',
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: 'transparent',
     marginBottom: 8,
     padding: 14,
   },

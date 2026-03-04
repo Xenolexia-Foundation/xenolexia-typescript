@@ -9,12 +9,10 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {XP_PER_MINUTE_READING, XP_PER_WORD_SAVED} from 'xenolexia-typescript';
 import {create} from 'zustand';
+
 import type {ReadingStats, ReadingSession} from '@types/index';
-import {
-  XP_PER_MINUTE_READING,
-  XP_PER_WORD_SAVED,
-} from 'xenolexia-typescript';
 
 const STATISTICS_KEY = '@xenolexia/statistics';
 const MAX_PERSISTED_SESSIONS = 200;
@@ -107,9 +105,7 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
     if (!currentSession) return;
 
     const endedAt = new Date();
-    const duration = Math.floor(
-      (endedAt.getTime() - currentSession.startedAt.getTime()) / 1000,
-    );
+    const duration = Math.floor((endedAt.getTime() - currentSession.startedAt.getTime()) / 1000);
 
     const completedSession: ReadingSession = {
       ...currentSession,
@@ -224,16 +220,14 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
   saveStats: async () => {
     try {
       const {stats, sessions, reviewStats} = get();
-      const sessionsToSave = sessions
-        .slice(-MAX_PERSISTED_SESSIONS)
-        .map(s => ({
-          ...s,
-          startedAt: s.startedAt.toISOString(),
-          endedAt: s.endedAt ? s.endedAt.toISOString() : null,
-        }));
+      const sessionsToSave = sessions.slice(-MAX_PERSISTED_SESSIONS).map(s => ({
+        ...s,
+        startedAt: s.startedAt.toISOString(),
+        endedAt: s.endedAt ? s.endedAt.toISOString() : null,
+      }));
       await AsyncStorage.setItem(
         STATISTICS_KEY,
-        JSON.stringify({stats, sessions: sessionsToSave, reviewStats}),
+        JSON.stringify({stats, sessions: sessionsToSave, reviewStats})
       );
     } catch (error) {
       console.error('Failed to save stats:', error);

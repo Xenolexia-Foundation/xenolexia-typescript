@@ -8,11 +8,14 @@
  */
 
 import React from 'react';
+
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 
 import {useColors} from '@/theme';
 import {spacing} from '@/theme/tokens';
+
 import {Text} from '@components/ui';
+
 import {ChevronLeftIcon} from './TabBarIcon';
 
 export interface ScreenHeaderProps {
@@ -45,7 +48,11 @@ export function ScreenHeader({
       {/* Left side */}
       <View style={styles.left}>
         {showBack && onBack && (
-          <TouchableOpacity style={styles.backButton} onPress={onBack} hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={onBack}
+            hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+          >
             <ChevronLeftIcon color={colors.primary} size={24} />
           </TouchableOpacity>
         )}

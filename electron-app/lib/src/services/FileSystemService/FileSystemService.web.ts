@@ -5,7 +5,7 @@
 
 /**
  * File System Service for Web
- * 
+ *
  * Uses the File System Access API to read/write files to the user's
  * actual file system with their permission.
  */
@@ -39,7 +39,7 @@ const openHandleDB = (): Promise<IDBDatabase> => {
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
 
-    request.onupgradeneeded = (event) => {
+    request.onupgradeneeded = event => {
       const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME);
@@ -107,7 +107,7 @@ export class FileSystemService {
       const savedHandle = await getHandle(BOOKS_DIR_KEY);
       if (savedHandle) {
         // Verify we still have permission
-        const permission = await savedHandle.requestPermission({ mode: 'readwrite' });
+        const permission = await savedHandle.requestPermission({mode: 'readwrite'});
         if (permission === 'granted') {
           this.booksDirectoryHandle = savedHandle;
           console.log('[FileSystemService] Restored directory access:', savedHandle.name);
@@ -130,7 +130,7 @@ export class FileSystemService {
     }
 
     try {
-      const permission = await this.booksDirectoryHandle.queryPermission({ mode: 'readwrite' });
+      const permission = await this.booksDirectoryHandle.queryPermission({mode: 'readwrite'});
       return permission === 'granted';
     } catch {
       return false;
@@ -195,7 +195,7 @@ export class FileSystemService {
     parent: FileSystemDirectoryHandle,
     name: string
   ): Promise<FileSystemDirectoryHandle> {
-    return await parent.getDirectoryHandle(name, { create: true });
+    return await parent.getDirectoryHandle(name, {create: true});
   }
 
   /**
@@ -212,7 +212,7 @@ export class FileSystemService {
     const bookDir = await this.getOrCreateDirectory(rootDir, bookId);
 
     // Create the file
-    const fileHandle = await bookDir.getFileHandle(filename, { create: true });
+    const fileHandle = await bookDir.getFileHandle(filename, {create: true});
     const writable = await fileHandle.createWritable();
 
     try {
@@ -249,7 +249,7 @@ export class FileSystemService {
    * Check if a book exists
    */
   static async bookExists(bookId: string, filename: string): Promise<boolean> {
-    if (!await this.hasDirectoryAccess()) {
+    if (!(await this.hasDirectoryAccess())) {
       return false;
     }
 
@@ -267,13 +267,13 @@ export class FileSystemService {
    * Delete a book directory
    */
   static async deleteBook(bookId: string): Promise<boolean> {
-    if (!await this.hasDirectoryAccess()) {
+    if (!(await this.hasDirectoryAccess())) {
       return false;
     }
 
     try {
       const rootDir = this.booksDirectoryHandle!;
-      await rootDir.removeEntry(bookId, { recursive: true });
+      await rootDir.removeEntry(bookId, {recursive: true});
       console.log('[FileSystemService] Deleted book:', bookId);
       return true;
     } catch (error: any) {
@@ -289,7 +289,7 @@ export class FileSystemService {
    * List all books in the directory
    */
   static async listBooks(): Promise<string[]> {
-    if (!await this.hasDirectoryAccess()) {
+    if (!(await this.hasDirectoryAccess())) {
       return [];
     }
 
@@ -318,7 +318,7 @@ export class FileSystemService {
   static async saveFileWithDialog(
     data: ArrayBuffer | Uint8Array | Blob,
     suggestedName: string,
-    types?: Array<{ description: string; accept: Record<string, string[]> }>
+    types?: Array<{description: string; accept: Record<string, string[]>}>
   ): Promise<string | null> {
     if (!this.isSupported()) {
       // Fallback to download
@@ -331,7 +331,7 @@ export class FileSystemService {
         types: types || [
           {
             description: 'EPUB files',
-            accept: { 'application/epub+zip': ['.epub'] },
+            accept: {'application/epub+zip': ['.epub']},
           },
         ],
       });
@@ -355,20 +355,17 @@ export class FileSystemService {
   /**
    * Fallback: trigger browser download
    */
-  private static downloadFile(
-    data: ArrayBuffer | Uint8Array | Blob,
-    filename: string
-  ): string {
+  private static downloadFile(data: ArrayBuffer | Uint8Array | Blob, filename: string): string {
     const blob = data instanceof Blob ? data : new Blob([data]);
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    
+
     URL.revokeObjectURL(url);
     return filename;
   }

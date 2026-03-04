@@ -9,7 +9,8 @@
  */
 
 import RNFS from 'react-native-fs';
-import type { IFileSystem } from 'xenolexia-typescript';
+
+import type {IFileSystem} from 'xenolexia-typescript';
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const binary = atob(base64);
@@ -33,7 +34,7 @@ export const rnfsFileSystem: IFileSystem = {
     return RNFS.readFile(filePath, 'base64');
   },
   fileExists: (filePath: string): Promise<boolean> => RNFS.exists(filePath),
-  mkdir: (dirPath: string, options?: { recursive?: boolean }): Promise<void> => {
+  mkdir: (dirPath: string, options?: {recursive?: boolean}): Promise<void> => {
     return RNFS.mkdir(dirPath).then(() => {});
   },
   unlink: (filePath: string): Promise<void> => RNFS.unlink(filePath),

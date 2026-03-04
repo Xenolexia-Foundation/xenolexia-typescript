@@ -8,20 +8,24 @@
  */
 
 import React, {useMemo, useState, useCallback} from 'react';
-import {useNavigate} from 'react-router-dom';
+
 import {useStatisticsStore} from '@xenolexia/shared/stores/statisticsStore';
-import {Card} from '../components/ui';
+import {useUserStore} from '@xenolexia/shared/stores/userStore';
 import {
   getLevelFromXp,
   getLevelProgress,
   getXpToNextLevel,
   getAllAchievementsWithProgress,
 } from 'xenolexia-typescript';
+
+import {Card} from '../components/ui';
+import {useBack} from '../hooks/useBack';
 import './StatisticsScreen.css';
 
 export function StatisticsScreen(): React.JSX.Element {
-  const navigate = useNavigate();
-  const {stats, isLoading, refreshStats, loadStats} = useStatisticsStore();
+  const goBack = useBack();
+  const {stats, dailyReadingTime, isLoading, refreshStats, loadStats} = useStatisticsStore();
+  const {preferences} = useUserStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Load stats on mount
@@ -44,12 +48,19 @@ export function StatisticsScreen(): React.JSX.Element {
     return `${minutes}m`;
   };
 
-  // Calculate progress percentage for daily goal
-  const dailyProgress = useMemo(() => {
-    const goalMinutes = 30; // Default goal: 30 minutes
-    const todayMinutes = Math.floor(stats.wordsRevealedToday / 10); // Rough estimate
-    return Math.min(100, Math.round((todayMinutes / goalMinutes) * 100));
-  }, [stats.wordsRevealedToday]);
+  // Daily goal: 30 min reading. Use today's minutes from dailyReadingTime.
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+  const todayMinutes = useMemo(
+    () => dailyReadingTime.find(d => d.date === todayStr)?.minutes ?? 0,
+    [dailyReadingTime, todayStr]
+  );
+  // Daily goal from user preferences (minutes)
+  const dailyGoalMinutes = preferences?.dailyGoal ?? 30;
+  const dailyProgress = useMemo(
+    () =>
+      Math.min(100, dailyGoalMinutes > 0 ? Math.round((todayMinutes / dailyGoalMinutes) * 100) : 0),
+    [todayMinutes, dailyGoalMinutes]
+  );
 
   const totalXp = stats.totalXp ?? 0;
   const level = useMemo(() => getLevelFromXp(totalXp), [totalXp]);
@@ -61,7 +72,7 @@ export function StatisticsScreen(): React.JSX.Element {
     return (
       <div className="statistics-screen">
         <div className="statistics-header">
-          <button onClick={() => navigate(-1)} className="statistics-back-button">
+          <button onClick={goBack} className="statistics-back-button">
             ← Back
           </button>
           <div>
@@ -78,7 +89,7 @@ export function StatisticsScreen(): React.JSX.Element {
   return (
     <div className="statistics-screen">
       <div className="statistics-header">
-        <button onClick={() => navigate(-1)} className="statistics-back-button">
+        <button onClick={goBack} className="statistics-back-button">
           ← Back
         </button>
         <div>
@@ -113,71 +124,74 @@ export function StatisticsScreen(): React.JSX.Element {
             <span className="statistics-level-xp">{totalXp} XP</span>
           </div>
           <div className="statistics-progress-bar">
-            <div
-              className="statistics-progress-fill"
-              style={{width: `${levelProgress}%`}}
-            />
+            <div className="statistics-progress-fill" style={{width: `${levelProgress}%`}} />
           </div>
           <p className="statistics-xp-to-next">{xpToNext} XP to next level</p>
         </Card>
 
         {/* Daily Progress */}
         <div className="statistics-section">
-          <h2 className="statistics-section-title">Today's Progress</h2>
+          <h2 className="statistics-section-title">Today&apos;s Progress</h2>
 
           <Card variant="outlined" padding="md" className="statistics-progress-card">
             <div className="statistics-progress-header">
-              <span className="statistics-progress-label">Daily Goal</span>
+              <span className="statistics-progress-label">
+                Daily goal ({dailyGoalMinutes} min reading)
+              </span>
               <span className="statistics-progress-percentage">{dailyProgress}%</span>
             </div>
             <div className="statistics-progress-bar">
-              <div
-                className="statistics-progress-fill"
-                style={{width: `${dailyProgress}%`}}
-              />
+              <div className="statistics-progress-fill" style={{width: `${dailyProgress}%`}} />
             </div>
+            <p className="statistics-progress-caption">{todayMinutes} min today</p>
           </Card>
 
           <div className="statistics-stats-grid">
-            <StatCard
-              icon="📖"
-              value={stats.wordsRevealedToday.toString()}
-              label="Words Seen"
-            />
-            <StatCard
-              icon="💾"
-              value={stats.wordsSavedToday.toString()}
-              label="Words Saved"
-            />
+            <StatCard icon="📖" value={stats.wordsRevealedToday.toString()} label="Words Seen" />
+            <StatCard icon="💾" value={stats.wordsSavedToday.toString()} label="Words Saved" />
           </div>
         </div>
 
-        {/* Reading over time (last 7 days) */}
+        {/* Reading over time (last 7 days) - real data */}
         <div className="statistics-section">
           <h2 className="statistics-section-title">Reading over time</h2>
           <Card variant="outlined" padding="md" className="statistics-chart-card">
             <div className="statistics-chart-bars">
-              {[6, 5, 4, 3, 2, 1, 0].map(dayOffset => {
-                const d = new Date();
-                d.setDate(d.getDate() - dayOffset);
-                const isToday = dayOffset === 0;
-                const value = isToday ? stats.wordsRevealedToday : 0;
-                const maxVal = Math.max(stats.wordsRevealedToday, 1);
-                const heightPct = maxVal > 0 ? (value / maxVal) * 100 : 0;
-                const dayLabel = d.toLocaleDateString('en-US', {weekday: 'short'});
-                return (
-                  <div key={dayOffset} className="statistics-chart-bar-wrap">
-                    <div
-                      className="statistics-chart-bar"
-                      style={{height: `${heightPct}%`}}
-                      title={`${dayLabel}: ${value} words`}
-                    />
-                    <span className="statistics-chart-label">{dayLabel}</span>
-                  </div>
-                );
-              })}
+              {dailyReadingTime.length > 0
+                ? dailyReadingTime.map(d => {
+                    const maxMin = Math.max(...dailyReadingTime.map(x => x.minutes), 1);
+                    const heightPct = maxMin > 0 ? (d.minutes / maxMin) * 100 : 0;
+                    const dayLabel = new Date(d.date + 'T12:00:00').toLocaleDateString('en-US', {
+                      weekday: 'short',
+                    });
+                    return (
+                      <div key={d.date} className="statistics-chart-bar-wrap">
+                        <div
+                          className="statistics-chart-bar"
+                          style={{height: `${heightPct}%`}}
+                          title={`${dayLabel}: ${d.minutes} min`}
+                        />
+                        <span className="statistics-chart-label">{dayLabel}</span>
+                      </div>
+                    );
+                  })
+                : [6, 5, 4, 3, 2, 1, 0].map(dayOffset => {
+                    const d = new Date();
+                    d.setDate(d.getDate() - dayOffset);
+                    const dayLabel = d.toLocaleDateString('en-US', {weekday: 'short'});
+                    return (
+                      <div key={dayOffset} className="statistics-chart-bar-wrap">
+                        <div
+                          className="statistics-chart-bar"
+                          style={{height: '4px'}}
+                          title={`${dayLabel}: 0 min`}
+                        />
+                        <span className="statistics-chart-label">{dayLabel}</span>
+                      </div>
+                    );
+                  })}
             </div>
-            <p className="statistics-chart-caption">Words revealed per day (today has real data)</p>
+            <p className="statistics-chart-caption">Reading time (minutes) per day</p>
           </Card>
         </div>
 
@@ -185,21 +199,9 @@ export function StatisticsScreen(): React.JSX.Element {
         <div className="statistics-section">
           <h2 className="statistics-section-title">All Time</h2>
           <div className="statistics-stats-grid">
-            <StatCard
-              icon="📚"
-              value={stats.totalBooksRead.toString()}
-              label="Books Read"
-            />
-            <StatCard
-              icon="⏱️"
-              value={formatTime(stats.totalReadingTime)}
-              label="Reading Time"
-            />
-            <StatCard
-              icon="🧠"
-              value={stats.totalWordsLearned.toString()}
-              label="Words Learned"
-            />
+            <StatCard icon="📚" value={stats.totalBooksRead.toString()} label="Books Read" />
+            <StatCard icon="⏱️" value={formatTime(stats.totalReadingTime)} label="Reading Time" />
+            <StatCard icon="🧠" value={stats.totalWordsLearned.toString()} label="Words Learned" />
             <StatCard
               icon="📊"
               value={formatTime(stats.averageSessionDuration)}
@@ -208,23 +210,38 @@ export function StatisticsScreen(): React.JSX.Element {
           </div>
         </div>
 
-        {/* Learning Insights */}
+        {/* Learning Insights - from real data */}
         <div className="statistics-section">
           <h2 className="statistics-section-title">Insights</h2>
           <Card variant="outlined" padding="md">
             <div className="statistics-insight-row">
               <span>Most active day</span>
-              <span className="statistics-insight-value">Monday</span>
+              <span className="statistics-insight-value">
+                {dailyReadingTime.length > 0
+                  ? (() => {
+                      const best = dailyReadingTime.reduce((a, b) =>
+                        a.minutes >= b.minutes ? a : b
+                      );
+                      return best.minutes > 0
+                        ? new Date(best.date + 'T12:00:00').toLocaleDateString('en-US', {
+                            weekday: 'long',
+                          })
+                        : '—';
+                    })()
+                  : '—'}
+              </span>
             </div>
             <div className="statistics-insight-divider" />
             <div className="statistics-insight-row">
-              <span>Favorite reading time</span>
-              <span className="statistics-insight-value">Evening</span>
+              <span>Words revealed today</span>
+              <span className="statistics-insight-value">{stats.wordsRevealedToday}</span>
             </div>
             <div className="statistics-insight-divider" />
             <div className="statistics-insight-row">
-              <span>Words learned this week</span>
-              <span className="statistics-insight-value statistics-insight-success">+42</span>
+              <span>Words saved today</span>
+              <span className="statistics-insight-value statistics-insight-success">
+                +{stats.wordsSavedToday}
+              </span>
             </div>
           </Card>
         </div>
@@ -239,14 +256,13 @@ export function StatisticsScreen(): React.JSX.Element {
                 variant="outlined"
                 padding="md"
                 className={`statistics-achievement-card ${unlocked ? 'statistics-achievement-unlocked' : ''}`}
+                title={definition.description}
               >
                 <div className="statistics-achievement-icon">{definition.icon}</div>
                 <div className="statistics-achievement-name">{definition.name}</div>
+                <div className="statistics-achievement-desc">{definition.description}</div>
                 <div className="statistics-progress-bar statistics-achievement-progress">
-                  <div
-                    className="statistics-progress-fill"
-                    style={{width: `${progress}%`}}
-                  />
+                  <div className="statistics-progress-fill" style={{width: `${progress}%`}} />
                 </div>
               </Card>
             ))}

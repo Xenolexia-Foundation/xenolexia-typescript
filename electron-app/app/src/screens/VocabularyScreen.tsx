@@ -8,10 +8,14 @@
  */
 
 import React, {useState, useCallback, useMemo, useEffect} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+
 import {useVocabularyStore} from '@xenolexia/shared/stores/vocabularyStore';
+import {useNavigate, useParams} from 'react-router-dom';
+
+import {PressableCard, SearchInput, Button, Modal} from '../components/ui';
+
 import type {VocabularyItem} from '@xenolexia/shared/types';
-import {Card, PressableCard, SearchInput, Button, Modal} from '../components/ui';
+
 import './VocabularyScreen.css';
 
 type FilterType = 'all' | 'new' | 'learning' | 'learned';
@@ -26,10 +30,11 @@ const FILTER_OPTIONS: Array<{id: FilterType; label: string; icon: string}> = [
 export function VocabularyScreen(): React.JSX.Element {
   const navigate = useNavigate();
   const {wordId} = useParams<{wordId?: string}>();
-  const {vocabulary, isLoading, refreshVocabulary, initialize, getWord, updateWord, removeWord} = useVocabularyStore();
+  const {vocabulary, isLoading, refreshVocabulary, initialize, getWord, updateWord, removeWord} =
+    useVocabularyStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<FilterType>('all');
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [_isRefreshing, setIsRefreshing] = useState(false);
   const [selectedWord, setSelectedWord] = useState<VocabularyItem | null>(null);
 
   useEffect(() => {
@@ -72,18 +77,15 @@ export function VocabularyScreen(): React.JSX.Element {
     );
   }, [vocabulary]);
 
-  const handleRefresh = useCallback(async () => {
+  const _handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     await refreshVocabulary();
     setIsRefreshing(false);
   }, [refreshVocabulary]);
 
-  const handleWordPress = useCallback(
-    (item: VocabularyItem) => {
-      setSelectedWord(item);
-    },
-    []
-  );
+  const handleWordPress = useCallback((item: VocabularyItem) => {
+    setSelectedWord(item);
+  }, []);
 
   const handleCloseWordDetail = useCallback(() => {
     setSelectedWord(null);
@@ -92,19 +94,22 @@ export function VocabularyScreen(): React.JSX.Element {
     }
   }, [wordId, navigate]);
 
-  const handleDeleteWord = useCallback(async (itemId: string) => {
-    if (window.confirm('Delete this word from your vocabulary?')) {
-      try {
-        await removeWord(itemId);
-        if (selectedWord?.id === itemId) {
-          setSelectedWord(null);
+  const handleDeleteWord = useCallback(
+    async (itemId: string) => {
+      if (window.confirm('Delete this word from your vocabulary?')) {
+        try {
+          await removeWord(itemId);
+          if (selectedWord?.id === itemId) {
+            setSelectedWord(null);
+          }
+        } catch (error) {
+          console.error('Failed to delete word:', error);
+          alert('Failed to delete word');
         }
-      } catch (error) {
-        console.error('Failed to delete word:', error);
-        alert('Failed to delete word');
       }
-    }
-  }, [removeWord, selectedWord]);
+    },
+    [removeWord, selectedWord]
+  );
 
   const handleStartReview = useCallback(() => {
     navigate('/vocabulary/review');
@@ -153,7 +158,7 @@ export function VocabularyScreen(): React.JSX.Element {
       </div>
 
       <div className="vocabulary-filters">
-        {FILTER_OPTIONS.map((option) => (
+        {FILTER_OPTIONS.map(option => (
           <button
             key={option.id}
             className={`filter-button ${filter === option.id ? 'filter-button-active' : ''}`}
@@ -168,7 +173,7 @@ export function VocabularyScreen(): React.JSX.Element {
       <div className="vocabulary-search">
         <SearchInput
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           placeholder="Search vocabulary..."
         />
       </div>
@@ -176,7 +181,7 @@ export function VocabularyScreen(): React.JSX.Element {
       {filteredVocabulary.length === 0 ? (
         <div className="vocabulary-empty">
           {searchQuery ? (
-            <p>No words found matching "{searchQuery}"</p>
+            <p>No words found matching &quot;{searchQuery}&quot;</p>
           ) : (
             <div className="empty-state">
               <div className="empty-icon">📝</div>
@@ -187,12 +192,8 @@ export function VocabularyScreen(): React.JSX.Element {
         </div>
       ) : (
         <div className="vocabulary-list">
-          {filteredVocabulary.map((item) => (
-            <VocabularyCard
-              key={item.id}
-              item={item}
-              onPress={() => handleWordPress(item)}
-            />
+          {filteredVocabulary.map(item => (
+            <VocabularyCard key={item.id} item={item} onPress={() => handleWordPress(item)} />
           ))}
         </div>
       )}
@@ -203,7 +204,7 @@ export function VocabularyScreen(): React.JSX.Element {
           word={selectedWord}
           onClose={handleCloseWordDetail}
           onDelete={handleDeleteWord}
-          onUpdate={async (updates) => {
+          onUpdate={async updates => {
             try {
               await updateWord(selectedWord.id, updates);
               setSelectedWord({...selectedWord, ...updates});
@@ -223,12 +224,13 @@ interface VocabularyCardProps {
   onPress: () => void;
 }
 
-function VocabularyCard({item, onPress}: VocabularyCardProps): React.JSX.Element {
+function VocabularyCard({item, onPress: _onPress}: VocabularyCardProps): React.JSX.Element {
   const [isRevealed, setIsRevealed] = useState(false);
 
   const statusConfig = {
     new: {label: 'New', color: '#6366f1'},
     learning: {label: 'Learning', color: '#f59e0b'},
+    review: {label: 'Review', color: '#8b5cf6'},
     learned: {label: 'Mastered', color: '#10b981'},
   }[item.status] || {label: item.status, color: '#6b7280'};
 
@@ -254,17 +256,13 @@ function VocabularyCard({item, onPress}: VocabularyCardProps): React.JSX.Element
         <div className="vocabulary-card-content">
           <p className="vocabulary-original">{item.sourceWord}</p>
           {item.contextSentence && (
-            <p className="vocabulary-context">"{item.contextSentence}"</p>
+            <p className="vocabulary-context">&quot;{item.contextSentence}&quot;</p>
           )}
-          {item.bookTitle && (
-            <p className="vocabulary-book">📖 {item.bookTitle}</p>
-          )}
+          {item.bookTitle && <p className="vocabulary-book">📖 {item.bookTitle}</p>}
         </div>
       )}
 
-      {!isRevealed && (
-        <p className="vocabulary-hint">Click to reveal</p>
-      )}
+      {!isRevealed && <p className="vocabulary-hint">Click to reveal</p>}
     </PressableCard>
   );
 }
@@ -277,13 +275,19 @@ interface WordDetailModalProps {
   onUpdate: (updates: Partial<VocabularyItem>) => Promise<void>;
 }
 
-function WordDetailModal({word, onClose, onDelete, onUpdate}: WordDetailModalProps): React.JSX.Element {
+function WordDetailModal({
+  word,
+  onClose,
+  onDelete,
+  onUpdate,
+}: WordDetailModalProps): React.JSX.Element {
   const [isEditing, setIsEditing] = useState(false);
   const [editedWord, setEditedWord] = useState(word);
 
   const statusConfig = {
     new: {label: 'New', color: '#6366f1'},
     learning: {label: 'Learning', color: '#f59e0b'},
+    review: {label: 'Review', color: '#8b5cf6'},
     learned: {label: 'Mastered', color: '#10b981'},
   }[word.status] || {label: word.status, color: '#6b7280'};
 
@@ -313,7 +317,7 @@ function WordDetailModal({word, onClose, onDelete, onUpdate}: WordDetailModalPro
             {word.contextSentence && (
               <div className="word-detail-section">
                 <h4>Context</h4>
-                <p className="word-detail-context">"{word.contextSentence}"</p>
+                <p className="word-detail-context">&quot;{word.contextSentence}&quot;</p>
               </div>
             )}
 
@@ -338,16 +342,24 @@ function WordDetailModal({word, onClose, onDelete, onUpdate}: WordDetailModalPro
                 {word.lastReviewedAt && (
                   <div className="word-detail-stat">
                     <span className="stat-label">Last Reviewed:</span>
-                    <span className="stat-value">{new Date(word.lastReviewedAt).toLocaleDateString()}</span>
+                    <span className="stat-value">
+                      {new Date(word.lastReviewedAt).toLocaleDateString()}
+                    </span>
                   </div>
                 )}
               </div>
             </div>
 
             <div className="word-detail-actions">
-              <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>
-              <Button variant="outline" onClick={() => onDelete(word.id)}>Delete</Button>
-              <Button variant="primary" onClick={onClose}>Close</Button>
+              <Button variant="outline" onClick={() => setIsEditing(true)}>
+                Edit
+              </Button>
+              <Button variant="outline" onClick={() => onDelete(word.id)}>
+                Delete
+              </Button>
+              <Button variant="primary" onClick={onClose}>
+                Close
+              </Button>
             </div>
           </>
         ) : (
@@ -358,7 +370,7 @@ function WordDetailModal({word, onClose, onDelete, onUpdate}: WordDetailModalPro
                 <input
                   type="text"
                   value={editedWord.targetWord}
-                  onChange={(e) => setEditedWord({...editedWord, targetWord: e.target.value})}
+                  onChange={e => setEditedWord({...editedWord, targetWord: e.target.value})}
                 />
               </div>
               <div className="word-detail-edit-field">
@@ -366,21 +378,33 @@ function WordDetailModal({word, onClose, onDelete, onUpdate}: WordDetailModalPro
                 <input
                   type="text"
                   value={editedWord.sourceWord}
-                  onChange={(e) => setEditedWord({...editedWord, sourceWord: e.target.value})}
+                  onChange={e => setEditedWord({...editedWord, sourceWord: e.target.value})}
                 />
               </div>
               <div className="word-detail-edit-field">
                 <label>Context Sentence:</label>
                 <textarea
                   value={editedWord.contextSentence || ''}
-                  onChange={(e) => setEditedWord({...editedWord, contextSentence: e.target.value || null})}
+                  onChange={e =>
+                    setEditedWord({...editedWord, contextSentence: e.target.value || null})
+                  }
                   rows={3}
                 />
               </div>
             </div>
             <div className="word-detail-actions">
-              <Button variant="outline" onClick={() => {setIsEditing(false); setEditedWord(word);}}>Cancel</Button>
-              <Button variant="primary" onClick={handleSave}>Save</Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditing(false);
+                  setEditedWord(word);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={handleSave}>
+                Save
+              </Button>
             </div>
           </>
         )}

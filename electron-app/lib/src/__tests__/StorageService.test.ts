@@ -7,9 +7,9 @@
  * Unit tests for StorageService (xenolexia-typescript core) - vocabulary, sessions, preferences, export
  */
 
-import { createStorageService } from '../services/StorageService';
-import type { IDataStore } from 'xenolexia-typescript';
-import type { VocabularyItem, ReadingStats } from 'xenolexia-typescript';
+import {createStorageService} from '../services/StorageService';
+
+import type {IDataStore, VocabularyItem, ReadingStats} from 'xenolexia-typescript';
 
 const uuid = require('uuid');
 
@@ -40,7 +40,9 @@ function createMockDataStore(): IDataStore {
     deleteBook: noop,
     deleteAllBooks: noop,
     getBookCount: noopNumber,
-    getBookStatistics: jest.fn().mockResolvedValue({ total: 0, in_progress: 0, completed: 0, total_time: 0 }),
+    getBookStatistics: jest
+      .fn()
+      .mockResolvedValue({total: 0, in_progress: 0, completed: 0, total_time: 0}),
     getVocabularyById: noopNull,
     getVocabulary: noopArray,
     addVocabulary: noop,
@@ -81,7 +83,7 @@ function createMockDataStore(): IDataStore {
     deleteWordListByPair: noop,
     getWordListProficiencyCounts: jest.fn().mockResolvedValue({}),
     getWordListPosCounts: jest.fn().mockResolvedValue({}),
-    getWordListStats: jest.fn().mockResolvedValue({ total: 0, pairs: [] }),
+    getWordListStats: jest.fn().mockResolvedValue({total: 0, pairs: []}),
     getWordListSearch: noopArray,
     runTransaction: noop,
   } as IDataStore;
@@ -159,9 +161,9 @@ describe('StorageService', () => {
 
   describe('exportData', () => {
     it('should return JSON string with books, vocabulary, sessions', async () => {
-      (mockDataStore.getBooks as jest.Mock).mockResolvedValue([{ id: 'b1', title: 'Test' }]);
+      (mockDataStore.getBooks as jest.Mock).mockResolvedValue([{id: 'b1', title: 'Test'}]);
       (mockDataStore.getVocabulary as jest.Mock).mockResolvedValue([
-        { id: 'v1', source_word: 'hello', target_word: 'hola' },
+        {id: 'v1', source_word: 'hello', target_word: 'hola'},
       ]);
       (mockDataStore.getRecentSessions as jest.Mock).mockResolvedValue([]);
       const json = await storageService.exportData();

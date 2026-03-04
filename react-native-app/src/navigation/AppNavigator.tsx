@@ -17,26 +17,20 @@ import React, {useCallback, useMemo} from 'react';
 
 import {Platform, StyleSheet, View, Text} from 'react-native';
 
-import {TabBarIcon} from '@components/common/TabBarIcon';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer, DefaultTheme, DarkTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
+import {useTheme} from '@/theme';
+
+import {TabBarIcon} from '@components/common/TabBarIcon';
+
 import {BookDetailScreen} from '@screens/BookDetail/BookDetailScreen';
 import {BookDiscoveryScreen} from '@screens/BookDiscovery/BookDiscoveryScreen';
 import {LibraryScreen} from '@screens/Library/LibraryScreen';
 import {OnboardingScreen} from '@screens/Onboarding/OnboardingScreen';
 import {ProfileScreen} from '@screens/Profile/ProfileScreen';
 import {ReaderScreen} from '@screens/Reader/ReaderScreen';
-import {StatisticsScreen} from '@screens/Statistics/StatisticsScreen';
-import {VocabularyDetailScreen} from '@screens/Vocabulary/VocabularyDetailScreen';
-import {VocabularyScreen} from '@screens/Vocabulary/VocabularyScreen';
-import {ReviewScreen} from '@screens/Vocabulary/ReviewScreen';
-
-import {useTheme} from '@/theme';
-import {linkingConfig} from './linking';
-import type {RootStackParamList, MainTabsParamList} from './types';
-
-// Screens
 import {
   SettingsScreen,
   LanguageSettingsScreen,
@@ -44,12 +38,22 @@ import {
   NotificationSettingsScreen,
   AboutScreen,
 } from '@screens/Settings';
+import {StatisticsScreen} from '@screens/Statistics/StatisticsScreen';
+import {ReviewScreen} from '@screens/Vocabulary/ReviewScreen';
+import {VocabularyDetailScreen} from '@screens/Vocabulary/VocabularyDetailScreen';
+import {VocabularyScreen} from '@screens/Vocabulary/VocabularyScreen';
+
+import {useUserStore} from '@stores/userStore';
+
+import {linkingConfig} from './linking';
+
+import type {RootStackParamList, MainTabsParamList} from './types';
+
+// Screens
 
 // Components
 
 // Hooks
-
-import {useUserStore} from '@stores/userStore';
 
 // Create navigators
 const Stack = createNativeStackNavigator<RootStackParamList>();

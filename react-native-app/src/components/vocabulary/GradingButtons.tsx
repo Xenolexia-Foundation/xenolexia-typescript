@@ -14,14 +14,10 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-} from 'react-native';
 
-import { useTheme } from '@theme/index';
+import {View, StyleSheet, TouchableOpacity, Animated} from 'react-native';
+
+import {useTheme} from '@theme/index';
 
 // ============================================================================
 // Types
@@ -85,7 +81,7 @@ export function GradingButtons({
   disabled = false,
   showLabels = true,
 }: GradingButtonsProps): React.JSX.Element {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
 
   const handlePress = (quality: number) => {
     if (!disabled) {
@@ -99,13 +95,13 @@ export function GradingButtons({
         <View style={styles.header}>
           <TextDisplay
             text="How well did you know this?"
-            style={[styles.headerText, { color: colors.text.secondary }]}
+            style={[styles.headerText, {color: colors.text.secondary}]}
           />
         </View>
       )}
 
       <View style={styles.buttonsRow}>
-        {GRADE_OPTIONS.map((option) => (
+        {GRADE_OPTIONS.map(option => (
           <TouchableOpacity
             key={option.quality}
             style={[
@@ -120,18 +116,12 @@ export function GradingButtons({
             disabled={disabled}
             activeOpacity={0.7}
           >
-            <TextDisplay
-              text={option.shortLabel}
-              style={styles.buttonIcon}
-            />
-            <TextDisplay
-              text={option.label}
-              style={[styles.buttonLabel, { color: option.color }]}
-            />
+            <TextDisplay text={option.shortLabel} style={styles.buttonIcon} />
+            <TextDisplay text={option.label} style={[styles.buttonLabel, {color: option.color}]} />
             {showLabels && (
               <TextDisplay
                 text={option.description}
-                style={[styles.buttonDescription, { color: colors.text.tertiary }]}
+                style={[styles.buttonDescription, {color: colors.text.tertiary}]}
               />
             )}
           </TouchableOpacity>
@@ -142,8 +132,8 @@ export function GradingButtons({
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 

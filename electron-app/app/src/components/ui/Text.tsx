@@ -11,7 +11,21 @@ import React from 'react';
 import './Text.css';
 
 export interface TextProps extends React.HTMLAttributes<HTMLElement> {
-  variant?: 'displayLarge' | 'displayMedium' | 'headlineLarge' | 'headlineMedium' | 'headlineSmall' | 'titleLarge' | 'titleMedium' | 'titleSmall' | 'bodyLarge' | 'bodyMedium' | 'bodySmall' | 'labelLarge' | 'labelMedium' | 'labelSmall';
+  variant?:
+    | 'displayLarge'
+    | 'displayMedium'
+    | 'headlineLarge'
+    | 'headlineMedium'
+    | 'headlineSmall'
+    | 'titleLarge'
+    | 'titleMedium'
+    | 'titleSmall'
+    | 'bodyLarge'
+    | 'bodyMedium'
+    | 'bodySmall'
+    | 'labelLarge'
+    | 'labelMedium'
+    | 'labelSmall';
   color?: 'primary' | 'secondary' | 'tertiary' | 'inverse' | 'error' | 'success' | 'accent';
   customColor?: string;
   weight?: 'thin' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold' | 'black';
@@ -39,8 +53,17 @@ export function Text({
   children,
   ...props
 }: TextProps): React.JSX.Element {
-  const Component = as || getDefaultComponent(variant);
-  
+  const Component = (as || getDefaultComponent(variant)) as
+    | 'p'
+    | 'span'
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'h4'
+    | 'h5'
+    | 'h6'
+    | 'div';
+
   const classes = [
     'text',
     `text-${variant}`,

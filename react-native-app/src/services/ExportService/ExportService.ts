@@ -12,11 +12,15 @@
  * - JSON - Full data export with metadata
  */
 
-import { Platform, Share } from 'react-native';
+import {Platform, Share} from 'react-native';
+
+import {format} from 'date-fns';
+
 import RNFS from 'react-native-fs';
-import { format } from 'date-fns';
-import type { VocabularyItem, Language } from '@/types';
-import { getLanguageInfo } from '@/types';
+
+import {getLanguageInfo} from '@/types';
+
+import type {VocabularyItem, Language} from '@/types';
 
 // ============================================================================
 // Types
@@ -30,7 +34,7 @@ export interface ExportOptions {
   includeSRSData?: boolean;
   includeBookInfo?: boolean;
   filterByStatus?: string[];
-  filterByLanguage?: { source?: Language; target?: Language };
+  filterByLanguage?: {source?: Language; target?: Language};
 }
 
 export interface ExportResult {
@@ -49,37 +53,35 @@ class ExportService {
   private readonly exportDir: string;
 
   constructor() {
-    this.exportDir = Platform.OS === 'ios'
-      ? RNFS.DocumentDirectoryPath
-      : RNFS.ExternalDirectoryPath || RNFS.DocumentDirectoryPath;
+    this.exportDir =
+      Platform.OS === 'ios'
+        ? RNFS.DocumentDirectoryPath
+        : RNFS.ExternalDirectoryPath || RNFS.DocumentDirectoryPath;
   }
 
   /**
    * Export vocabulary items to the specified format
    */
-  async export(
-    vocabulary: VocabularyItem[],
-    options: ExportOptions
-  ): Promise<ExportResult> {
+  async export(vocabulary: VocabularyItem[], options: ExportOptions): Promise<ExportResult> {
     try {
       // Apply filters
       let filteredVocabulary = [...vocabulary];
 
       if (options.filterByStatus && options.filterByStatus.length > 0) {
-        filteredVocabulary = filteredVocabulary.filter(
-          (v) => options.filterByStatus!.includes(v.status)
+        filteredVocabulary = filteredVocabulary.filter(v =>
+          options.filterByStatus!.includes(v.status)
         );
       }
 
       if (options.filterByLanguage) {
         if (options.filterByLanguage.source) {
           filteredVocabulary = filteredVocabulary.filter(
-            (v) => v.sourceLanguage === options.filterByLanguage!.source
+            v => v.sourceLanguage === options.filterByLanguage!.source
           );
         }
         if (options.filterByLanguage.target) {
           filteredVocabulary = filteredVocabulary.filter(
-            (v) => v.targetLanguage === options.filterByLanguage!.target
+            v => v.targetLanguage === options.filterByLanguage!.target
           );
         }
       }
@@ -178,7 +180,7 @@ class ExportService {
       headers.push('status', 'review_count', 'ease_factor', 'interval', 'added_at');
     }
 
-    const rows = vocabulary.map((item) => {
+    const rows = vocabulary.map(item => {
       const row: string[] = [
         this.escapeCSV(item.sourceWord),
         this.escapeCSV(item.targetWord),
@@ -217,7 +219,7 @@ class ExportService {
    * - Tags: language pair + proficiency level
    */
   private generateAnki(vocabulary: VocabularyItem[], options: ExportOptions): string {
-    const rows = vocabulary.map((item) => {
+    const rows = vocabulary.map(item => {
       // Front of card (foreign word)
       const front = item.targetWord;
 
@@ -231,10 +233,7 @@ class ExportService {
       }
 
       // Tags
-      const tags = [
-        `${item.sourceLanguage}-${item.targetLanguage}`,
-        item.status,
-      ];
+      const tags = [`${item.sourceLanguage}-${item.targetLanguage}`, item.status];
 
       return `${front}\t${back}\t${tags.join(' ')}`;
     });
@@ -252,7 +251,7 @@ class ExportService {
       exportedAt: new Date().toISOString(),
       itemCount: vocabulary.length,
       format: 'xenolexia-vocabulary-v1',
-      items: vocabulary.map((item) => {
+      items: vocabulary.map(item => {
         const exportItem: Record<string, any> = {
           sourceWord: item.sourceWord,
           targetWord: item.targetWord,

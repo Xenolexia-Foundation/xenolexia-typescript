@@ -21,4 +21,4 @@ export {
   extractEPUBInfo,
   extractEPUBCover,
 } from 'xenolexia-typescript';
-export type { IBookParser, ParserOptions, SearchResult } from 'xenolexia-typescript';
+export type {IBookParser, ParserOptions, SearchResult} from 'xenolexia-typescript';

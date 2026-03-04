@@ -7,8 +7,6 @@
  * Reader Store - Manages reading state, content loading, and progress tracking
  */
 
-import {create} from 'zustand';
-
 import {
   BookParserService,
   type ChapterContentService,
@@ -19,7 +17,9 @@ import {
   type ReaderSettings,
   type TableOfContentsItem,
 } from 'xenolexia-typescript';
-import { getCore } from '../electronCore';
+import {create} from 'zustand';
+
+import {getCore} from '../electronCore';
 
 import {useLibraryStore} from './libraryStore';
 
@@ -158,8 +158,10 @@ export const useReaderStore = create<ReaderState>((set, get) => ({
       });
 
       // Load the book in content service for image extraction (only for EPUB)
-      const contentService = getCore().createChapterContentService(getCore().createTranslationEngine);
-      set({ contentService });
+      const contentService = getCore().createChapterContentService(
+        getCore().createTranslationEngine
+      );
+      set({contentService});
 
       if (format === 'epub') {
         console.log('Loading EPUB in content service...');

@@ -15,10 +15,7 @@ export {TranslationEngine, WordMatcher} from './TranslationEngine';
 export type {TranslationOptions, ProcessedText} from './TranslationEngine';
 
 // Translation API Service (multi-provider)
-export {
-  TranslationAPIService,
-  translationAPI,
-} from './TranslationEngine';
+export {TranslationAPIService, translationAPI} from './TranslationEngine';
 export type {
   TranslationProvider,
   TranslationResult,
@@ -31,20 +28,11 @@ export {
   frequencyListService,
   PROFICIENCY_THRESHOLDS,
 } from './TranslationEngine';
-export type {
-  FrequencyWord,
-  FrequencyList,
-} from './TranslationEngine';
+export type {FrequencyWord, FrequencyList} from './TranslationEngine';
 
 // Dynamic Word Database (any language pair)
-export {
-  DynamicWordDatabase,
-  dynamicWordDatabase,
-} from './TranslationEngine';
-export type {
-  DynamicWordEntry,
-  WordLookupResult,
-} from './TranslationEngine';
+export {DynamicWordDatabase, dynamicWordDatabase} from './TranslationEngine';
+export type {DynamicWordEntry, WordLookupResult} from './TranslationEngine';
 
 export {StorageService, DatabaseSchema} from './StorageService';
 
@@ -94,12 +82,9 @@ export {
   saveBookSettings,
   loadBookSettings,
 } from './ReaderStyleService';
-export type {
-  ReaderStyleConfig,
-  ThemeColors,
-} from './ReaderStyleService';
+export type {ReaderStyleConfig, ThemeColors} from './ReaderStyleService';
 
-export { BrightnessService } from './BrightnessService';
+export {BrightnessService} from './BrightnessService';
 
-export { exportService } from './ExportService';
-export type { ExportFormat, ExportOptions, ExportResult } from './ExportService';
+export {exportService} from './ExportService';
+export type {ExportFormat, ExportOptions, ExportResult} from './ExportService';

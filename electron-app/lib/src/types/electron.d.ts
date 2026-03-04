@@ -1,0 +1,59 @@
+/**
+ * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
+ * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
+ *
+ * Type definitions for Electron API exposed via preload script.
+ * Used by both app (renderer) and lib (adapters). Single source of truth.
+ */
+
+export interface ElectronAPI {
+  platform: string;
+
+  onMenuAction: (callback: (event: unknown, action: string) => void) => void;
+  openExternal?: (url: string) => Promise<void>;
+
+  showOpenDialog: (options: {
+    filters: Array<{name: string; extensions: string[]}>;
+    properties: string[];
+  }) => Promise<{path: string; name: string; size: number} | null>;
+
+  showSaveDialog: (options?: {
+    title?: string;
+    defaultPath?: string;
+    filters?: Array<{name: string; extensions: string[]}>;
+  }) => Promise<string | null>;
+
+  readFile: (filePath: string) => Promise<ArrayBuffer>;
+  readFileText: (filePath: string) => Promise<string>;
+  writeFile: (filePath: string, content: ArrayBuffer | string) => Promise<string>;
+  fileExists: (filePath: string) => Promise<boolean>;
+  getAppDataPath: () => Promise<string>;
+  getBooksDirectory: () => Promise<string>;
+  unlink?: (filePath: string) => Promise<void>;
+
+  dbInvoke: (method: string, ...args: unknown[]) => Promise<unknown>;
+
+  translateBulk: (
+    words: string[],
+    sourceLanguage: string,
+    targetLanguage: string
+  ) => Promise<{translations: Record<string, string>; provider: string; failed: string[]}>;
+
+  downloadDictionary: (url: string) => Promise<{
+    words?: Array<{
+      source: string;
+      target: string;
+      rank?: number;
+      pos?: string;
+      variants?: string[];
+      pronunciation?: string;
+    }>;
+    error?: string;
+  }>;
+}
+
+declare global {
+  interface Window {
+    electronAPI?: ElectronAPI;
+  }
+}

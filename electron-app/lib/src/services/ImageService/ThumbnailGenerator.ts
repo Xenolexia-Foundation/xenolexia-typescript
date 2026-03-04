@@ -13,15 +13,18 @@
  * This implementation provides a stubbed version that works with the cache system.
  */
 
-import type {
-  ImageDimensions,
-  ResizeOptions,
-  ThumbnailOptions,
-  ThumbnailSize,
-} from './types';
-import {THUMBNAIL_SIZES} from './types';
+import {
+  getAppDataPath,
+  mkdir,
+  fileExists,
+  readFileAsBase64,
+  writeFile,
+} from '../../utils/FileSystem.electron';
+
 import {ImageCache} from './ImageCache';
-import { getAppDataPath, mkdir, fileExists, readFileAsBase64, writeFile } from '../../utils/FileSystem.electron';
+import {THUMBNAIL_SIZES} from './types';
+
+import type {ImageDimensions, ResizeOptions, ThumbnailOptions, ThumbnailSize} from './types';
 
 // ============================================================================
 // Constants
@@ -76,7 +79,7 @@ export class ThumbnailGenerator {
 
       const exists = await fileExists(this.thumbnailsDir);
       if (!exists) {
-        await mkdir(this.thumbnailsDir, { recursive: true });
+        await mkdir(this.thumbnailsDir, {recursive: true});
       }
 
       this.initialized = true;
@@ -89,10 +92,7 @@ export class ThumbnailGenerator {
   /**
    * Generate thumbnail for an image
    */
-  async generateThumbnail(
-    sourcePath: string,
-    options: ThumbnailOptions = {},
-  ): Promise<string> {
+  async generateThumbnail(sourcePath: string, options: ThumbnailOptions = {}): Promise<string> {
     await this.ensureInitialized();
 
     const {size = 'medium', quality = 80, format = 'jpeg'} = options;
@@ -141,10 +141,7 @@ export class ThumbnailGenerator {
   /**
    * Get thumbnail path if it exists
    */
-  async getThumbnail(
-    sourcePath: string,
-    size: ThumbnailSize = 'medium',
-  ): Promise<string | null> {
+  async getThumbnail(sourcePath: string, size: ThumbnailSize = 'medium'): Promise<string | null> {
     await this.ensureInitialized();
 
     const cacheKey = this.generateCacheKey(sourcePath, size);
@@ -176,10 +173,7 @@ export class ThumbnailGenerator {
    *
    * For now, we copy the image and trust the cache system.
    */
-  private async resizeImage(
-    sourcePath: string,
-    options: ResizeOptions,
-  ): Promise<string> {
+  private async resizeImage(sourcePath: string, options: ResizeOptions): Promise<string> {
     const {format = 'jpeg'} = options;
     const extension = format === 'png' ? '.png' : '.jpg';
     const tempPath = `${this.thumbnailsDir}/temp_${Date.now()}${extension}`;
@@ -228,7 +222,7 @@ export class ThumbnailGenerator {
   calculateScaledDimensions(
     original: ImageDimensions,
     target: ImageDimensions,
-    mode: 'contain' | 'cover' = 'contain',
+    mode: 'contain' | 'cover' = 'contain'
   ): ImageDimensions {
     const aspectRatio = original.width / original.height;
     const targetAspectRatio = target.width / target.height;

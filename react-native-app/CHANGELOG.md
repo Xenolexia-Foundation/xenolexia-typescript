@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
+
 - Custom book collections
 - Additional language dictionaries
 - Cloud backup and sync
@@ -24,6 +25,7 @@ This is the first public release of Xenolexia!
 ### Added
 
 #### Library & Book Import
+
 - Import EPUB ebooks from device storage
 - Support for multiple ebook formats (EPUB primary)
 - Book metadata extraction (title, author, cover, TOC)
@@ -34,6 +36,7 @@ This is the first public release of Xenolexia!
 - Delete and manage books
 
 #### Reader
+
 - WebView-based EPUB rendering
 - Foreign word replacement with proficiency levels
 - Tap-to-reveal word translations
@@ -48,6 +51,7 @@ This is the first public release of Xenolexia!
 - Automatic position saving
 
 #### Translation Engine
+
 - Support for 28+ languages
 - Multi-provider translation API:
   - LibreTranslate
@@ -59,6 +63,7 @@ This is the first public release of Xenolexia!
 - Protected content detection (quotes, names)
 
 #### Vocabulary Management
+
 - Save words from reader
 - Context sentence storage
 - Filter by status (new, learning, review, learned)
@@ -67,6 +72,7 @@ This is the first public release of Xenolexia!
 - Export to CSV, Anki, JSON
 
 #### Spaced Repetition Review
+
 - SM-2 algorithm implementation
 - Flashcard review interface
 - Self-grading (Again, Hard, Good, Easy)
@@ -74,12 +80,14 @@ This is the first public release of Xenolexia!
 - Review statistics
 
 #### Statistics & Progress
+
 - Reading time tracking
 - Words revealed/saved counts
 - Learning streaks
 - Daily goals
 
 #### Settings & Onboarding
+
 - 6-step onboarding flow
 - Language pair selection
 - Proficiency level selection
@@ -88,6 +96,7 @@ This is the first public release of Xenolexia!
 - Data management (export, clear)
 
 #### UI/UX
+
 - Modern, clean design
 - Light and dark themes
 - Smooth animations
@@ -96,6 +105,7 @@ This is the first public release of Xenolexia!
 - Empty states
 
 ### Technical
+
 - React Native with TypeScript
 - Zustand state management
 - SQLite local database
@@ -107,16 +117,18 @@ This is the first public release of Xenolexia!
 
 ## Version History Summary
 
-| Version | Date | Highlights |
-|---------|------|------------|
-| 1.0.0 | 2026-01-21 | Initial release with full feature set |
+| Version | Date       | Highlights                            |
+| ------- | ---------- | ------------------------------------- |
+| 1.0.0   | 2026-01-21 | Initial release with full feature set |
 
 ---
 
 ## Upgrade Notes
 
 ### From Beta to 1.0.0
+
 If you were using the beta version:
+
 - Your books and vocabulary will be preserved
 - Settings may need to be reconfigured
 - Backup your vocabulary export before updating
@@ -126,18 +138,21 @@ If you were using the beta version:
 ## Future Roadmap
 
 ### 1.1.0 (Planned)
+
 - Custom word lists import
 - Book collections/folders
 - Improved Asian language support
 - Reading goals and reminders
 
 ### 1.2.0 (Planned)
+
 - Cloud backup (optional)
 - Cross-device sync
 - Social features (share progress)
 - More ebook format support
 
 ### 2.0.0 (Planned)
+
 - Audio pronunciation
 - Sentence-level translations
 - AI-powered difficulty adjustment

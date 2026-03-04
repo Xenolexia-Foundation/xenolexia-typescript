@@ -16,4 +16,4 @@ export {
   getBundledWords,
   hasBundledWords,
 } from 'xenolexia-typescript';
-export type { WordData } from 'xenolexia-typescript';
+export type {WordData} from 'xenolexia-typescript';

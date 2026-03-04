@@ -4,14 +4,16 @@
  */
 
 import React from 'react';
-import {createRoot} from 'react-dom/client';
+
 import {
   setElectronAdapters,
   electronFileSystem,
   createElectronKeyValueStore,
 } from '@xenolexia/shared';
-import {databaseService} from './services/DatabaseService.renderer';
+import {createRoot} from 'react-dom/client';
+
 import App from './App';
+import {databaseService} from './services/DatabaseService.renderer';
 
 // Wire shared core to Electron adapters (must run before any store uses getCore())
 if (typeof window !== 'undefined' && (window as any).electronAPI) {

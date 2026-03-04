@@ -30,4 +30,4 @@ export type {
   MigrationDefinition,
 } from 'xenolexia-typescript';
 
-export { databaseService, DatabaseService } from './DatabaseService.electron';
+export {databaseService, DatabaseService} from './DatabaseService.electron';

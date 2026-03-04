@@ -7,7 +7,8 @@
  * Export Modal - Options for exporting vocabulary
  */
 
-import React, { useState, useCallback } from 'react';
+import React, {useState, useCallback} from 'react';
+
 import {
   View,
   StyleSheet,
@@ -19,9 +20,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { useTheme } from '@theme/index';
-import { exportService, ExportFormat } from '@services/ExportService';
-import type { VocabularyItem } from '@/types';
+import {exportService, ExportFormat} from '@services/ExportService';
+
+import {useTheme} from '@theme/index';
+
+import type {VocabularyItem} from '@/types';
 
 // ============================================================================
 // Types
@@ -69,12 +72,8 @@ const FORMAT_OPTIONS: FormatOption[] = [
 // Component
 // ============================================================================
 
-export function ExportModal({
-  visible,
-  onClose,
-  vocabulary,
-}: ExportModalProps): React.JSX.Element {
-  const { colors } = useTheme();
+export function ExportModal({visible, onClose, vocabulary}: ExportModalProps): React.JSX.Element {
+  const {colors} = useTheme();
 
   // State
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>('csv');
@@ -103,7 +102,7 @@ export function ExportModal({
         Alert.alert(
           'Export Complete',
           `Successfully exported ${result.itemCount} words to ${result.fileName}`,
-          [{ text: 'OK', onPress: onClose }]
+          [{text: 'OK', onPress: onClose}]
         );
       } else if (result.error) {
         Alert.alert('Export Failed', result.error);
@@ -119,27 +118,22 @@ export function ExportModal({
   }, [vocabulary, selectedFormat, includeContext, includeSRSData, includeBookInfo, onClose]);
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable
-          style={[styles.container, { backgroundColor: colors.background.primary }]}
-          onPress={(e) => e.stopPropagation()}
+          style={[styles.container, {backgroundColor: colors.background.primary}]}
+          onPress={e => e.stopPropagation()}
         >
           {/* Header */}
-          <View style={[styles.header, { borderBottomColor: colors.border.secondary }]}>
+          <View style={[styles.header, {borderBottomColor: colors.border.secondary}]}>
             <TextDisplay
               text="Export Vocabulary"
-              style={[styles.headerTitle, { color: colors.text.primary }]}
+              style={[styles.headerTitle, {color: colors.text.primary}]}
             />
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <TextDisplay
                 text="✕"
-                style={[styles.closeButtonText, { color: colors.text.secondary }]}
+                style={[styles.closeButtonText, {color: colors.text.secondary}]}
               />
             </TouchableOpacity>
           </View>
@@ -150,14 +144,14 @@ export function ExportModal({
             showsVerticalScrollIndicator={false}
           >
             {/* Word Count */}
-            <View style={[styles.wordCount, { backgroundColor: colors.background.secondary }]}>
+            <View style={[styles.wordCount, {backgroundColor: colors.background.secondary}]}>
               <TextDisplay
                 text={`${vocabulary.length} words`}
-                style={[styles.wordCountText, { color: colors.text.primary }]}
+                style={[styles.wordCountText, {color: colors.text.primary}]}
               />
               <TextDisplay
                 text="will be exported"
-                style={[styles.wordCountSubtext, { color: colors.text.tertiary }]}
+                style={[styles.wordCountSubtext, {color: colors.text.tertiary}]}
               />
             </View>
 
@@ -165,11 +159,11 @@ export function ExportModal({
             <View style={styles.section}>
               <TextDisplay
                 text="Export Format"
-                style={[styles.sectionTitle, { color: colors.text.secondary }]}
+                style={[styles.sectionTitle, {color: colors.text.secondary}]}
               />
 
               <View style={styles.formatOptions}>
-                {FORMAT_OPTIONS.map((option) => (
+                {FORMAT_OPTIONS.map(option => (
                   <TouchableOpacity
                     key={option.id}
                     style={[
@@ -204,11 +198,11 @@ export function ExportModal({
                       />
                       <TextDisplay
                         text={option.description}
-                        style={[styles.formatDescription, { color: colors.text.tertiary }]}
+                        style={[styles.formatDescription, {color: colors.text.tertiary}]}
                       />
                     </View>
                     {selectedFormat === option.id && (
-                      <View style={[styles.checkmark, { backgroundColor: colors.primary[500] }]}>
+                      <View style={[styles.checkmark, {backgroundColor: colors.primary[500]}]}>
                         <TextDisplay text="✓" style={styles.checkmarkText} />
                       </View>
                     )}
@@ -221,7 +215,7 @@ export function ExportModal({
             <View style={styles.section}>
               <TextDisplay
                 text="Include in Export"
-                style={[styles.sectionTitle, { color: colors.text.secondary }]}
+                style={[styles.sectionTitle, {color: colors.text.secondary}]}
               />
 
               <OptionToggle
@@ -248,11 +242,11 @@ export function ExportModal({
           </ScrollView>
 
           {/* Footer */}
-          <View style={[styles.footer, { borderTopColor: colors.border.secondary }]}>
+          <View style={[styles.footer, {borderTopColor: colors.border.secondary}]}>
             <TouchableOpacity
               style={[
                 styles.exportButton,
-                { backgroundColor: colors.primary[500] },
+                {backgroundColor: colors.primary[500]},
                 isExporting && styles.exportButtonDisabled,
               ]}
               onPress={handleExport}
@@ -263,10 +257,7 @@ export function ExportModal({
               ) : (
                 <>
                   <TextDisplay text="📤" style={styles.exportButtonIcon} />
-                  <TextDisplay
-                    text="Export & Share"
-                    style={styles.exportButtonText}
-                  />
+                  <TextDisplay text="Export & Share" style={styles.exportButtonText} />
                 </>
               )}
             </TouchableOpacity>
@@ -289,22 +280,19 @@ function OptionToggle({
   enabled: boolean;
   onToggle: () => void;
 }) {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
 
   return (
     <TouchableOpacity
-      style={[styles.optionToggle, { backgroundColor: colors.background.secondary }]}
+      style={[styles.optionToggle, {backgroundColor: colors.background.secondary}]}
       onPress={onToggle}
       activeOpacity={0.7}
     >
       <View style={styles.optionContent}>
-        <TextDisplay
-          text={label}
-          style={[styles.optionLabel, { color: colors.text.primary }]}
-        />
+        <TextDisplay text={label} style={[styles.optionLabel, {color: colors.text.primary}]} />
         <TextDisplay
           text={description}
-          style={[styles.optionDescription, { color: colors.text.tertiary }]}
+          style={[styles.optionDescription, {color: colors.text.tertiary}]}
         />
       </View>
       <View
@@ -320,7 +308,7 @@ function OptionToggle({
             styles.toggleKnob,
             {
               backgroundColor: '#ffffff',
-              transform: [{ translateX: enabled ? 16 : 0 }],
+              transform: [{translateX: enabled ? 16 : 0}],
             },
           ]}
         />
@@ -330,8 +318,8 @@ function OptionToggle({
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 

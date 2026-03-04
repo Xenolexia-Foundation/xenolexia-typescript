@@ -67,7 +67,10 @@ test.describe('Electron App', () => {
       const bodyText = await window.locator('body').textContent();
       expect(bodyText).toBeTruthy();
       const hasLibraryOrOnboarding =
-        (bodyText?.includes('Library') || bodyText?.includes('Welcome') || bodyText?.includes('Xenolexia')) ?? false;
+        (bodyText?.includes('Library') ||
+          bodyText?.includes('Welcome') ||
+          bodyText?.includes('Xenolexia')) ??
+        false;
       expect(hasLibraryOrOnboarding).toBe(true);
     } finally {
       await electronApp.close();

@@ -8,14 +8,10 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Animated,
-} from 'react-native';
 
-import { useTheme } from '@theme/index';
+import {View, StyleSheet, TouchableOpacity, Animated} from 'react-native';
+
+import {useTheme} from '@theme/index';
 
 // ============================================================================
 // Types
@@ -48,7 +44,7 @@ export function ReviewSessionSummary({
   onContinue,
   onReviewAgain,
 }: ReviewSessionSummaryProps): React.JSX.Element {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
 
   const accuracy = totalCards > 0 ? (correctCount / totalCards) * 100 : 0;
   const minutes = Math.floor(timeSpentSeconds / 60);
@@ -56,34 +52,31 @@ export function ReviewSessionSummary({
 
   // Determine performance message
   const getPerformanceMessage = () => {
-    if (accuracy >= 90) return { emoji: '🌟', text: 'Excellent!' };
-    if (accuracy >= 70) return { emoji: '👏', text: 'Great job!' };
-    if (accuracy >= 50) return { emoji: '💪', text: 'Keep practicing!' };
-    return { emoji: '📚', text: 'More review needed' };
+    if (accuracy >= 90) return {emoji: '🌟', text: 'Excellent!'};
+    if (accuracy >= 70) return {emoji: '👏', text: 'Great job!'};
+    if (accuracy >= 50) return {emoji: '💪', text: 'Keep practicing!'};
+    return {emoji: '📚', text: 'More review needed'};
   };
 
   const performance = getPerformanceMessage();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background.primary }]}>
+    <View style={[styles.container, {backgroundColor: colors.background.primary}]}>
       {/* Header */}
       <View style={styles.header}>
-        <TextDisplay
-          text={performance.emoji}
-          style={styles.headerEmoji}
-        />
+        <TextDisplay text={performance.emoji} style={styles.headerEmoji} />
         <TextDisplay
           text={performance.text}
-          style={[styles.headerText, { color: colors.text.primary }]}
+          style={[styles.headerText, {color: colors.text.primary}]}
         />
         <TextDisplay
           text="Review Complete"
-          style={[styles.headerSubtext, { color: colors.text.secondary }]}
+          style={[styles.headerSubtext, {color: colors.text.secondary}]}
         />
       </View>
 
       {/* Main stats */}
-      <View style={[styles.mainStats, { backgroundColor: colors.background.secondary }]}>
+      <View style={[styles.mainStats, {backgroundColor: colors.background.secondary}]}>
         <View style={styles.mainStatItem}>
           <TextDisplay
             text={`${accuracy.toFixed(0)}%`}
@@ -96,42 +89,42 @@ export function ReviewSessionSummary({
           />
           <TextDisplay
             text="Accuracy"
-            style={[styles.mainStatLabel, { color: colors.text.tertiary }]}
+            style={[styles.mainStatLabel, {color: colors.text.tertiary}]}
           />
         </View>
 
-        <View style={[styles.statDivider, { backgroundColor: colors.border.secondary }]} />
+        <View style={[styles.statDivider, {backgroundColor: colors.border.secondary}]} />
 
         <View style={styles.mainStatItem}>
           <TextDisplay
             text={`${totalCards}`}
-            style={[styles.mainStatValue, { color: colors.text.primary }]}
+            style={[styles.mainStatValue, {color: colors.text.primary}]}
           />
           <TextDisplay
             text="Cards Reviewed"
-            style={[styles.mainStatLabel, { color: colors.text.tertiary }]}
+            style={[styles.mainStatLabel, {color: colors.text.tertiary}]}
           />
         </View>
 
-        <View style={[styles.statDivider, { backgroundColor: colors.border.secondary }]} />
+        <View style={[styles.statDivider, {backgroundColor: colors.border.secondary}]} />
 
         <View style={styles.mainStatItem}>
           <TextDisplay
             text={minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`}
-            style={[styles.mainStatValue, { color: colors.text.primary }]}
+            style={[styles.mainStatValue, {color: colors.text.primary}]}
           />
           <TextDisplay
             text="Time Spent"
-            style={[styles.mainStatLabel, { color: colors.text.tertiary }]}
+            style={[styles.mainStatLabel, {color: colors.text.tertiary}]}
           />
         </View>
       </View>
 
       {/* Grade breakdown */}
-      <View style={[styles.gradeBreakdown, { backgroundColor: colors.background.secondary }]}>
+      <View style={[styles.gradeBreakdown, {backgroundColor: colors.background.secondary}]}>
         <TextDisplay
           text="Grade Breakdown"
-          style={[styles.sectionTitle, { color: colors.text.secondary }]}
+          style={[styles.sectionTitle, {color: colors.text.secondary}]}
         />
 
         <View style={styles.gradeRow}>
@@ -146,24 +139,21 @@ export function ReviewSessionSummary({
       <View style={styles.actions}>
         {againCount > 0 && onReviewAgain && (
           <TouchableOpacity
-            style={[styles.secondaryButton, { borderColor: colors.border.primary }]}
+            style={[styles.secondaryButton, {borderColor: colors.border.primary}]}
             onPress={onReviewAgain}
           >
             <TextDisplay
               text={`Review ${againCount} Failed Cards`}
-              style={[styles.secondaryButtonText, { color: colors.text.primary }]}
+              style={[styles.secondaryButtonText, {color: colors.text.primary}]}
             />
           </TouchableOpacity>
         )}
 
         <TouchableOpacity
-          style={[styles.primaryButton, { backgroundColor: colors.primary[500] }]}
+          style={[styles.primaryButton, {backgroundColor: colors.primary[500]}]}
           onPress={onContinue}
         >
-          <TextDisplay
-            text="Done"
-            style={styles.primaryButtonText}
-          />
+          <TextDisplay text="Done" style={styles.primaryButtonText} />
         </TouchableOpacity>
       </View>
     </View>
@@ -186,7 +176,7 @@ function GradeItem({
 
   return (
     <View style={styles.gradeItem}>
-      <View style={[styles.gradeBar, { backgroundColor: color + '20' }]}>
+      <View style={[styles.gradeBar, {backgroundColor: color + '20'}]}>
         <View
           style={[
             styles.gradeBarFill,
@@ -197,15 +187,15 @@ function GradeItem({
           ]}
         />
       </View>
-      <TextDisplay text={count.toString()} style={[styles.gradeCount, { color }]} />
+      <TextDisplay text={count.toString()} style={[styles.gradeCount, {color}]} />
       <TextDisplay text={label} style={styles.gradeLabel} />
     </View>
   );
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 

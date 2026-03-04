@@ -8,9 +8,9 @@
  * Store uses getCore().storageService (mock adapters set in jest.setup.ts).
  */
 
-import { useVocabularyStore } from '../stores/vocabularyStore';
+import {useVocabularyStore} from '../stores/vocabularyStore';
 
-import type { VocabularyItem } from '../types';
+import type {VocabularyItem} from '../types';
 
 describe('VocabularyStore', () => {
   const makeWord = (overrides: Partial<VocabularyItem> = {}): VocabularyItem => ({
@@ -34,13 +34,13 @@ describe('VocabularyStore', () => {
   beforeEach(() => {
     useVocabularyStore.setState({
       vocabulary: [],
-      stats: { total: 0, new: 0, learning: 0, review: 0, learned: 0, dueToday: 0 },
+      stats: {total: 0, new: 0, learning: 0, review: 0, learned: 0, dueToday: 0},
     });
   });
 
   describe('addWord', () => {
     it('should add word and update state', async () => {
-      const word = makeWord({ id: 'w1' });
+      const word = makeWord({id: 'w1'});
       await useVocabularyStore.getState().addWord(word);
       expect(useVocabularyStore.getState().vocabulary).toHaveLength(1);
       expect(useVocabularyStore.getState().vocabulary[0].id).toBe('w1');
@@ -55,13 +55,13 @@ describe('VocabularyStore', () => {
     });
 
     it('should return true when word exists for target language', async () => {
-      const word = makeWord({ sourceWord: 'house', targetLanguage: 'es' });
+      const word = makeWord({sourceWord: 'house', targetLanguage: 'es'});
       await useVocabularyStore.getState().addWord(word);
       expect(useVocabularyStore.getState().isWordSaved('house', 'es')).toBe(true);
     });
 
     it('should return false for different target language', async () => {
-      const word = makeWord({ sourceWord: 'house', targetLanguage: 'es' });
+      const word = makeWord({sourceWord: 'house', targetLanguage: 'es'});
       await useVocabularyStore.getState().addWord(word);
       expect(useVocabularyStore.getState().isWordSaved('house', 'fr')).toBe(false);
     });
@@ -69,7 +69,7 @@ describe('VocabularyStore', () => {
 
   describe('removeWord', () => {
     it('should remove word from state after delete', async () => {
-      const word = makeWord({ id: 'w2' });
+      const word = makeWord({id: 'w2'});
       await useVocabularyStore.getState().addWord(word);
       await useVocabularyStore.getState().removeWord('w2');
       expect(useVocabularyStore.getState().vocabulary).toHaveLength(0);

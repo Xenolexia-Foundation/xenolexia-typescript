@@ -8,7 +8,9 @@
  */
 
 import React from 'react';
+
 import {View} from 'react-native';
+
 import Svg, {Path, Circle, Rect, G} from 'react-native-svg';
 
 export type TabIconName = 'library' | 'vocabulary' | 'stats' | 'profile';
@@ -40,12 +42,7 @@ function LibraryIcon({color, size}: {color: string; size: number}) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <Path
-        d="M9 7h6"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
+      <Path d="M9 7h6" stroke={color} strokeWidth={2} strokeLinecap="round" />
     </Svg>
   );
 }
@@ -56,33 +53,10 @@ function LibraryIcon({color, size}: {color: string; size: number}) {
 function VocabularyIcon({color, size}: {color: string; size: number}) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Rect
-        x="3"
-        y="3"
-        width="18"
-        height="18"
-        rx="2"
-        stroke={color}
-        strokeWidth={2}
-      />
-      <Path
-        d="M7 7h4"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
-      <Path
-        d="M7 12h10"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
-      <Path
-        d="M7 17h6"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
+      <Rect x="3" y="3" width="18" height="18" rx="2" stroke={color} strokeWidth={2} />
+      <Path d="M7 7h4" stroke={color} strokeWidth={2} strokeLinecap="round" />
+      <Path d="M7 12h10" stroke={color} strokeWidth={2} strokeLinecap="round" />
+      <Path d="M7 17h6" stroke={color} strokeWidth={2} strokeLinecap="round" />
     </Svg>
   );
 }
@@ -124,13 +98,7 @@ function StatsIcon({color, size}: {color: string; size: number}) {
 function ProfileIcon({color, size}: {color: string; size: number}) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle
-        cx="12"
-        cy="8"
-        r="4"
-        stroke={color}
-        strokeWidth={2}
-      />
+      <Circle cx="12" cy="8" r="4" stroke={color} strokeWidth={2} />
       <Path
         d="M20 21a8 8 0 1 0-16 0"
         stroke={color}
@@ -283,9 +251,5 @@ export function TabBarIcon({name, color, size, focused}: TabBarIconProps): React
     }
   };
 
-  return (
-    <View style={{alignItems: 'center', justifyContent: 'center'}}>
-      {renderIcon()}
-    </View>
-  );
+  return <View style={{alignItems: 'center', justifyContent: 'center'}}>{renderIcon()}</View>;
 }

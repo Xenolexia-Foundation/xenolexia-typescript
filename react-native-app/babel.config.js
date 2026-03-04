@@ -33,6 +33,7 @@ module.exports = {
           '@constants': './src/constants',
           '@assets': './src/assets',
           '@navigation': './src/navigation',
+          '@theme': './src/theme',
         },
       },
     ],

@@ -7,7 +7,8 @@
  * Word Detail Modal - Shows full word information with edit/delete capabilities
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
+
 import {
   View,
   StyleSheet,
@@ -19,12 +20,16 @@ import {
   Animated,
   TextInput,
 } from 'react-native';
-import { format, formatDistanceToNow } from 'date-fns';
 
-import { useTheme } from '@theme/index';
-import type { VocabularyItem, Language } from '@/types';
-import { getLanguageInfo, SUPPORTED_LANGUAGES } from '@/types';
-import { useVocabularyStore } from '@stores/vocabularyStore';
+import {format, formatDistanceToNow} from 'date-fns';
+
+import {getLanguageInfo, SUPPORTED_LANGUAGES} from '@/types';
+
+import {useVocabularyStore} from '@stores/vocabularyStore';
+
+import {useTheme} from '@theme/index';
+
+import type {VocabularyItem, Language} from '@/types';
 
 // ============================================================================
 // Types
@@ -49,8 +54,8 @@ export function WordDetailModal({
   onNavigateToBook,
   onStartReview,
 }: WordDetailModalProps): React.JSX.Element | null {
-  const { colors, isDark } = useTheme();
-  const { updateWord, removeWord } = useVocabularyStore();
+  const {colors, isDark} = useTheme();
+  const {updateWord, removeWord} = useVocabularyStore();
 
   // Edit state
   const [isEditing, setIsEditing] = useState(false);
@@ -93,15 +98,15 @@ export function WordDetailModal({
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'new':
-        return { color: colors.primary[500], label: 'New', icon: '✨' };
+        return {color: colors.primary[500], label: 'New', icon: '✨'};
       case 'learning':
-        return { color: '#f59e0b', label: 'Learning', icon: '📖' };
+        return {color: '#f59e0b', label: 'Learning', icon: '📖'};
       case 'review':
-        return { color: colors.primary[400], label: 'Review', icon: '🔄' };
+        return {color: colors.primary[400], label: 'Review', icon: '🔄'};
       case 'learned':
-        return { color: '#10b981', label: 'Mastered', icon: '🎯' };
+        return {color: '#10b981', label: 'Mastered', icon: '🎯'};
       default:
-        return { color: colors.text.secondary, label: status, icon: '📝' };
+        return {color: colors.text.secondary, label: status, icon: '📝'};
     }
   };
 
@@ -117,7 +122,7 @@ export function WordDetailModal({
     if (nextDate <= new Date()) {
       return 'Due now';
     }
-    return formatDistanceToNow(nextDate, { addSuffix: true });
+    return formatDistanceToNow(nextDate, {addSuffix: true});
   };
 
   // Handlers
@@ -144,7 +149,7 @@ export function WordDetailModal({
       'Delete Word',
       `Are you sure you want to delete "${word.targetWord}"? This cannot be undone.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Delete',
           style: 'destructive',
@@ -174,23 +179,18 @@ export function WordDetailModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      onRequestClose={onClose}
-    >
-      <Animated.View style={[styles.backdrop, { opacity: fadeAnim }]}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
+      <Animated.View style={[styles.backdrop, {opacity: fadeAnim}]}>
         <Pressable style={styles.backdropPressable} onPress={onClose}>
           <Pressable
-            style={[styles.container, { backgroundColor: colors.background.primary }]}
-            onPress={(e) => e.stopPropagation()}
+            style={[styles.container, {backgroundColor: colors.background.primary}]}
+            onPress={e => e.stopPropagation()}
           >
             {/* Header */}
-            <View style={[styles.header, { borderBottomColor: colors.border.secondary }]}>
+            <View style={[styles.header, {borderBottomColor: colors.border.secondary}]}>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <View style={[styles.closeIcon, { backgroundColor: colors.background.secondary }]}>
-                  <View style={[styles.closeX, { backgroundColor: colors.text.secondary }]} />
+                <View style={[styles.closeIcon, {backgroundColor: colors.background.secondary}]}>
+                  <View style={[styles.closeX, {backgroundColor: colors.text.secondary}]} />
                 </View>
               </TouchableOpacity>
               <View style={styles.headerActions}>
@@ -198,28 +198,28 @@ export function WordDetailModal({
                   <>
                     <TouchableOpacity
                       onPress={() => setIsEditing(true)}
-                      style={[styles.headerButton, { backgroundColor: colors.background.secondary }]}
+                      style={[styles.headerButton, {backgroundColor: colors.background.secondary}]}
                     >
                       <View style={styles.editIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={handleDelete}
-                      style={[styles.headerButton, { backgroundColor: '#fee2e2' }]}
+                      style={[styles.headerButton, {backgroundColor: '#fee2e2'}]}
                     >
-                      <View style={[styles.deleteIcon, { backgroundColor: '#ef4444' }]} />
+                      <View style={[styles.deleteIcon, {backgroundColor: '#ef4444'}]} />
                     </TouchableOpacity>
                   </>
                 ) : (
                   <>
                     <TouchableOpacity
                       onPress={() => setIsEditing(false)}
-                      style={[styles.headerButton, { backgroundColor: colors.background.secondary }]}
+                      style={[styles.headerButton, {backgroundColor: colors.background.secondary}]}
                     >
                       <View style={styles.cancelText}>✕</View>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={handleSaveEdit}
-                      style={[styles.headerButton, { backgroundColor: colors.primary[500] }]}
+                      style={[styles.headerButton, {backgroundColor: colors.primary[500]}]}
                     >
                       <View style={styles.saveText}>✓</View>
                     </TouchableOpacity>
@@ -253,7 +253,7 @@ export function WordDetailModal({
                       placeholderTextColor={colors.text.tertiary}
                     />
                     <View style={styles.arrow}>
-                      <View style={[styles.arrowLine, { backgroundColor: colors.border.primary }]} />
+                      <View style={[styles.arrowLine, {backgroundColor: colors.border.primary}]} />
                     </View>
                     <TextInput
                       style={[
@@ -276,9 +276,9 @@ export function WordDetailModal({
                     <View style={styles.targetWordRow}>
                       <View style={styles.targetWordContainer}>
                         <View style={styles.targetWord}>
-                          <View style={[styles.statusDot, { backgroundColor: statusConfig.color }]} />
+                          <View style={[styles.statusDot, {backgroundColor: statusConfig.color}]} />
                           <View style={styles.targetWordText}>
-                            <View style={[styles.wordText, { color: colors.primary[500] }]}>
+                            <View style={[styles.wordText, {color: colors.primary[500]}]}>
                               {/* Using Text component would be better but keeping simple */}
                             </View>
                           </View>
@@ -286,31 +286,44 @@ export function WordDetailModal({
                         <View style={styles.targetWordMain}>
                           <TextDisplay
                             text={word.targetWord}
-                            style={[styles.targetWordTextStyle, { color: colors.primary[500] }]}
+                            style={[styles.targetWordTextStyle, {color: colors.primary[500]}]}
                           />
                         </View>
                       </View>
-                      <View style={[styles.languageBadge, { backgroundColor: colors.background.secondary }]}>
+                      <View
+                        style={[
+                          styles.languageBadge,
+                          {backgroundColor: colors.background.secondary},
+                        ]}
+                      >
                         <TextDisplay
                           text={`${targetLanguage?.flag || ''} ${targetLanguage?.code.toUpperCase() || ''}`}
-                          style={[styles.languageText, { color: colors.text.secondary }]}
+                          style={[styles.languageText, {color: colors.text.secondary}]}
                         />
                       </View>
                     </View>
 
                     <View style={styles.arrow}>
-                      <TextDisplay text="↓" style={[styles.arrowText, { color: colors.text.tertiary }]} />
+                      <TextDisplay
+                        text="↓"
+                        style={[styles.arrowText, {color: colors.text.tertiary}]}
+                      />
                     </View>
 
                     <View style={styles.sourceWordRow}>
                       <TextDisplay
                         text={word.sourceWord}
-                        style={[styles.sourceWordTextStyle, { color: colors.text.primary }]}
+                        style={[styles.sourceWordTextStyle, {color: colors.text.primary}]}
                       />
-                      <View style={[styles.languageBadge, { backgroundColor: colors.background.secondary }]}>
+                      <View
+                        style={[
+                          styles.languageBadge,
+                          {backgroundColor: colors.background.secondary},
+                        ]}
+                      >
                         <TextDisplay
                           text={`${sourceLanguage?.flag || ''} ${sourceLanguage?.code.toUpperCase() || ''}`}
-                          style={[styles.languageText, { color: colors.text.secondary }]}
+                          style={[styles.languageText, {color: colors.text.secondary}]}
                         />
                       </View>
                     </View>
@@ -320,20 +333,20 @@ export function WordDetailModal({
 
               {/* Status Badge */}
               <View style={styles.statusSection}>
-                <View style={[styles.statusBadge, { backgroundColor: statusConfig.color + '20' }]}>
+                <View style={[styles.statusBadge, {backgroundColor: statusConfig.color + '20'}]}>
                   <TextDisplay
                     text={`${statusConfig.icon} ${statusConfig.label}`}
-                    style={[styles.statusText, { color: statusConfig.color }]}
+                    style={[styles.statusText, {color: statusConfig.color}]}
                   />
                 </View>
               </View>
 
               {/* Context Sentence */}
               {(word.contextSentence || isEditing) && (
-                <View style={[styles.section, { backgroundColor: colors.background.secondary }]}>
+                <View style={[styles.section, {backgroundColor: colors.background.secondary}]}>
                   <TextDisplay
                     text="Context"
-                    style={[styles.sectionLabel, { color: colors.text.tertiary }]}
+                    style={[styles.sectionLabel, {color: colors.text.tertiary}]}
                   />
                   {isEditing ? (
                     <TextInput
@@ -354,7 +367,7 @@ export function WordDetailModal({
                   ) : (
                     <TextDisplay
                       text={`"${word.contextSentence}"`}
-                      style={[styles.contextText, { color: colors.text.secondary }]}
+                      style={[styles.contextText, {color: colors.text.secondary}]}
                     />
                   )}
                 </View>
@@ -363,24 +376,24 @@ export function WordDetailModal({
               {/* Book Source */}
               {word.bookTitle && (
                 <TouchableOpacity
-                  style={[styles.section, { backgroundColor: colors.background.secondary }]}
+                  style={[styles.section, {backgroundColor: colors.background.secondary}]}
                   onPress={handleGoToBook}
                   disabled={!word.bookId}
                 >
                   <TextDisplay
                     text="From Book"
-                    style={[styles.sectionLabel, { color: colors.text.tertiary }]}
+                    style={[styles.sectionLabel, {color: colors.text.tertiary}]}
                   />
                   <View style={styles.bookRow}>
                     <TextDisplay text="📖" style={styles.bookIcon} />
                     <TextDisplay
                       text={word.bookTitle}
-                      style={[styles.bookTitle, { color: colors.text.primary }]}
+                      style={[styles.bookTitle, {color: colors.text.primary}]}
                     />
                     {word.bookId && (
                       <TextDisplay
                         text="→"
-                        style={[styles.bookArrow, { color: colors.primary[500] }]}
+                        style={[styles.bookArrow, {color: colors.primary[500]}]}
                       />
                     )}
                   </View>
@@ -388,48 +401,48 @@ export function WordDetailModal({
               )}
 
               {/* SRS Statistics */}
-              <View style={[styles.section, { backgroundColor: colors.background.secondary }]}>
+              <View style={[styles.section, {backgroundColor: colors.background.secondary}]}>
                 <TextDisplay
                   text="Learning Progress"
-                  style={[styles.sectionLabel, { color: colors.text.tertiary }]}
+                  style={[styles.sectionLabel, {color: colors.text.tertiary}]}
                 />
                 <View style={styles.statsGrid}>
                   <View style={styles.statItem}>
                     <TextDisplay
                       text={word.reviewCount.toString()}
-                      style={[styles.statValue, { color: colors.text.primary }]}
+                      style={[styles.statValue, {color: colors.text.primary}]}
                     />
                     <TextDisplay
                       text="Reviews"
-                      style={[styles.statLabel, { color: colors.text.tertiary }]}
+                      style={[styles.statLabel, {color: colors.text.tertiary}]}
                     />
                   </View>
                   <View style={styles.statItem}>
                     <TextDisplay
                       text={word.easeFactor.toFixed(2)}
-                      style={[styles.statValue, { color: colors.text.primary }]}
+                      style={[styles.statValue, {color: colors.text.primary}]}
                     />
                     <TextDisplay
                       text="Ease Factor"
-                      style={[styles.statLabel, { color: colors.text.tertiary }]}
+                      style={[styles.statLabel, {color: colors.text.tertiary}]}
                     />
                   </View>
                   <View style={styles.statItem}>
                     <TextDisplay
                       text={word.interval > 0 ? `${word.interval}d` : '-'}
-                      style={[styles.statValue, { color: colors.text.primary }]}
+                      style={[styles.statValue, {color: colors.text.primary}]}
                     />
                     <TextDisplay
                       text="Interval"
-                      style={[styles.statLabel, { color: colors.text.tertiary }]}
+                      style={[styles.statLabel, {color: colors.text.tertiary}]}
                     />
                   </View>
                 </View>
 
-                <View style={[styles.nextReview, { borderTopColor: colors.border.secondary }]}>
+                <View style={[styles.nextReview, {borderTopColor: colors.border.secondary}]}>
                   <TextDisplay
                     text="Next Review:"
-                    style={[styles.nextReviewLabel, { color: colors.text.tertiary }]}
+                    style={[styles.nextReviewLabel, {color: colors.text.tertiary}]}
                   />
                   <TextDisplay
                     text={getNextReviewDate()}
@@ -447,26 +460,26 @@ export function WordDetailModal({
               </View>
 
               {/* Dates */}
-              <View style={[styles.section, { backgroundColor: colors.background.secondary }]}>
+              <View style={[styles.section, {backgroundColor: colors.background.secondary}]}>
                 <View style={styles.dateRow}>
                   <TextDisplay
                     text="Added"
-                    style={[styles.dateLabel, { color: colors.text.tertiary }]}
+                    style={[styles.dateLabel, {color: colors.text.tertiary}]}
                   />
                   <TextDisplay
                     text={format(word.addedAt, 'MMM d, yyyy')}
-                    style={[styles.dateValue, { color: colors.text.secondary }]}
+                    style={[styles.dateValue, {color: colors.text.secondary}]}
                   />
                 </View>
                 {word.lastReviewedAt && (
                   <View style={styles.dateRow}>
                     <TextDisplay
                       text="Last Reviewed"
-                      style={[styles.dateLabel, { color: colors.text.tertiary }]}
+                      style={[styles.dateLabel, {color: colors.text.tertiary}]}
                     />
                     <TextDisplay
-                      text={formatDistanceToNow(word.lastReviewedAt, { addSuffix: true })}
-                      style={[styles.dateValue, { color: colors.text.secondary }]}
+                      text={formatDistanceToNow(word.lastReviewedAt, {addSuffix: true})}
+                      style={[styles.dateValue, {color: colors.text.secondary}]}
                     />
                   </View>
                 )}
@@ -475,15 +488,12 @@ export function WordDetailModal({
 
             {/* Action Button */}
             {!isEditing && (
-              <View style={[styles.footer, { borderTopColor: colors.border.secondary }]}>
+              <View style={[styles.footer, {borderTopColor: colors.border.secondary}]}>
                 <TouchableOpacity
-                  style={[styles.practiceButton, { backgroundColor: colors.primary[500] }]}
+                  style={[styles.practiceButton, {backgroundColor: colors.primary[500]}]}
                   onPress={handlePractice}
                 >
-                  <TextDisplay
-                    text="🎴 Practice This Word"
-                    style={styles.practiceButtonText}
-                  />
+                  <TextDisplay text="🎴 Practice This Word" style={styles.practiceButtonText} />
                 </TouchableOpacity>
               </View>
             )}
@@ -495,8 +505,8 @@ export function WordDetailModal({
 }
 
 // Simple text display component to avoid import issues
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 
@@ -560,7 +570,7 @@ const styles = StyleSheet.create({
   closeX: {
     borderRadius: 1,
     height: 12,
-    transform: [{ rotate: '45deg' }],
+    transform: [{rotate: '45deg'}],
     width: 2,
   },
   container: {

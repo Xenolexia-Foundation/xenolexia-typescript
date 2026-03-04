@@ -8,19 +8,16 @@
  */
 
 import React, {useState, useCallback} from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Modal,
-  ScrollView,
-  Pressable,
-} from 'react-native';
+
+import {View, TouchableOpacity, StyleSheet, Modal, ScrollView, Pressable} from 'react-native';
+
 import Svg, {Path} from 'react-native-svg';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
+
 import {Text, Button} from '@components/ui';
+
 import type {BookFormat, ProficiencyLevel} from '@/types';
 import type {BookSort, BookFilter} from '@services/StorageService/repositories';
 
@@ -84,12 +81,7 @@ const PROFICIENCY_FILTERS: Array<{label: string; value: ProficiencyLevel | null}
 function SortIcon({color, size = 18}: {color: string; size?: number}) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M3 6h18M6 12h12M9 18h6"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
+      <Path d="M3 6h18M6 12h12M9 18h6" stroke={color} strokeWidth={2} strokeLinecap="round" />
     </Svg>
   );
 }
@@ -151,13 +143,10 @@ export function SortFilterBar({
   const [showSortModal, setShowSortModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
 
-  const currentSortLabel =
-    SORT_OPTIONS.find(o => o.value === sort.by)?.label || 'Sort';
+  const currentSortLabel = SORT_OPTIONS.find(o => o.value === sort.by)?.label || 'Sort';
 
   const hasActiveFilters = filter !== null && Object.keys(filter).length > 0;
-  const activeFilterCount = filter
-    ? Object.values(filter).filter(v => v !== undefined).length
-    : 0;
+  const activeFilterCount = filter ? Object.values(filter).filter(v => v !== undefined).length : 0;
 
   const handleSortSelect = useCallback(
     (by: BookSort['by']) => {
@@ -166,7 +155,7 @@ export function SortFilterBar({
       onSortChange({by, order: newOrder});
       setShowSortModal(false);
     },
-    [sort, onSortChange],
+    [sort, onSortChange]
   );
 
   const handleFilterApply = useCallback(
@@ -174,7 +163,7 @@ export function SortFilterBar({
       onFilterChange(newFilter);
       setShowFilterModal(false);
     },
-    [onFilterChange],
+    [onFilterChange]
   );
 
   return (
@@ -255,21 +244,11 @@ interface SortModalProps {
   onSelect: (by: BookSort['by']) => void;
 }
 
-function SortModal({
-  visible,
-  onClose,
-  currentSort,
-  onSelect,
-}: SortModalProps): React.JSX.Element {
+function SortModal({visible, onClose, currentSort, onSelect}: SortModalProps): React.JSX.Element {
   const colors = useColors();
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.modalOverlay} onPress={onClose}>
         <View style={[styles.modalContent, {backgroundColor: colors.surface}]}>
           <Text variant="titleMedium" style={styles.modalTitle}>
@@ -289,9 +268,7 @@ function SortModal({
             >
               <Text
                 variant="bodyMedium"
-                customColor={
-                  currentSort.by === option.value ? colors.primary : colors.text
-                }
+                customColor={currentSort.by === option.value ? colors.primary : colors.text}
               >
                 {option.label}
               </Text>
@@ -371,12 +348,7 @@ function FilterModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.filterModalOverlay}>
         <View style={[styles.filterModalContent, {backgroundColor: colors.surface}]}>
           <View style={styles.filterHeader}>
@@ -407,9 +379,7 @@ function FilterModal({
                       style={[
                         styles.chip,
                         {
-                          backgroundColor: isSelected
-                            ? colors.primary
-                            : colors.surfaceHover,
+                          backgroundColor: isSelected ? colors.primary : colors.surfaceHover,
                         },
                       ]}
                       onPress={() => handleStatusChange(option.value)}
@@ -443,9 +413,7 @@ function FilterModal({
                       style={[
                         styles.chip,
                         {
-                          backgroundColor: isSelected
-                            ? colors.primary
-                            : colors.surfaceHover,
+                          backgroundColor: isSelected ? colors.primary : colors.surfaceHover,
                         },
                       ]}
                       onPress={() => handleFormatChange(option.value)}
@@ -479,9 +447,7 @@ function FilterModal({
                       style={[
                         styles.chip,
                         {
-                          backgroundColor: isSelected
-                            ? colors.primary
-                            : colors.surfaceHover,
+                          backgroundColor: isSelected ? colors.primary : colors.surfaceHover,
                         },
                       ]}
                       onPress={() => handleProficiencyChange(option.value)}

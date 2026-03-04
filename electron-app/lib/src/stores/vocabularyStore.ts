@@ -7,9 +7,11 @@
  * Vocabulary Store - Manages saved words and SRS with database persistence
  */
 
-import { create } from 'zustand';
-import type { VocabularyItem, VocabularyStatus, Language } from 'xenolexia-typescript';
-import { getCore } from '../electronCore';
+import {create} from 'zustand';
+
+import {getCore} from '../electronCore';
+
+import type {VocabularyItem, VocabularyStatus, Language} from 'xenolexia-typescript';
 
 // ============================================================================
 // Types
@@ -46,7 +48,10 @@ interface VocabularyState {
   // Search and filter
   searchWords: (query: string) => Promise<VocabularyItem[]>;
   getWordsByBook: (bookId: string) => Promise<VocabularyItem[]>;
-  getWordsByLanguage: (sourceLanguage: Language, targetLanguage: Language) => Promise<VocabularyItem[]>;
+  getWordsByLanguage: (
+    sourceLanguage: Language,
+    targetLanguage: Language
+  ) => Promise<VocabularyItem[]>;
   getWordsByStatus: (status: VocabularyStatus) => VocabularyItem[];
 
   // Check if word exists
@@ -87,10 +92,10 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
   initialize: async () => {
     if (get().isInitialized) return;
 
-    set({ isLoading: true, error: null });
+    set({isLoading: true, error: null});
     try {
       const repo = getCore().storageService.getVocabularyRepository();
-      const vocabulary = await repo.getAll({ by: 'addedAt', order: 'desc' });
+      const vocabulary = await repo.getAll({by: 'addedAt', order: 'desc'});
       const stats = await repo.getStatistics();
 
       set({
@@ -118,7 +123,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
       await getCore().storageService.addVocabulary(word);
 
       // Update local state
-      set((state) => ({
+      set(state => ({
         vocabulary: [word, ...state.vocabulary],
         stats: {
           ...state.stats,
@@ -136,7 +141,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
    * Remove a word from vocabulary
    */
   removeWord: async (wordId: string) => {
-    const word = get().vocabulary.find((w) => w.id === wordId);
+    const word = get().vocabulary.find(w => w.id === wordId);
     if (!word) return;
 
     try {
@@ -144,13 +149,13 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
       await getCore().storageService.deleteVocabulary(wordId);
 
       // Update local state
-      set((state) => {
-        const newStats = { ...state.stats };
+      set(state => {
+        const newStats = {...state.stats};
         newStats.total -= 1;
         newStats[word.status] -= 1;
 
         return {
-          vocabulary: state.vocabulary.filter((w) => w.id !== wordId),
+          vocabulary: state.vocabulary.filter(w => w.id !== wordId),
           stats: newStats,
         };
       });
@@ -169,9 +174,9 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
       await getCore().storageService.getVocabularyRepository().update(wordId, updates);
 
       // Update local state
-      set((state) => ({
-        vocabulary: state.vocabulary.map((word) =>
-          word.id === wordId ? { ...word, ...updates } : word
+      set(state => ({
+        vocabulary: state.vocabulary.map(word =>
+          word.id === wordId ? {...word, ...updates} : word
         ),
       }));
 
@@ -189,14 +194,14 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
    * Update a word's status
    */
   updateWordStatus: async (wordId: string, status: VocabularyStatus) => {
-    await get().updateWord(wordId, { status });
+    await get().updateWord(wordId, {status});
   },
 
   /**
    * Get a word by ID
    */
   getWord: (wordId: string) => {
-    return get().vocabulary.find((w) => w.id === wordId);
+    return get().vocabulary.find(w => w.id === wordId);
   },
 
   /**
@@ -229,8 +234,8 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
       if (!updatedWord) return;
 
       // Update local state
-      set((state) => {
-        const newStats = { ...state.stats };
+      set(state => {
+        const newStats = {...state.stats};
         // Adjust stats based on status change
         if (oldStatus !== updatedWord.status) {
           newStats[oldStatus] = Math.max(0, newStats[oldStatus] - 1);
@@ -238,9 +243,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
         }
 
         return {
-          vocabulary: state.vocabulary.map((w) =>
-            w.id === wordId ? updatedWord : w
-          ),
+          vocabulary: state.vocabulary.map(w => (w.id === wordId ? updatedWord : w)),
           stats: newStats,
         };
       });
@@ -254,13 +257,13 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
    * Refresh vocabulary from database
    */
   refreshVocabulary: async () => {
-    set({ isLoading: true, error: null });
+    set({isLoading: true, error: null});
     try {
       const vocabulary = await getCore().storageService.getVocabularyRepository().getAll({
         by: 'addedAt',
         order: 'desc',
       });
-      set({ vocabulary, isLoading: false });
+      set({vocabulary, isLoading: false});
       await get().refreshStats();
     } catch (error) {
       set({
@@ -276,7 +279,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
   refreshStats: async () => {
     try {
       const stats = await getCore().storageService.getVocabularyRepository().getStatistics();
-      set({ stats });
+      set({stats});
     } catch (error) {
       console.error('Failed to refresh stats:', error);
     }
@@ -297,7 +300,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
       // Fallback to local search
       const lowerQuery = query.toLowerCase();
       return get().vocabulary.filter(
-        (w) =>
+        w =>
           w.sourceWord.toLowerCase().includes(lowerQuery) ||
           w.targetWord.toLowerCase().includes(lowerQuery)
       );
@@ -309,10 +312,10 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
    */
   getWordsByBook: async (bookId: string) => {
     try {
-      return await getCore().storageService.getVocabularyRepository().getFiltered({ bookId });
+      return await getCore().storageService.getVocabularyRepository().getFiltered({bookId});
     } catch (error) {
       console.error('Failed to get words by book:', error);
-      return get().vocabulary.filter((w) => w.bookId === bookId);
+      return get().vocabulary.filter(w => w.bookId === bookId);
     }
   },
 
@@ -328,9 +331,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
     } catch (error) {
       console.error('Failed to get words by language:', error);
       return get().vocabulary.filter(
-        (w) =>
-          w.sourceLanguage === sourceLanguage &&
-          w.targetLanguage === targetLanguage
+        w => w.sourceLanguage === sourceLanguage && w.targetLanguage === targetLanguage
       );
     }
   },
@@ -339,7 +340,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
    * Get words by status (local filter)
    */
   getWordsByStatus: (status: VocabularyStatus) => {
-    return get().vocabulary.filter((w) => w.status === status);
+    return get().vocabulary.filter(w => w.status === status);
   },
 
   /**
@@ -347,7 +348,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
    */
   isWordSaved: (sourceWord: string, targetLanguage: Language) => {
     return get().vocabulary.some(
-      (w) =>
+      w =>
         w.sourceWord.toLowerCase() === sourceWord.toLowerCase() &&
         w.targetLanguage === targetLanguage
     );
@@ -357,7 +358,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
    * Clear all vocabulary (for data management)
    */
   clearVocabulary: async () => {
-    set({ isLoading: true });
+    set({isLoading: true});
     try {
       await getCore().storageService.getVocabularyRepository().deleteAll();
       set({
@@ -367,7 +368,7 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
       });
     } catch (error) {
       console.error('Failed to clear vocabulary:', error);
-      set({ isLoading: false });
+      set({isLoading: false});
       throw error;
     }
   },
@@ -387,8 +388,8 @@ export const useVocabularyStore = create<VocabularyState>((set, get) => ({
 export const selectVocabularyStats = (state: VocabularyState) => state.stats;
 export const selectDueCount = (state: VocabularyState) => state.stats.dueToday;
 export const selectNewWords = (state: VocabularyState) =>
-  state.vocabulary.filter((w) => w.status === 'new');
+  state.vocabulary.filter(w => w.status === 'new');
 export const selectLearningWords = (state: VocabularyState) =>
-  state.vocabulary.filter((w) => w.status === 'learning');
+  state.vocabulary.filter(w => w.status === 'learning');
 export const selectLearnedWords = (state: VocabularyState) =>
-  state.vocabulary.filter((w) => w.status === 'learned');
+  state.vocabulary.filter(w => w.status === 'learned');

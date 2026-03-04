@@ -7,9 +7,11 @@
  * Session Repository - Database operations for reading sessions
  */
 
-import type {ReadingSession, ReadingStats} from '@/types';
-import {databaseService} from '../DatabaseService';
 import {v4 as uuidv4} from 'uuid';
+
+import {databaseService} from '../DatabaseService';
+
+import type {ReadingSession, ReadingStats} from '@/types';
 
 // ============================================================================
 // Types
@@ -46,7 +48,7 @@ class SessionRepository {
     await databaseService.execute(
       `INSERT INTO reading_sessions (id, book_id, started_at)
        VALUES (?, ?, ?)`,
-      [sessionId, bookId, now],
+      [sessionId, bookId, now]
     );
 
     return sessionId;
@@ -61,14 +63,14 @@ class SessionRepository {
       pagesRead: number;
       wordsRevealed: number;
       wordsSaved: number;
-    },
+    }
   ): Promise<void> {
     const now = Date.now();
 
     // Get session to calculate duration
     const session = await databaseService.getOne<SessionRow>(
       'SELECT * FROM reading_sessions WHERE id = ?',
-      [sessionId],
+      [sessionId]
     );
 
     const duration = session ? Math.floor((now - session.started_at) / 1000) : 0;
@@ -77,7 +79,7 @@ class SessionRepository {
       `UPDATE reading_sessions 
        SET ended_at = ?, pages_read = ?, words_revealed = ?, words_saved = ?, duration = ?
        WHERE id = ?`,
-      [now, stats.pagesRead, stats.wordsRevealed, stats.wordsSaved, duration, sessionId],
+      [now, stats.pagesRead, stats.wordsRevealed, stats.wordsSaved, duration, sessionId]
     );
   }
 
@@ -87,7 +89,7 @@ class SessionRepository {
   async getById(sessionId: string): Promise<ReadingSession | null> {
     const row = await databaseService.getOne<SessionRow>(
       'SELECT * FROM reading_sessions WHERE id = ?',
-      [sessionId],
+      [sessionId]
     );
 
     return row ? this.rowToSession(row) : null;
@@ -101,10 +103,10 @@ class SessionRepository {
       `SELECT * FROM reading_sessions 
        WHERE book_id = ? 
        ORDER BY started_at DESC`,
-      [bookId],
+      [bookId]
     );
 
-    return rows.map((row) => this.rowToSession(row));
+    return rows.map(row => this.rowToSession(row));
   }
 
   /**
@@ -116,10 +118,10 @@ class SessionRepository {
        WHERE ended_at IS NOT NULL
        ORDER BY started_at DESC 
        LIMIT ?`,
-      [limit],
+      [limit]
     );
 
-    return rows.map((row) => this.rowToSession(row));
+    return rows.map(row => this.rowToSession(row));
   }
 
   /**
@@ -133,30 +135,24 @@ class SessionRepository {
       `SELECT * FROM reading_sessions 
        WHERE started_at >= ?
        ORDER BY started_at DESC`,
-      [startOfDay.getTime()],
+      [startOfDay.getTime()]
     );
 
-    return rows.map((row) => this.rowToSession(row));
+    return rows.map(row => this.rowToSession(row));
   }
 
   /**
    * Delete a session
    */
   async delete(sessionId: string): Promise<void> {
-    await databaseService.execute(
-      'DELETE FROM reading_sessions WHERE id = ?',
-      [sessionId],
-    );
+    await databaseService.execute('DELETE FROM reading_sessions WHERE id = ?', [sessionId]);
   }
 
   /**
    * Delete all sessions for a book
    */
   async deleteByBookId(bookId: string): Promise<void> {
-    await databaseService.execute(
-      'DELETE FROM reading_sessions WHERE book_id = ?',
-      [bookId],
-    );
+    await databaseService.execute('DELETE FROM reading_sessions WHERE book_id = ?', [bookId]);
   }
 
   // ============================================================================
@@ -189,13 +185,16 @@ class SessionRepository {
     const today = await databaseService.getOne<{
       words_revealed: number;
       words_saved: number;
-    }>(`
+    }>(
+      `
       SELECT 
         COALESCE(SUM(words_revealed), 0) as words_revealed,
         COALESCE(SUM(words_saved), 0) as words_saved
       FROM reading_sessions
       WHERE started_at >= ?
-    `, [startOfToday.getTime()]);
+    `,
+      [startOfToday.getTime()]
+    );
 
     // Streak calculation
     const streakData = await this.calculateStreak();
@@ -275,7 +274,7 @@ class SessionRepository {
       const currentDay = new Date(rows[i].day);
       const nextDay = new Date(rows[i + 1].day);
       const diffDays = Math.floor(
-        (currentDay.getTime() - nextDay.getTime()) / (1000 * 60 * 60 * 24),
+        (currentDay.getTime() - nextDay.getTime()) / (1000 * 60 * 60 * 24)
       );
 
       if (diffDays === 1) {
@@ -294,12 +293,15 @@ class SessionRepository {
    * Get reading time for a specific period
    */
   async getReadingTimeForPeriod(startDate: Date, endDate: Date): Promise<number> {
-    const result = await databaseService.getOne<{total: number}>(`
+    const result = await databaseService.getOne<{total: number}>(
+      `
       SELECT COALESCE(SUM(duration), 0) as total
       FROM reading_sessions
       WHERE started_at >= ? AND started_at < ?
       AND ended_at IS NOT NULL
-    `, [startDate.getTime(), endDate.getTime()]);
+    `,
+      [startDate.getTime(), endDate.getTime()]
+    );
 
     return result?.total ?? 0;
   }
@@ -312,7 +314,8 @@ class SessionRepository {
     startDate.setDate(startDate.getDate() - days);
     startDate.setHours(0, 0, 0, 0);
 
-    const rows = await databaseService.getAll<{day: string; total: number}>(`
+    const rows = await databaseService.getAll<{day: string; total: number}>(
+      `
       SELECT 
         date(started_at / 1000, 'unixepoch', 'localtime') as day,
         COALESCE(SUM(duration), 0) as total
@@ -320,11 +323,13 @@ class SessionRepository {
       WHERE started_at >= ? AND ended_at IS NOT NULL
       GROUP BY day
       ORDER BY day ASC
-    `, [startDate.getTime()]);
+    `,
+      [startDate.getTime()]
+    );
 
     // Fill in missing days with 0
     const result: Array<{date: string; minutes: number}> = [];
-    const dateMap = new Map(rows.map((r) => [r.day, r.total]));
+    const dateMap = new Map(rows.map(r => [r.day, r.total]));
 
     for (let i = 0; i < days; i++) {
       const date = new Date(startDate);

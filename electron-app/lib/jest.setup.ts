@@ -8,13 +8,14 @@
  * Initializes xenolexia-typescript core with mock adapters so getCore() works in tests.
  */
 
-import { setElectronAdapters } from './src/electronCore';
-import type { IFileSystem, IDataStore, IKeyValueStore } from 'xenolexia-typescript';
+import {setElectronAdapters} from './src/electronCore';
+
+import type {IFileSystem, IDataStore, IKeyValueStore} from 'xenolexia-typescript';
 
 // ---------------------------------------------------------------------------
 // Electron / Node environment (no React Native)
 // ---------------------------------------------------------------------------
-if (typeof process === 'undefined') (global as any).process = { platform: 'linux' };
+if (typeof process === 'undefined') (global as any).process = {platform: 'linux'};
 
 if (typeof window === 'undefined') {
   (global as any).window = {};
@@ -50,7 +51,9 @@ function createMockDataStore(): IDataStore {
     deleteBook: noop,
     deleteAllBooks: noop,
     getBookCount: noopNumber,
-    getBookStatistics: jest.fn().mockResolvedValue({ total: 0, in_progress: 0, completed: 0, total_time: 0 }),
+    getBookStatistics: jest
+      .fn()
+      .mockResolvedValue({total: 0, in_progress: 0, completed: 0, total_time: 0}),
     getVocabularyById: noopNull,
     getVocabulary: noopArray,
     addVocabulary: noop,
@@ -100,7 +103,7 @@ function createMockDataStore(): IDataStore {
     deleteWordListByPair: noop,
     getWordListProficiencyCounts: jest.fn().mockResolvedValue({}),
     getWordListPosCounts: jest.fn().mockResolvedValue({}),
-    getWordListStats: jest.fn().mockResolvedValue({ total: 0, pairs: [] }),
+    getWordListStats: jest.fn().mockResolvedValue({total: 0, pairs: []}),
     getWordListSearch: noopArray,
     runTransaction: noop,
   } as IDataStore;

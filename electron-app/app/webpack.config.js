@@ -1,4 +1,5 @@
 const path = require('path');
+
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
@@ -26,9 +27,7 @@ const babelLoaderConfiguration = {
         ['@babel/preset-react', {runtime: 'automatic'}],
         '@babel/preset-typescript',
       ],
-      plugins: [
-        '@babel/plugin-transform-runtime',
-      ],
+      plugins: ['@babel/plugin-transform-runtime'],
     },
   },
 };
@@ -63,7 +62,7 @@ module.exports = {
   output: {
     path: path.resolve(appDirectory, 'dist'),
     filename: 'bundle.[contenthash].js',
-    publicPath: (isDev || isElectron) ? './' : '/',
+    publicPath: isDev || isElectron ? './' : '/',
     clean: true,
   },
   module: {
@@ -73,7 +72,7 @@ module.exports = {
         test: /\.js$/,
         include: tsSharedCoreDistRegex,
         type: 'javascript/auto',
-        resolve: { fullySpecified: false },
+        resolve: {fullySpecified: false},
         parser: {
           javascript: {
             commonjsMagicComments: true,
@@ -87,7 +86,7 @@ module.exports = {
         test: /\.js$/,
         include: cjsNodeModulesRegex,
         type: 'javascript/auto',
-        resolve: { fullySpecified: false },
+        resolve: {fullySpecified: false},
         parser: {
           javascript: {
             commonjsMagicComments: true,
@@ -153,15 +152,15 @@ module.exports = {
     // Use IPC stub for DatabaseService in renderer so DB runs only in main process
     new webpack.NormalModuleReplacementPlugin(
       /[\\/]DatabaseService\.electron(\.ts)?$/,
-      path.resolve(__dirname, 'src/services/DatabaseService.renderer.ts'),
+      path.resolve(__dirname, 'src/services/DatabaseService.renderer.ts')
     ),
     // electron-store is main-process only; stub for renderer bundle
     new webpack.NormalModuleReplacementPlugin(
       /^electron-store$/,
-      path.resolve(__dirname, 'src/mocks/empty-node-module.js'),
+      path.resolve(__dirname, 'src/mocks/empty-node-module.js')
     ),
     // Rewrite node: protocol requests to polyfill paths so webpack doesn't hit UnhandledSchemeError
-    new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+    new webpack.NormalModuleReplacementPlugin(/^node:/, resource => {
       const name = resource.request.slice(5); // 'node:assert' -> 'assert'
       const map = {
         assert: require.resolve('assert/'),

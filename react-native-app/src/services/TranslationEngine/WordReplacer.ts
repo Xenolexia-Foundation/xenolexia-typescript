@@ -14,8 +14,8 @@
  * - Supports configurable replacement strategies
  */
 
-import type { WordEntry, ProficiencyLevel, ForeignWordData } from '@/types';
-import type { Token } from './Tokenizer';
+import type {Token} from './Tokenizer';
+import type {WordEntry, ProficiencyLevel, ForeignWordData} from '@/types';
 
 // ============================================================================
 // Types
@@ -109,10 +109,10 @@ export class WordReplacer {
     // Perform replacements
     let modifiedHtml = html;
     const foreignWords: ForeignWordData[] = [];
-    let offset = 0;
+    const offset = 0;
 
     for (const candidate of selected) {
-      const { token, entry } = candidate;
+      const {token, entry} = candidate;
 
       // Preserve original case
       const foreignWord = this.preserveCase(token.original, entry.targetWord);
@@ -125,10 +125,7 @@ export class WordReplacer {
       const end = token.endIndex;
 
       // Replace in HTML
-      modifiedHtml =
-        modifiedHtml.substring(0, start) +
-        marker +
-        modifiedHtml.substring(end);
+      modifiedHtml = modifiedHtml.substring(0, start) + marker + modifiedHtml.substring(end);
 
       // Track foreign word data
       foreignWords.push({
@@ -192,7 +189,7 @@ export class WordReplacer {
       // Calculate replacement score
       const score = this.calculateScore(token, entry);
 
-      candidates.push({ token, entry, score });
+      candidates.push({token, entry, score});
     }
 
     return candidates;
@@ -242,9 +239,7 @@ export class WordReplacer {
     targetCount: number
   ): ReplacementCandidate[] {
     // Sort by frequency rank (lower = more common)
-    const sorted = [...candidates].sort(
-      (a, b) => a.entry.frequencyRank - b.entry.frequencyRank
-    );
+    const sorted = [...candidates].sort((a, b) => a.entry.frequencyRank - b.entry.frequencyRank);
     return this.applySpacingConstraint(sorted, targetCount);
   }
 
@@ -260,9 +255,7 @@ export class WordReplacer {
     }
 
     // Sort by position
-    const sorted = [...candidates].sort(
-      (a, b) => a.token.startIndex - b.token.startIndex
-    );
+    const sorted = [...candidates].sort((a, b) => a.token.startIndex - b.token.startIndex);
 
     // Select evenly distributed indices
     const step = sorted.length / targetCount;
@@ -290,9 +283,7 @@ export class WordReplacer {
     }
 
     // Sort by position
-    const sorted = [...candidates].sort(
-      (a, b) => a.token.startIndex - b.token.startIndex
-    );
+    const sorted = [...candidates].sort((a, b) => a.token.startIndex - b.token.startIndex);
 
     const selected: ReplacementCandidate[] = [];
     let lastPosition = -Infinity;
@@ -384,11 +375,7 @@ export class WordReplacer {
   /**
    * Create HTML marker for a foreign word
    */
-  private createMarker(
-    foreignWord: string,
-    entry: WordEntry,
-    token: Token
-  ): string {
+  private createMarker(foreignWord: string, entry: WordEntry, token: Token): string {
     const attrs = [
       `class="foreign-word"`,
       `data-original="${this.escapeHtml(entry.sourceWord)}"`,
@@ -419,14 +406,14 @@ export class WordReplacer {
    * Update replacer options
    */
   updateOptions(options: Partial<ReplacerOptions>): void {
-    this.options = { ...this.options, ...options };
+    this.options = {...this.options, ...options};
   }
 
   /**
    * Get current options
    */
   getOptions(): Required<ReplacerOptions> {
-    return { ...this.options };
+    return {...this.options};
   }
 }
 

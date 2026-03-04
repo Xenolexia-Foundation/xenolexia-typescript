@@ -7,7 +7,7 @@
  * Book Download Service Types
  */
 
-import type {BookFormat} from '../types/index';
+import type {BookFormat} from '../../types';
 
 /**
  * Supported ebook source types

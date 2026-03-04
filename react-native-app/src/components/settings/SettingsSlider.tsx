@@ -7,7 +7,8 @@
  * Settings Slider - Interactive slider component using gesture handler
  */
 
-import React, { useCallback, useRef } from 'react';
+import React, {useCallback, useRef} from 'react';
+
 import {
   View,
   StyleSheet,
@@ -88,8 +89,7 @@ export function SettingsSlider({
         // Optional: Add haptic feedback here
       },
       onPanResponderMove: (_, gestureState) => {
-        const newPosition =
-          (percentage / 100) * trackWidth.current + gestureState.dx;
+        const newPosition = (percentage / 100) * trackWidth.current + gestureState.dx;
         const newValue = positionToValue(newPosition);
         if (newValue !== value) {
           onValueChange(newValue);
@@ -105,7 +105,7 @@ export function SettingsSlider({
   const handleTrackPress = useCallback(
     (event: any) => {
       if (disabled) return;
-      const { locationX } = event.nativeEvent;
+      const {locationX} = event.nativeEvent;
       const newValue = positionToValue(locationX);
       onValueChange(newValue);
     },
@@ -129,20 +129,21 @@ export function SettingsSlider({
         <TouchableOpacity
           onPress={handleDecrement}
           style={[styles.button, disabled && styles.buttonDisabled]}
-          disabled={disabled || value <= minimumValue}>
-          <Text style={[styles.buttonText, disabled && styles.buttonTextDisabled]}>
-            −
-          </Text>
+          disabled={disabled || value <= minimumValue}
+        >
+          <Text style={[styles.buttonText, disabled && styles.buttonTextDisabled]}>−</Text>
         </TouchableOpacity>
       )}
 
       <View
         style={[styles.trackContainer, !showButtons && styles.trackContainerFull]}
-        onLayout={handleTrackLayout}>
+        onLayout={handleTrackLayout}
+      >
         <TouchableOpacity
           activeOpacity={1}
           onPress={handleTrackPress}
-          style={[styles.track, { backgroundColor: trackColor }]}>
+          style={[styles.track, {backgroundColor: trackColor}]}
+        >
           <Animated.View
             style={[
               styles.fill,
@@ -168,7 +169,8 @@ export function SettingsSlider({
               }),
             },
             disabled && styles.thumbDisabled,
-          ]}>
+          ]}
+        >
           <View style={styles.thumbInner} />
         </Animated.View>
       </View>
@@ -177,10 +179,9 @@ export function SettingsSlider({
         <TouchableOpacity
           onPress={handleIncrement}
           style={[styles.button, disabled && styles.buttonDisabled]}
-          disabled={disabled || value >= maximumValue}>
-          <Text style={[styles.buttonText, disabled && styles.buttonTextDisabled]}>
-            +
-          </Text>
+          disabled={disabled || value >= maximumValue}
+        >
+          <Text style={[styles.buttonText, disabled && styles.buttonTextDisabled]}>+</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -192,71 +193,71 @@ export function SettingsSlider({
 // ============================================================================
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 44,
-  },
   button: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#f3f4f6',
     alignItems: 'center',
+    backgroundColor: '#f3f4f6',
+    borderRadius: 18,
+    height: 36,
     justifyContent: 'center',
+    width: 36,
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   buttonText: {
+    color: '#374151',
     fontSize: 24,
     fontWeight: '400',
-    color: '#374151',
     lineHeight: 28,
   },
   buttonTextDisabled: {
     color: '#9ca3af',
   },
-  trackContainer: {
-    flex: 1,
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
     height: 44,
-    marginHorizontal: 12,
-    justifyContent: 'center',
-  },
-  trackContainerFull: {
-    marginHorizontal: 0,
-  },
-  track: {
-    height: 6,
-    borderRadius: 3,
-    overflow: 'hidden',
   },
   fill: {
-    height: '100%',
     borderRadius: 3,
+    height: '100%',
   },
   thumb: {
-    position: 'absolute',
-    width: 28,
-    height: 28,
+    alignItems: 'center',
     borderRadius: 14,
+    elevation: 4,
+    height: 28,
+    justifyContent: 'center',
     marginLeft: -14,
-    top: 8,
+    position: 'absolute',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  thumbInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    top: 8,
+    width: 28,
   },
   thumbDisabled: {
     opacity: 0.5,
+  },
+  thumbInner: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 6,
+    height: 12,
+    width: 12,
+  },
+  track: {
+    borderRadius: 3,
+    height: 6,
+    overflow: 'hidden',
+  },
+  trackContainer: {
+    flex: 1,
+    height: 44,
+    justifyContent: 'center',
+    marginHorizontal: 12,
+  },
+  trackContainerFull: {
+    marginHorizontal: 0,
   },
 });

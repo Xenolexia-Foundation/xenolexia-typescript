@@ -7,33 +7,28 @@
  * Reader Screen - Main book reading experience with foreign word integration
  */
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, {useState, useCallback, useEffect, useRef} from 'react';
 
-import type { RootStackScreenProps } from '@types/navigation';
-import type { ForeignWordData } from '@types/index';
-import { useLibraryStore } from '@stores/libraryStore';
-import { useVocabularyStore } from '@stores/vocabularyStore';
-import { useStatisticsStore } from '@stores/statisticsStore';
-import {
-  useReaderStore,
-  selectHasNextChapter,
-  selectHasPreviousChapter,
-} from '@stores/readerStore';
-import { TranslationPopup } from '@components/reader/TranslationPopup';
-import { ReaderSettingsModal } from '@components/reader/ReaderSettingsModal';
-import { ChapterNavigator } from '@components/reader/ChapterNavigator';
-import { EPUBRenderer } from './components/EPUBRenderer';
-import { useWordTapHandler, WebViewWordData } from './hooks';
+import {View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert} from 'react-native';
+
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+import {useNavigation, useRoute} from '@react-navigation/native';
+
+import {ChapterNavigator} from '@components/reader/ChapterNavigator';
+import {ReaderSettingsModal} from '@components/reader/ReaderSettingsModal';
+import {TranslationPopup} from '@components/reader/TranslationPopup';
+
+import {useLibraryStore} from '@stores/libraryStore';
+import {useReaderStore, selectHasNextChapter, selectHasPreviousChapter} from '@stores/readerStore';
+import {useStatisticsStore} from '@stores/statisticsStore';
+import {useVocabularyStore} from '@stores/vocabularyStore';
+
+import {EPUBRenderer} from './components/EPUBRenderer';
+import {useWordTapHandler, WebViewWordData} from './hooks';
+
+import type {ForeignWordData} from '@types/index';
+import type {RootStackScreenProps} from '@types/navigation';
 
 type ReaderScreenProps = RootStackScreenProps<'Reader'>;
 
@@ -44,11 +39,11 @@ type ReaderScreenProps = RootStackScreenProps<'Reader'>;
 export function ReaderScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const route = useRoute<ReaderScreenProps['route']>();
-  const { bookId } = route.params;
+  const {bookId} = route.params;
 
   // Store hooks
-  const { getBook, updateProgress: updateBookProgress } = useLibraryStore();
-  const { initialize: initVocabulary, isWordSaved } = useVocabularyStore();
+  const {getBook, updateProgress: updateBookProgress} = useLibraryStore();
+  const {initialize: initVocabulary, isWordSaved} = useVocabularyStore();
   const {
     currentBook,
     currentChapter,
@@ -70,7 +65,7 @@ export function ReaderScreen(): React.JSX.Element {
   const hasNext = useReaderStore(selectHasNextChapter);
   const hasPrevious = useReaderStore(selectHasPreviousChapter);
 
-  const { startSession } = useStatisticsStore();
+  const {startSession} = useStatisticsStore();
   const sessionStartedRef = useRef(false);
 
   const book = getBook(bookId);
@@ -93,7 +88,7 @@ export function ReaderScreen(): React.JSX.Element {
     onWordSaved: () => {
       // Could show toast notification
     },
-    onWordKnown: (wordId) => {
+    onWordKnown: wordId => {
       // Could track known words for exclusion
     },
   });
@@ -159,29 +154,32 @@ export function ReaderScreen(): React.JSX.Element {
         Alert.alert(
           'Session summary',
           `Words revealed: ${wordsRevealed}\nWords saved: ${wordsSaved}`,
-          [{ text: 'OK' }],
+          [{text: 'OK'}]
         );
       }
     };
   }, []); // Empty deps - only runs on unmount
 
   // Handle word tap from WebView
-  const onWebViewWordTap = useCallback((data: ForeignWordData) => {
-    // Convert ForeignWordData to WebViewWordData format
-    const webViewData: WebViewWordData = {
-      foreignWord: data.foreignWord,
-      originalWord: data.originalWord,
-      wordId: data.wordEntry.id,
-      pronunciation: data.wordEntry.pronunciation,
-      partOfSpeech: data.wordEntry.partOfSpeech,
-    };
-    handleWordTap(webViewData);
-    setShowControls(false);
-  }, [handleWordTap]);
+  const onWebViewWordTap = useCallback(
+    (data: ForeignWordData) => {
+      // Convert ForeignWordData to WebViewWordData format
+      const webViewData: WebViewWordData = {
+        foreignWord: data.foreignWord,
+        originalWord: data.originalWord,
+        wordId: data.wordEntry.id,
+        pronunciation: data.wordEntry.pronunciation,
+        partOfSpeech: data.wordEntry.partOfSpeech,
+      };
+      handleWordTap(webViewData);
+      setShowControls(false);
+    },
+    [handleWordTap]
+  );
 
   const handleToggleControls = useCallback(() => {
     if (!selectedWord) {
-      setShowControls((prev) => !prev);
+      setShowControls(prev => !prev);
     }
   }, [selectedWord]);
 
@@ -217,14 +215,10 @@ export function ReaderScreen(): React.JSX.Element {
   // Error state
   if (error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <SafeAreaView style={[styles.container, {backgroundColor: themeColors.background}]}>
         <View style={styles.errorContainer}>
-          <Text style={[styles.errorText, { color: themeColors.text }]}>
-            {error}
-          </Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={() => book && loadBook(book)}>
+          <Text style={[styles.errorText, {color: themeColors.text}]}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={() => book && loadBook(book)}>
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
         </View>
@@ -235,11 +229,9 @@ export function ReaderScreen(): React.JSX.Element {
   // Book not found
   if (!book) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <SafeAreaView style={[styles.container, {backgroundColor: themeColors.background}]}>
         <View style={styles.errorContainer}>
-          <Text style={[styles.errorText, { color: themeColors.text }]}>
-            Book not found
-          </Text>
+          <Text style={[styles.errorText, {color: themeColors.text}]}>Book not found</Text>
           <TouchableOpacity style={styles.retryButton} onPress={handleBack}>
             <Text style={styles.retryButtonText}>Go Back</Text>
           </TouchableOpacity>
@@ -251,12 +243,10 @@ export function ReaderScreen(): React.JSX.Element {
   // Loading state
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <SafeAreaView style={[styles.container, {backgroundColor: themeColors.background}]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={themeColors.accent} />
-          <Text style={[styles.loadingText, { color: themeColors.text }]}>
-            Loading book...
-          </Text>
+          <Text style={[styles.loadingText, {color: themeColors.text}]}>Loading book...</Text>
         </View>
       </SafeAreaView>
     );
@@ -264,29 +254,24 @@ export function ReaderScreen(): React.JSX.Element {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: themeColors.background }]}
-      edges={['top']}>
+      style={[styles.container, {backgroundColor: themeColors.background}]}
+      edges={['top']}
+    >
       {/* Header Controls */}
       {showControls && (
-        <View style={[styles.header, { borderBottomColor: themeColors.border }]}>
+        <View style={[styles.header, {borderBottomColor: themeColors.border}]}>
           <TouchableOpacity onPress={handleBack} style={styles.headerButton}>
-            <Text style={[styles.headerButtonText, { color: themeColors.text }]}>←</Text>
+            <Text style={[styles.headerButtonText, {color: themeColors.text}]}>←</Text>
           </TouchableOpacity>
           <View style={styles.headerCenter}>
-            <Text
-              style={[styles.bookTitle, { color: themeColors.text }]}
-              numberOfLines={1}>
+            <Text style={[styles.bookTitle, {color: themeColors.text}]} numberOfLines={1}>
               {book.title}
             </Text>
-            <Text
-              style={[styles.chapterTitle, { color: themeColors.textMuted }]}
-              numberOfLines={1}>
+            <Text style={[styles.chapterTitle, {color: themeColors.textMuted}]} numberOfLines={1}>
               {currentChapter?.title || 'Loading...'}
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => setShowSettings(true)}
-            style={styles.headerButton}>
+          <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerButton}>
             <Text style={styles.headerButtonText}>⚙️</Text>
           </TouchableOpacity>
         </View>
@@ -296,7 +281,8 @@ export function ReaderScreen(): React.JSX.Element {
       <TouchableOpacity
         activeOpacity={1}
         onPress={handleToggleControls}
-        style={styles.readerContainer}>
+        style={styles.readerContainer}
+      >
         {isLoadingChapter ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color={themeColors.accent} />
@@ -312,7 +298,7 @@ export function ReaderScreen(): React.JSX.Element {
           />
         ) : (
           <View style={styles.emptyContainer}>
-            <Text style={[styles.emptyText, { color: themeColors.textMuted }]}>
+            <Text style={[styles.emptyText, {color: themeColors.textMuted}]}>
               No content available
             </Text>
           </View>
@@ -321,35 +307,40 @@ export function ReaderScreen(): React.JSX.Element {
 
       {/* Footer Controls */}
       {showControls && (
-        <View style={[styles.footer, { borderTopColor: themeColors.border }]}>
+        <View style={[styles.footer, {borderTopColor: themeColors.border}]}>
           <TouchableOpacity
             onPress={goToPreviousChapter}
             style={[styles.navButton, !hasPrevious && styles.navButtonDisabled]}
-            disabled={!hasPrevious}>
+            disabled={!hasPrevious}
+          >
             <Text
               style={[
                 styles.navButtonText,
-                { color: hasPrevious ? themeColors.accent : themeColors.textMuted },
-              ]}>
+                {color: hasPrevious ? themeColors.accent : themeColors.textMuted},
+              ]}
+            >
               ‹ Previous
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setShowChapters(true)}
-            style={[styles.chapterButton, { backgroundColor: themeColors.cardBackground }]}>
-            <Text style={[styles.progressText, { color: themeColors.text }]}>
+            style={[styles.chapterButton, {backgroundColor: themeColors.cardBackground}]}
+          >
+            <Text style={[styles.progressText, {color: themeColors.text}]}>
               {overallProgress.toFixed(0)}%
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={goToNextChapter}
             style={[styles.navButton, !hasNext && styles.navButtonDisabled]}
-            disabled={!hasNext}>
+            disabled={!hasNext}
+          >
             <Text
               style={[
                 styles.navButtonText,
-                { color: hasNext ? themeColors.accent : themeColors.textMuted },
-              ]}>
+                {color: hasNext ? themeColors.accent : themeColors.textMuted},
+              ]}
+            >
               Next ›
             </Text>
           </TouchableOpacity>
@@ -369,10 +360,7 @@ export function ReaderScreen(): React.JSX.Element {
       )}
 
       {/* Settings Modal */}
-      <ReaderSettingsModal
-        visible={showSettings}
-        onClose={() => setShowSettings(false)}
-      />
+      <ReaderSettingsModal visible={showSettings} onClose={() => setShowSettings(false)} />
 
       {/* Chapter Navigator Modal */}
       <ChapterNavigator
@@ -434,90 +422,81 @@ function getThemeColors(theme: 'light' | 'dark' | 'sepia'): ThemeColors {
 // ============================================================================
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-  },
-  headerButton: {
-    padding: 8,
-    minWidth: 44,
-    alignItems: 'center',
-  },
-  headerButtonText: {
-    fontSize: 24,
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: 'center',
-    paddingHorizontal: 8,
-  },
   bookTitle: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  chapterButton: {
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   chapterTitle: {
     fontSize: 12,
     marginTop: 2,
   },
-  readerContainer: {
+  container: {
     flex: 1,
   },
-  loadingContainer: {
+  emptyContainer: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    gap: 16,
   },
-  loadingText: {
+  emptyText: {
     fontSize: 16,
   },
   errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    flex: 1,
     gap: 16,
+    justifyContent: 'center',
+    padding: 24,
   },
   errorText: {
     fontSize: 16,
     textAlign: 'center',
   },
-  retryButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    backgroundColor: '#6366f1',
-    borderRadius: 8,
-  },
-  retryButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-  },
   footer: {
-    flexDirection: 'row',
     alignItems: 'center',
+    borderTopWidth: 1,
+    flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderTopWidth: 1,
+  },
+  header: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  headerButton: {
+    alignItems: 'center',
+    minWidth: 44,
+    padding: 8,
+  },
+  headerButtonText: {
+    fontSize: 24,
+  },
+  headerCenter: {
+    alignItems: 'center',
+    flex: 1,
+    paddingHorizontal: 8,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    flex: 1,
+    gap: 16,
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
   },
   navButton: {
-    padding: 8,
     minWidth: 80,
+    padding: 8,
   },
   navButtonDisabled: {
     opacity: 0.5,
@@ -526,13 +505,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  chapterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
   progressText: {
     fontSize: 14,
+    fontWeight: '600',
+  },
+  readerContainer: {
+    flex: 1,
+  },
+  retryButton: {
+    backgroundColor: '#6366f1',
+    borderRadius: 8,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
+  retryButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
     fontWeight: '600',
   },
 });

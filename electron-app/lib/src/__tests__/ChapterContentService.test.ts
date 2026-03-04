@@ -7,13 +7,14 @@
  * Unit tests for ChapterContentService (xenolexia-typescript core) - getChapterHtml with and without translation
  */
 
-import { getCore } from '../electronCore';
-import type { Chapter } from 'xenolexia-typescript';
+import {getCore} from '../electronCore';
+
+import type {Chapter} from 'xenolexia-typescript';
 
 const createTranslationEngine = jest.fn();
 jest.mock('xenolexia-typescript', () => {
   const actual = jest.requireActual('xenolexia-typescript');
-  return { ...actual, createTranslationEngine };
+  return {...actual, createTranslationEngine};
 });
 
 jest.mock('../utils/FileSystem.electron', () => ({
@@ -37,7 +38,7 @@ describe('ChapterContentService', () => {
       processContent: jest.fn().mockResolvedValue({
         content: '',
         foreignWords: [],
-        stats: { totalWords: 0, eligibleWords: 0, replacedWords: 0, processingTime: 0 },
+        stats: {totalWords: 0, eligibleWords: 0, replacedWords: 0, processingTime: 0},
       }),
     }));
     service = getCore().createChapterContentService(createTranslationEngine as any);

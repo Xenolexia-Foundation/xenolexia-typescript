@@ -7,10 +7,12 @@
  * Statistics Store - Manages reading and learning statistics
  */
 
-import {create} from 'zustand';
-import type {ReadingStats, ReadingSession} from 'xenolexia-typescript';
-import {getCore} from '../electronCore';
 import {XP_PER_MINUTE_READING, XP_PER_WORD_SAVED} from 'xenolexia-typescript';
+import {create} from 'zustand';
+
+import {getCore} from '../electronCore';
+
+import type {ReadingStats, ReadingSession} from 'xenolexia-typescript';
 
 const defaultStats: ReadingStats = {
   totalBooksRead: 0,
@@ -34,6 +36,8 @@ interface StatisticsState {
   stats: ReadingStats;
   currentSession: ReadingSession | null;
   sessions: ReadingSession[];
+  /** Last 7 days reading time in minutes (for charts) */
+  dailyReadingTime: Array<{date: string; minutes: number}>;
   isLoading: boolean;
 
   // Review stats
@@ -60,6 +64,7 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
   stats: defaultStats,
   currentSession: null,
   sessions: [],
+  dailyReadingTime: [],
   isLoading: false,
   reviewStats: {
     totalReviews: 0,
@@ -104,9 +109,7 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
     if (!currentSession) return;
 
     const endedAt = new Date();
-    const duration = Math.floor(
-      (endedAt.getTime() - currentSession.startedAt.getTime()) / 1000,
-    );
+    const duration = Math.floor((endedAt.getTime() - currentSession.startedAt.getTime()) / 1000);
 
     const completedSession: ReadingSession = {
       ...currentSession,
@@ -195,13 +198,33 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
   loadStats: async () => {
     set({isLoading: true});
     try {
-      const stats = await getCore().storageService.getReadingStats();
-      // Get recent sessions (last 50)
-      const recentSessions = await getCore().storageService.getSessionRepository().getRecent(50);
-      const currentStats = get().stats;
+      const [stats, recentSessions, dailyReadingTime] = await Promise.all([
+        getCore().storageService.getReadingStats(),
+        getCore().storageService.getSessionRepository().getRecent(50),
+        getCore().storageService.getDailyReadingTime(7),
+      ]);
+      const state = get();
+      const currentStats = state.stats;
+      // Merge in-memory session counts so stats are correct even before endSession persists
+      const session = state.currentSession;
+      const wordsRevealedToday = session
+        ? stats.wordsRevealedToday + session.wordsRevealed
+        : stats.wordsRevealedToday;
+      const wordsSavedToday = session
+        ? stats.wordsSavedToday + session.wordsSaved
+        : stats.wordsSavedToday;
+      const totalXp = stats.totalXp ?? currentStats.totalXp ?? 0;
+      const mergedTotalXp =
+        session && (currentStats.totalXp ?? 0) > totalXp ? currentStats.totalXp ?? 0 : totalXp;
       set({
-        stats: {...stats, totalXp: stats.totalXp ?? currentStats.totalXp ?? 0},
+        stats: {
+          ...stats,
+          totalXp: mergedTotalXp,
+          wordsRevealedToday,
+          wordsSavedToday,
+        },
         sessions: recentSessions,
+        dailyReadingTime: dailyReadingTime ?? [],
         isLoading: false,
       });
     } catch (error) {

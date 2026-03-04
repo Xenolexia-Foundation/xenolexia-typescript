@@ -7,23 +7,22 @@
  * Settings Screen - Complete app configuration
  */
 
-import React, { useCallback } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Switch,
-  Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, {useCallback} from 'react';
 
-import { useTheme } from '@theme/index';
-import { useUserStore } from '@stores/userStore';
-import { getLanguageInfo, SUPPORTED_LANGUAGES } from '@types/index';
-import type { RootStackParamList, Language, ProficiencyLevel } from '@types/index';
+import {View, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert} from 'react-native';
+
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+import {useNavigation} from '@react-navigation/native';
+
+import {useUserStore} from '@stores/userStore';
+
+import {getLanguageInfo, SUPPORTED_LANGUAGES} from '@types/index';
+
+import {useTheme} from '@theme/index';
+
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import type {RootStackParamList, Language, ProficiencyLevel} from '@types/index';
 
 type SettingsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -33,16 +32,19 @@ type SettingsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export function SettingsScreen(): React.JSX.Element {
   const navigation = useNavigation<SettingsNavigationProp>();
-  const { colors } = useTheme();
-  const { preferences, updatePreferences, resetPreferences } = useUserStore();
+  const {colors} = useTheme();
+  const {preferences, updatePreferences, resetPreferences} = useUserStore();
 
   const sourceLang = getLanguageInfo(preferences.defaultSourceLanguage);
   const targetLang = getLanguageInfo(preferences.defaultTargetLanguage);
 
   // Navigation handlers
-  const handleNavigate = useCallback((screen: keyof RootStackParamList) => {
-    navigation.navigate(screen as never);
-  }, [navigation]);
+  const handleNavigate = useCallback(
+    (screen: keyof RootStackParamList) => {
+      navigation.navigate(screen as never);
+    },
+    [navigation]
+  );
 
   // Destructive actions
   const handleResetSettings = useCallback(() => {
@@ -50,7 +52,7 @@ export function SettingsScreen(): React.JSX.Element {
       'Reset Settings',
       'This will reset all settings to their defaults. Your books and vocabulary will not be affected.',
       [
-        { text: 'Cancel', style: 'cancel' },
+        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Reset',
           style: 'destructive',
@@ -65,14 +67,14 @@ export function SettingsScreen(): React.JSX.Element {
 
   // Dynamic styles
   const dynamicStyles = {
-    container: { backgroundColor: colors.background.primary },
-    header: { borderBottomColor: colors.border.secondary },
-    section: { backgroundColor: colors.background.secondary },
-    sectionTitle: { color: colors.text.tertiary },
-    rowLabel: { color: colors.text.primary },
-    rowValue: { color: colors.text.secondary },
-    rowIcon: { color: colors.text.tertiary },
-    divider: { backgroundColor: colors.border.secondary },
+    container: {backgroundColor: colors.background.primary},
+    header: {borderBottomColor: colors.border.secondary},
+    section: {backgroundColor: colors.background.secondary},
+    sectionTitle: {color: colors.text.tertiary},
+    rowLabel: {color: colors.text.primary},
+    rowValue: {color: colors.text.secondary},
+    rowIcon: {color: colors.text.tertiary},
+    divider: {backgroundColor: colors.border.secondary},
   };
 
   return (
@@ -80,9 +82,9 @@ export function SettingsScreen(): React.JSX.Element {
       {/* Header */}
       <View style={[styles.header, dynamicStyles.header]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <TextDisplay text="←" style={[styles.backText, { color: colors.primary[500] }]} />
+          <TextDisplay text="←" style={[styles.backText, {color: colors.primary[500]}]} />
         </TouchableOpacity>
-        <TextDisplay text="Settings" style={[styles.title, { color: colors.text.primary }]} />
+        <TextDisplay text="Settings" style={[styles.title, {color: colors.text.primary}]} />
         <View style={styles.backButton} />
       </View>
 
@@ -92,10 +94,7 @@ export function SettingsScreen(): React.JSX.Element {
           <TextDisplay text="LEARNING" style={[styles.sectionTitle, dynamicStyles.sectionTitle]} />
           <View style={[styles.section, dynamicStyles.section]}>
             {/* Languages */}
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleNavigate('LanguageSettings')}
-            >
+            <TouchableOpacity style={styles.row} onPress={() => handleNavigate('LanguageSettings')}>
               <TextDisplay text="🌍" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
                 <TextDisplay text="Languages" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
@@ -110,15 +109,18 @@ export function SettingsScreen(): React.JSX.Element {
             <View style={[styles.divider, dynamicStyles.divider]} />
 
             {/* Proficiency Level */}
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleNavigate('LanguageSettings')}
-            >
+            <TouchableOpacity style={styles.row} onPress={() => handleNavigate('LanguageSettings')}>
               <TextDisplay text="📊" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Proficiency Level" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
                 <TextDisplay
-                  text={preferences.defaultProficiencyLevel.charAt(0).toUpperCase() + preferences.defaultProficiencyLevel.slice(1)}
+                  text="Proficiency Level"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
+                <TextDisplay
+                  text={
+                    preferences.defaultProficiencyLevel.charAt(0).toUpperCase() +
+                    preferences.defaultProficiencyLevel.slice(1)
+                  }
                   style={[styles.rowValue, dynamicStyles.rowValue]}
                 />
               </View>
@@ -131,7 +133,10 @@ export function SettingsScreen(): React.JSX.Element {
             <View style={styles.row}>
               <TextDisplay text="📝" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Word Density" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
+                <TextDisplay
+                  text="Word Density"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
                 <TextDisplay
                   text={`${Math.round(preferences.defaultWordDensity * 100)}% of words replaced`}
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -139,7 +144,7 @@ export function SettingsScreen(): React.JSX.Element {
               </View>
               <TextDisplay
                 text={`${Math.round(preferences.defaultWordDensity * 100)}%`}
-                style={[styles.rowValueBadge, { color: colors.primary[500] }]}
+                style={[styles.rowValueBadge, {color: colors.primary[500]}]}
               />
             </View>
 
@@ -149,7 +154,10 @@ export function SettingsScreen(): React.JSX.Element {
             <View style={styles.row}>
               <TextDisplay text="🎯" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Daily Reading Goal" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
+                <TextDisplay
+                  text="Daily Reading Goal"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
                 <TextDisplay
                   text="Set a daily reading target"
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -157,7 +165,7 @@ export function SettingsScreen(): React.JSX.Element {
               </View>
               <TextDisplay
                 text={`${preferences.dailyGoal} min`}
-                style={[styles.rowValueBadge, { color: colors.primary[500] }]}
+                style={[styles.rowValueBadge, {color: colors.primary[500]}]}
               />
             </View>
           </View>
@@ -167,13 +175,13 @@ export function SettingsScreen(): React.JSX.Element {
         <View style={styles.sectionContainer}>
           <TextDisplay text="READER" style={[styles.sectionTitle, dynamicStyles.sectionTitle]} />
           <View style={[styles.section, dynamicStyles.section]}>
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleNavigate('ReaderSettings')}
-            >
+            <TouchableOpacity style={styles.row} onPress={() => handleNavigate('ReaderSettings')}>
               <TextDisplay text="📖" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Reader Defaults" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
+                <TextDisplay
+                  text="Reader Defaults"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
                 <TextDisplay
                   text="Theme, font, size, spacing"
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -186,12 +194,18 @@ export function SettingsScreen(): React.JSX.Element {
 
         {/* Notifications Section */}
         <View style={styles.sectionContainer}>
-          <TextDisplay text="NOTIFICATIONS" style={[styles.sectionTitle, dynamicStyles.sectionTitle]} />
+          <TextDisplay
+            text="NOTIFICATIONS"
+            style={[styles.sectionTitle, dynamicStyles.sectionTitle]}
+          />
           <View style={[styles.section, dynamicStyles.section]}>
             <View style={styles.row}>
               <TextDisplay text="🔔" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Daily Reminders" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
+                <TextDisplay
+                  text="Daily Reminders"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
                 <TextDisplay
                   text="Get reminded to read and review"
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -199,8 +213,8 @@ export function SettingsScreen(): React.JSX.Element {
               </View>
               <Switch
                 value={preferences.notificationsEnabled}
-                onValueChange={(value) => updatePreferences({ notificationsEnabled: value })}
-                trackColor={{ false: colors.background.tertiary, true: colors.primary[500] }}
+                onValueChange={value => updatePreferences({notificationsEnabled: value})}
+                trackColor={{false: colors.background.tertiary, true: colors.primary[500]}}
                 thumbColor="#ffffff"
               />
             </View>
@@ -213,7 +227,10 @@ export function SettingsScreen(): React.JSX.Element {
             >
               <TextDisplay text="⏰" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Notification Settings" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
+                <TextDisplay
+                  text="Notification Settings"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
                 <TextDisplay
                   text="Schedule, sounds, badges"
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -228,13 +245,13 @@ export function SettingsScreen(): React.JSX.Element {
         <View style={styles.sectionContainer}>
           <TextDisplay text="DATA" style={[styles.sectionTitle, dynamicStyles.sectionTitle]} />
           <View style={[styles.section, dynamicStyles.section]}>
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleNavigate('DataManagement')}
-            >
+            <TouchableOpacity style={styles.row} onPress={() => handleNavigate('DataManagement')}>
               <TextDisplay text="💾" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Data Management" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
+                <TextDisplay
+                  text="Data Management"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
                 <TextDisplay
                   text="Export, import, clear data"
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -249,13 +266,13 @@ export function SettingsScreen(): React.JSX.Element {
         <View style={styles.sectionContainer}>
           <TextDisplay text="ABOUT" style={[styles.sectionTitle, dynamicStyles.sectionTitle]} />
           <View style={[styles.section, dynamicStyles.section]}>
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleNavigate('About')}
-            >
+            <TouchableOpacity style={styles.row} onPress={() => handleNavigate('About')}>
               <TextDisplay text="ℹ️" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="About Xenolexia" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
+                <TextDisplay
+                  text="About Xenolexia"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
                 <TextDisplay
                   text="Version, licenses, contact"
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -269,7 +286,10 @@ export function SettingsScreen(): React.JSX.Element {
             <TouchableOpacity style={styles.row} onPress={() => {}}>
               <TextDisplay text="⭐" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Rate Xenolexia" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
+                <TextDisplay
+                  text="Rate Xenolexia"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
                 <TextDisplay
                   text="Help us by leaving a review"
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -283,7 +303,10 @@ export function SettingsScreen(): React.JSX.Element {
             <TouchableOpacity style={styles.row} onPress={() => {}}>
               <TextDisplay text="📤" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Share Xenolexia" style={[styles.rowLabel, dynamicStyles.rowLabel]} />
+                <TextDisplay
+                  text="Share Xenolexia"
+                  style={[styles.rowLabel, dynamicStyles.rowLabel]}
+                />
                 <TextDisplay
                   text="Tell your friends about us"
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -300,7 +323,7 @@ export function SettingsScreen(): React.JSX.Element {
             <TouchableOpacity style={styles.row} onPress={handleResetSettings}>
               <TextDisplay text="🔄" style={styles.rowIconEmoji} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Reset Settings" style={[styles.rowLabel, { color: '#f59e0b' }]} />
+                <TextDisplay text="Reset Settings" style={[styles.rowLabel, {color: '#f59e0b'}]} />
                 <TextDisplay
                   text="Restore default settings"
                   style={[styles.rowValue, dynamicStyles.rowValue]}
@@ -314,11 +337,11 @@ export function SettingsScreen(): React.JSX.Element {
         <View style={styles.footer}>
           <TextDisplay
             text="Xenolexia v1.0.0"
-            style={[styles.footerText, { color: colors.text.tertiary }]}
+            style={[styles.footerText, {color: colors.text.tertiary}]}
           />
           <TextDisplay
             text="Made with 📚 for language learners"
-            style={[styles.footerText, { color: colors.text.tertiary }]}
+            style={[styles.footerText, {color: colors.text.tertiary}]}
           />
         </View>
       </ScrollView>
@@ -327,8 +350,8 @@ export function SettingsScreen(): React.JSX.Element {
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 

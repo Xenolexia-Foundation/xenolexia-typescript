@@ -8,10 +8,12 @@
  */
 
 import React, {useEffect, useRef} from 'react';
+
 import {View, StyleSheet, Animated, ActivityIndicator} from 'react-native';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
+
 import {Text} from '@components/ui';
 
 // ============================================================================
@@ -46,11 +48,7 @@ export function LoadingSpinner({
   );
 
   if (fullScreen) {
-    return (
-      <View style={[styles.fullScreen, {backgroundColor: colors.background}]}>
-        {content}
-      </View>
-    );
+    return <View style={[styles.fullScreen, {backgroundColor: colors.background}]}>{content}</View>;
   }
 
   return content;
@@ -143,7 +141,9 @@ export function SkeletonCard(): React.JSX.Element {
   const colors = useColors();
 
   return (
-    <View style={[styles.skeletonCard, {backgroundColor: colors.surface, borderColor: colors.border}]}>
+    <View
+      style={[styles.skeletonCard, {backgroundColor: colors.surface, borderColor: colors.border}]}
+    >
       <Skeleton width="100%" height={120} radius={borderRadius.md} />
       <View style={styles.skeletonCardContent}>
         <Skeleton width="80%" height={18} />

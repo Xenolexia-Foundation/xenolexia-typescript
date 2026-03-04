@@ -140,7 +140,7 @@ async function stat(filePath: string): Promise<{
 /**
  * Create directory
  */
-async function mkdir(filePath: string, options?: {recursive?: boolean}): Promise<void> {
+async function mkdir(filePath: string, _options?: {recursive?: boolean}): Promise<void> {
   if (!window.electronAPI) {
     throw new Error('Electron API not available');
   }
@@ -160,7 +160,7 @@ async function mkdir(filePath: string, options?: {recursive?: boolean}): Promise
 /**
  * Read directory contents
  */
-async function readdir(filePath: string): Promise<string[]> {
+async function readdir(_filePath: string): Promise<string[]> {
   if (!window.electronAPI) {
     throw new Error('Electron API not available');
   }

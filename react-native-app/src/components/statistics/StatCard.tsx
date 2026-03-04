@@ -8,10 +8,12 @@
  */
 
 import React from 'react';
+
 import {View, StyleSheet, Dimensions} from 'react-native';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
+
 import {Text} from '@components/ui';
 
 interface StatCardProps {

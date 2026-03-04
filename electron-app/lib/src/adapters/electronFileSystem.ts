@@ -1,28 +1,12 @@
 /**
- * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
- * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
- */
-
-/**
  * Electron IFileSystem adapter - uses IPC (window.electronAPI) in renderer.
+ * Window.electronAPI is typed in app/src/types/electron.d.ts when building the app.
  */
 
-import type { IFileSystem } from 'xenolexia-typescript';
+import type {IFileSystem} from 'xenolexia-typescript';
 
-declare global {
-  interface Window {
-    electronAPI?: {
-      readFile?: (filePath: string) => Promise<ArrayBuffer>;
-      readFileText?: (filePath: string) => Promise<string>;
-      writeFile?: (filePath: string, content: string | ArrayBuffer, encoding?: string) => Promise<void>;
-      fileExists?: (filePath: string) => Promise<boolean>;
-      unlink?: (filePath: string) => Promise<void>;
-      getAppDataPath?: () => Promise<string>;
-    };
-  }
-}
-
-function getAPI(): NonNullable<Window['electronAPI']> {
+/** Minimal API used by this adapter; full API is in app. */
+function getAPI(): NonNullable<typeof window.electronAPI> {
   if (typeof window === 'undefined' || !window.electronAPI) {
     throw new Error('window.electronAPI not available (Electron preload only)');
   }
@@ -52,9 +36,9 @@ export const electronFileSystem: IFileSystem = {
   async writeFile(
     filePath: string,
     content: string | ArrayBuffer,
-    encoding?: 'utf8' | 'base64'
+    _encoding?: 'utf8' | 'base64'
   ): Promise<void> {
-    await getAPI().writeFile!(filePath, content, encoding);
+    await getAPI().writeFile(filePath, content);
   },
 
   async fileExists(filePath: string): Promise<boolean> {

@@ -7,19 +7,17 @@
  * Notification Settings Screen - Configure reminders and alerts
  */
 
-import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Switch,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState} from 'react';
 
-import { useTheme } from '@theme/index';
-import { useUserStore } from '@stores/userStore';
+import {View, StyleSheet, ScrollView, TouchableOpacity, Switch} from 'react-native';
+
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+import {useNavigation} from '@react-navigation/native';
+
+import {useUserStore} from '@stores/userStore';
+
+import {useTheme} from '@theme/index';
 
 // ============================================================================
 // Component
@@ -27,8 +25,8 @@ import { useUserStore } from '@stores/userStore';
 
 export function NotificationSettingsScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const { colors } = useTheme();
-  const { preferences, updatePreferences } = useUserStore();
+  const {colors} = useTheme();
+  const {preferences, updatePreferences} = useUserStore();
 
   // Local state for notification settings (would be persisted in a real app)
   const [readingReminder, setReadingReminder] = useState(true);
@@ -37,20 +35,20 @@ export function NotificationSettingsScreen(): React.JSX.Element {
   const [reminderTime, setReminderTime] = useState('20:00');
 
   const dynamicStyles = {
-    container: { backgroundColor: colors.background.primary },
-    section: { backgroundColor: colors.background.secondary },
-    label: { color: colors.text.primary },
-    value: { color: colors.text.secondary },
+    container: {backgroundColor: colors.background.primary},
+    section: {backgroundColor: colors.background.secondary},
+    label: {color: colors.text.primary},
+    value: {color: colors.text.secondary},
   };
 
   return (
     <SafeAreaView style={[styles.container, dynamicStyles.container]} edges={['top']}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border.secondary }]}>
+      <View style={[styles.header, {borderBottomColor: colors.border.secondary}]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <TextDisplay text="←" style={[styles.backText, { color: colors.primary[500] }]} />
+          <TextDisplay text="←" style={[styles.backText, {color: colors.primary[500]}]} />
         </TouchableOpacity>
-        <TextDisplay text="Notifications" style={[styles.title, { color: colors.text.primary }]} />
+        <TextDisplay text="Notifications" style={[styles.title, {color: colors.text.primary}]} />
         <View style={styles.backButton} />
       </View>
 
@@ -60,16 +58,19 @@ export function NotificationSettingsScreen(): React.JSX.Element {
           <View style={[styles.section, dynamicStyles.section]}>
             <View style={styles.row}>
               <View style={styles.rowContent}>
-                <TextDisplay text="Enable Notifications" style={[styles.rowLabel, dynamicStyles.label]} />
+                <TextDisplay
+                  text="Enable Notifications"
+                  style={[styles.rowLabel, dynamicStyles.label]}
+                />
                 <TextDisplay
                   text="Receive reminders and alerts"
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
               <Switch
                 value={preferences.notificationsEnabled}
-                onValueChange={(value) => updatePreferences({ notificationsEnabled: value })}
-                trackColor={{ false: colors.background.tertiary, true: colors.primary[500] }}
+                onValueChange={value => updatePreferences({notificationsEnabled: value})}
+                trackColor={{false: colors.background.tertiary, true: colors.primary[500]}}
                 thumbColor="#ffffff"
               />
             </View>
@@ -77,8 +78,13 @@ export function NotificationSettingsScreen(): React.JSX.Element {
         </View>
 
         {/* Reminder Types */}
-        <View style={[styles.sectionContainer, { opacity: preferences.notificationsEnabled ? 1 : 0.5 }]}>
-          <TextDisplay text="REMINDER TYPES" style={[styles.sectionTitle, { color: colors.text.tertiary }]} />
+        <View
+          style={[styles.sectionContainer, {opacity: preferences.notificationsEnabled ? 1 : 0.5}]}
+        >
+          <TextDisplay
+            text="REMINDER TYPES"
+            style={[styles.sectionTitle, {color: colors.text.tertiary}]}
+          />
           <View style={[styles.section, dynamicStyles.section]}>
             <View style={styles.row}>
               <TextDisplay text="📖" style={styles.rowIcon} />
@@ -86,54 +92,60 @@ export function NotificationSettingsScreen(): React.JSX.Element {
                 <TextDisplay text="Daily Reading" style={[styles.rowLabel, dynamicStyles.label]} />
                 <TextDisplay
                   text="Reminder to reach your daily goal"
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
               <Switch
                 value={readingReminder}
                 onValueChange={setReadingReminder}
                 disabled={!preferences.notificationsEnabled}
-                trackColor={{ false: colors.background.tertiary, true: colors.primary[500] }}
+                trackColor={{false: colors.background.tertiary, true: colors.primary[500]}}
                 thumbColor="#ffffff"
               />
             </View>
 
-            <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+            <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
             <View style={styles.row}>
               <TextDisplay text="🎴" style={styles.rowIcon} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Vocabulary Review" style={[styles.rowLabel, dynamicStyles.label]} />
+                <TextDisplay
+                  text="Vocabulary Review"
+                  style={[styles.rowLabel, dynamicStyles.label]}
+                />
                 <TextDisplay
                   text="Reminder when cards are due for review"
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
               <Switch
                 value={reviewReminder}
                 onValueChange={setReviewReminder}
                 disabled={!preferences.notificationsEnabled}
-                trackColor={{ false: colors.background.tertiary, true: colors.primary[500] }}
+                trackColor={{false: colors.background.tertiary, true: colors.primary[500]}}
                 thumbColor="#ffffff"
               />
             </View>
 
-            <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+            <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
             <View style={styles.row}>
               <TextDisplay text="🔥" style={styles.rowIcon} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Streak Protection" style={[styles.rowLabel, dynamicStyles.label]} />
+                <TextDisplay
+                  text="Streak Protection"
+                  style={[styles.rowLabel, dynamicStyles.label]}
+                />
                 <TextDisplay
                   text="Reminder to maintain your reading streak"
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
               <Switch
                 value={streakReminder}
                 onValueChange={setStreakReminder}
                 disabled={!preferences.notificationsEnabled}
-                trackColor={{ false: colors.background.tertiary, true: colors.primary[500] }}
+                trackColor={{false: colors.background.tertiary, true: colors.primary[500]}}
                 thumbColor="#ffffff"
               />
             </View>
@@ -141,8 +153,10 @@ export function NotificationSettingsScreen(): React.JSX.Element {
         </View>
 
         {/* Timing */}
-        <View style={[styles.sectionContainer, { opacity: preferences.notificationsEnabled ? 1 : 0.5 }]}>
-          <TextDisplay text="TIMING" style={[styles.sectionTitle, { color: colors.text.tertiary }]} />
+        <View
+          style={[styles.sectionContainer, {opacity: preferences.notificationsEnabled ? 1 : 0.5}]}
+        >
+          <TextDisplay text="TIMING" style={[styles.sectionTitle, {color: colors.text.tertiary}]} />
           <View style={[styles.section, dynamicStyles.section]}>
             <TouchableOpacity
               style={styles.row}
@@ -156,12 +170,12 @@ export function NotificationSettingsScreen(): React.JSX.Element {
                 <TextDisplay text="Reminder Time" style={[styles.rowLabel, dynamicStyles.label]} />
                 <TextDisplay
                   text="When to send daily reminders"
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
               <TextDisplay
                 text={reminderTime}
-                style={[styles.timeValue, { color: colors.primary[500] }]}
+                style={[styles.timeValue, {color: colors.primary[500]}]}
               />
             </TouchableOpacity>
           </View>
@@ -171,7 +185,7 @@ export function NotificationSettingsScreen(): React.JSX.Element {
         <View style={styles.infoContainer}>
           <TextDisplay
             text="💡 Notifications help you build consistent learning habits. You can customize or disable them at any time."
-            style={[styles.infoText, { color: colors.text.tertiary }]}
+            style={[styles.infoText, {color: colors.text.tertiary}]}
           />
         </View>
       </ScrollView>
@@ -180,8 +194,8 @@ export function NotificationSettingsScreen(): React.JSX.Element {
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 

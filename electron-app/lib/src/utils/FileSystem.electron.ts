@@ -23,7 +23,9 @@ export async function readFileAsBase64(filePath: string): Promise<string> {
       }
       return btoa(binary);
     } catch (error) {
-      throw new Error(`Failed to read file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to read file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -54,7 +56,9 @@ export async function readFileAsArrayBuffer(filePath: string): Promise<ArrayBuff
     try {
       return await (window as any).electronAPI.readFile(filePath);
     } catch (error) {
-      throw new Error(`Failed to read file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to read file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -75,7 +79,9 @@ export async function readFileAsText(filePath: string): Promise<string> {
     try {
       return await (window as any).electronAPI.readFileText(filePath);
     } catch (error) {
-      throw new Error(`Failed to read file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to read file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -90,18 +96,26 @@ export async function readFileAsText(filePath: string): Promise<string> {
 /**
  * Write file
  */
-export async function writeFile(filePath: string, content: string | ArrayBuffer, encoding: 'utf8' | 'base64' = 'utf8'): Promise<void> {
+export async function writeFile(
+  filePath: string,
+  content: string | ArrayBuffer,
+  encoding: 'utf8' | 'base64' = 'utf8'
+): Promise<void> {
   // Check if we're in Electron
   if (typeof window !== 'undefined' && (window as any).electronAPI) {
     try {
       await (window as any).electronAPI.writeFile(filePath, content);
       return;
     } catch (error) {
-      throw new Error(`Failed to write file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to write file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
-  throw new Error(`Cannot write file: ${filePath}. No file system access available (Electron API only).`);
+  throw new Error(
+    `Cannot write file: ${filePath}. No file system access available (Electron API only).`
+  );
 }
 
 /**
@@ -123,7 +137,7 @@ export async function fileExists(filePath: string): Promise<boolean> {
 /**
  * Create directory
  */
-export async function mkdir(dirPath: string, options?: { recursive?: boolean }): Promise<void> {
+export async function mkdir(dirPath: string, options?: {recursive?: boolean}): Promise<void> {
   // Check if we're in Electron
   if (typeof window !== 'undefined' && (window as any).electronAPI) {
     // Electron API doesn't have mkdir, but writeFile will create directories
@@ -143,7 +157,9 @@ export async function mkdir(dirPath: string, options?: { recursive?: boolean }):
     }
   }
 
-  throw new Error(`Cannot create directory: ${dirPath}. No file system access available (Electron API only).`);
+  throw new Error(
+    `Cannot create directory: ${dirPath}. No file system access available (Electron API only).`
+  );
 }
 
 /**
@@ -164,7 +180,16 @@ export async function getAppDataPath(): Promise<string> {
 /**
  * Read directory contents
  */
-export async function readDir(dirPath: string): Promise<Array<{name: string; path: string; isFile: () => boolean; isDirectory: () => boolean; size: number; mtime: Date}>> {
+export async function readDir(dirPath: string): Promise<
+  Array<{
+    name: string;
+    path: string;
+    isFile: () => boolean;
+    isDirectory: () => boolean;
+    size: number;
+    mtime: Date;
+  }>
+> {
   // Check if we're in Electron
   if (typeof window !== 'undefined' && (window as any).electronAPI) {
     // Electron doesn't have a direct readDir API, we'll need to add it to preload.js
@@ -192,9 +217,13 @@ export async function unlink(filePath: string): Promise<void> {
       await (window as any).electronAPI.unlink(filePath);
       return;
     } catch (error) {
-      throw new Error(`Failed to delete file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to delete file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
-  throw new Error(`Cannot delete file: ${filePath}. No file system access available (Electron API only).`);
+  throw new Error(
+    `Cannot delete file: ${filePath}. No file system access available (Electron API only).`
+  );
 }

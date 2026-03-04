@@ -8,9 +8,12 @@
  */
 
 import React from 'react';
-import {render, screen, fireEvent, waitFor} from '../test-utils';
+
 import {VocabularyScreen} from '@screens/Vocabulary/VocabularyScreen';
+
 import {useVocabularyStore} from '@stores/vocabularyStore';
+
+import {render, screen, fireEvent, waitFor} from '../test-utils';
 
 import type {VocabularyItem} from '@/types';
 

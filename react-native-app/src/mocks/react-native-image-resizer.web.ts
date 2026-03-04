@@ -25,11 +25,14 @@ export function createResizedImage(
   rotation?: number,
   outputPath?: string,
   keepMeta?: boolean,
-  options?: { mode?: string },
+  options?: {mode?: string}
 ): Promise<ImageResizerResult> {
   return Promise.resolve({
     path: path,
-    uri: path.startsWith('file://') || path.startsWith('http') || path.startsWith('data:') ? path : path,
+    uri:
+      path.startsWith('file://') || path.startsWith('http') || path.startsWith('data:')
+        ? path
+        : path,
     width,
     height,
   });

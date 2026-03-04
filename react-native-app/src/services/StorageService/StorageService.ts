@@ -12,6 +12,11 @@
  * - Preferences stored in SQLite preferences table (key/value JSON)
  */
 
+import {databaseService} from './DatabaseService';
+import {bookRepository} from './repositories/BookRepository';
+import {sessionRepository} from './repositories/SessionRepository';
+import {vocabularyRepository} from './repositories/VocabularyRepository';
+
 import type {
   Book,
   VocabularyItem,
@@ -19,11 +24,6 @@ import type {
   ReadingStats,
   UserPreferences,
 } from '@types/index';
-
-import {databaseService} from './DatabaseService';
-import {bookRepository} from './repositories/BookRepository';
-import {vocabularyRepository} from './repositories/VocabularyRepository';
-import {sessionRepository} from './repositories/SessionRepository';
 
 const PREFERENCES_KEY = 'user_preferences';
 
@@ -83,10 +83,7 @@ export class StorageService {
     await vocabularyRepository.add(item);
   }
 
-  static async updateVocabulary(
-    itemId: string,
-    updates: Partial<VocabularyItem>,
-  ): Promise<void> {
+  static async updateVocabulary(itemId: string, updates: Partial<VocabularyItem>): Promise<void> {
     await this.initialize();
     await vocabularyRepository.update(itemId, updates);
   }
@@ -117,7 +114,7 @@ export class StorageService {
 
   static async endSession(
     sessionId: string,
-    stats: {pagesRead: number; wordsRevealed: number; wordsSaved: number},
+    stats: {pagesRead: number; wordsRevealed: number; wordsSaved: number}
   ): Promise<void> {
     await this.initialize();
     await sessionRepository.endSession(sessionId, {
@@ -142,7 +139,7 @@ export class StorageService {
     const now = Date.now();
     await databaseService.execute(
       `INSERT OR REPLACE INTO preferences (key, value, updated_at) VALUES (?, ?, ?)`,
-      [PREFERENCES_KEY, value, now],
+      [PREFERENCES_KEY, value, now]
     );
   }
 
@@ -150,7 +147,7 @@ export class StorageService {
     await this.initialize();
     const row = await databaseService.getOne<{value: string}>(
       'SELECT value FROM preferences WHERE key = ?',
-      [PREFERENCES_KEY],
+      [PREFERENCES_KEY]
     );
     if (!row?.value) return null;
     try {

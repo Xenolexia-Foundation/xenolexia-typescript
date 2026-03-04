@@ -11,18 +11,16 @@
  * React Native Image.getSize for dimensions.
  */
 
-import { Image } from 'react-native';
-import RNFS from 'react-native-fs';
+import {Image} from 'react-native';
+
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 
-import type {
-  ImageDimensions,
-  ResizeOptions,
-  ThumbnailOptions,
-  ThumbnailSize,
-} from './types';
-import {THUMBNAIL_SIZES} from './types';
+import RNFS from 'react-native-fs';
+
 import {ImageCache} from './ImageCache';
+import {THUMBNAIL_SIZES} from './types';
+
+import type {ImageDimensions, ResizeOptions, ThumbnailOptions, ThumbnailSize} from './types';
 
 // ============================================================================
 // Constants
@@ -79,10 +77,7 @@ export class ThumbnailGenerator {
   /**
    * Generate thumbnail for an image
    */
-  async generateThumbnail(
-    sourcePath: string,
-    options: ThumbnailOptions = {},
-  ): Promise<string> {
+  async generateThumbnail(sourcePath: string, options: ThumbnailOptions = {}): Promise<string> {
     await this.ensureInitialized();
 
     const {size = 'medium', quality = 80, format = 'jpeg'} = options;
@@ -131,10 +126,7 @@ export class ThumbnailGenerator {
   /**
    * Get thumbnail path if it exists
    */
-  async getThumbnail(
-    sourcePath: string,
-    size: ThumbnailSize = 'medium',
-  ): Promise<string | null> {
+  async getThumbnail(sourcePath: string, size: ThumbnailSize = 'medium'): Promise<string | null> {
     await this.ensureInitialized();
 
     const cacheKey = this.generateCacheKey(sourcePath, size);
@@ -158,17 +150,8 @@ export class ThumbnailGenerator {
   /**
    * Resize an image using @bam.tech/react-native-image-resizer (FOSS).
    */
-  private async resizeImage(
-    sourcePath: string,
-    options: ResizeOptions,
-  ): Promise<string> {
-    const {
-      width = 0,
-      height = 0,
-      format = 'jpeg',
-      quality = 80,
-      mode = 'cover',
-    } = options;
+  private async resizeImage(sourcePath: string, options: ResizeOptions): Promise<string> {
+    const {width = 0, height = 0, format = 'jpeg', quality = 80, mode = 'cover'} = options;
 
     const extension = format === 'png' ? '.png' : '.jpg';
     const outputPath = `${this.thumbnailsDir}/temp_${Date.now()}${extension}`;
@@ -186,7 +169,7 @@ export class ThumbnailGenerator {
       0,
       outputPath,
       false,
-      { mode },
+      {mode}
     );
 
     return result.path ?? result.uri ?? outputPath;
@@ -203,14 +186,14 @@ export class ThumbnailGenerator {
       }
 
       const uri = imagePath.startsWith('file://') ? imagePath : `file://${imagePath}`;
-      return new Promise<ImageDimensions | null>((resolve) => {
+      return new Promise<ImageDimensions | null>(resolve => {
         Image.getSize(
           uri,
-          (width, height) => resolve({ width, height }),
+          (width, height) => resolve({width, height}),
           () => {
             console.warn('Failed to get image dimensions for:', imagePath);
             resolve(null);
-          },
+          }
         );
       });
     } catch (error) {
@@ -225,7 +208,7 @@ export class ThumbnailGenerator {
   calculateScaledDimensions(
     original: ImageDimensions,
     target: ImageDimensions,
-    mode: 'contain' | 'cover' = 'contain',
+    mode: 'contain' | 'cover' = 'contain'
   ): ImageDimensions {
     const aspectRatio = original.width / original.height;
     const targetAspectRatio = target.width / target.height;

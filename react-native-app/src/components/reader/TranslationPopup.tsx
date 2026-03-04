@@ -16,7 +16,8 @@
  * - Smooth animations
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef} from 'react';
+
 import {
   View,
   Text,
@@ -28,8 +29,10 @@ import {
   Animated,
   Platform,
 } from 'react-native';
-import type { ForeignWordData } from '@types/index';
-import { useTheme } from '@theme/index';
+
+import {useTheme} from '@theme/index';
+
+import type {ForeignWordData} from '@types/index';
 
 // ============================================================================
 // Types
@@ -48,7 +51,7 @@ interface TranslationPopupProps {
 // Component
 // ============================================================================
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const {width: SCREEN_WIDTH} = Dimensions.get('window');
 
 export function TranslationPopup({
   word,
@@ -58,7 +61,7 @@ export function TranslationPopup({
   onKnewIt,
   isAlreadySaved = false,
 }: TranslationPopupProps): React.JSX.Element {
-  const { colors, isDark } = useTheme();
+  const {colors, isDark} = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
 
@@ -130,10 +133,10 @@ export function TranslationPopup({
     const parts = contextSentence.split(new RegExp(`(${word.foreignWord})`, 'gi'));
 
     return (
-      <Text style={[styles.contextText, { color: colors.text.secondary }]}>
+      <Text style={[styles.contextText, {color: colors.text.secondary}]}>
         {parts.map((part, index) =>
           part.toLowerCase() === word.foreignWord.toLowerCase() ? (
-            <Text key={index} style={[styles.contextHighlight, { color: colors.primary[500] }]}>
+            <Text key={index} style={[styles.contextHighlight, {color: colors.primary[500]}]}>
               {part}
             </Text>
           ) : (
@@ -146,15 +149,16 @@ export function TranslationPopup({
 
   return (
     <Modal transparent visible animationType="none" onRequestClose={handleDismiss}>
-      <Animated.View style={[styles.backdrop, { opacity: fadeAnim }]}>
+      <Animated.View style={[styles.backdrop, {opacity: fadeAnim}]}>
         <Pressable style={styles.backdropPressable} onPress={handleDismiss}>
           <Animated.View
             style={[
               styles.container,
               {
-                transform: [{ translateY: slideAnim }],
+                transform: [{translateY: slideAnim}],
               },
-            ]}>
+            ]}
+          >
             <Pressable
               style={[
                 styles.popup,
@@ -163,42 +167,43 @@ export function TranslationPopup({
                   borderColor: colors.border.primary,
                 },
               ]}
-              onPress={(e) => e.stopPropagation()}>
+              onPress={e => e.stopPropagation()}
+            >
               {/* Foreign Word */}
-              <Text style={[styles.foreignWord, { color: colors.primary[500] }]}>
+              <Text style={[styles.foreignWord, {color: colors.primary[500]}]}>
                 {word.foreignWord}
               </Text>
 
               {/* Pronunciation */}
               {word.wordEntry.pronunciation && (
-                <Text style={[styles.pronunciation, { color: colors.text.tertiary }]}>
+                <Text style={[styles.pronunciation, {color: colors.text.tertiary}]}>
                   [{word.wordEntry.pronunciation}]
                 </Text>
               )}
 
               {/* Part of Speech */}
               {word.wordEntry.partOfSpeech && word.wordEntry.partOfSpeech !== 'other' && (
-                <View style={[styles.posBadge, { backgroundColor: colors.background.secondary }]}>
-                  <Text style={[styles.posText, { color: colors.text.secondary }]}>
+                <View style={[styles.posBadge, {backgroundColor: colors.background.secondary}]}>
+                  <Text style={[styles.posText, {color: colors.text.secondary}]}>
                     {formatPartOfSpeech(word.wordEntry.partOfSpeech)}
                   </Text>
                 </View>
               )}
 
               {/* Divider */}
-              <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+              <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
               {/* Original Word */}
-              <Text style={[styles.originalWord, { color: colors.text.primary }]}>
+              <Text style={[styles.originalWord, {color: colors.text.primary}]}>
                 {word.originalWord}
               </Text>
 
               {/* Context Sentence */}
               {contextSentence && (
-                <View style={[styles.contextContainer, { backgroundColor: colors.background.secondary }]}>
-                  <Text style={[styles.contextLabel, { color: colors.text.tertiary }]}>
-                    Context:
-                  </Text>
+                <View
+                  style={[styles.contextContainer, {backgroundColor: colors.background.secondary}]}
+                >
+                  <Text style={[styles.contextLabel, {color: colors.text.tertiary}]}>Context:</Text>
                   {renderContextSentence()}
                 </View>
               )}
@@ -215,7 +220,8 @@ export function TranslationPopup({
                           ? '#f59e0b'
                           : '#ef4444',
                   },
-                ]}>
+                ]}
+              >
                 <Text style={styles.levelText}>
                   {word.wordEntry.proficiencyLevel.charAt(0).toUpperCase() +
                     word.wordEntry.proficiencyLevel.slice(1)}
@@ -228,11 +234,12 @@ export function TranslationPopup({
                   style={[
                     styles.actionButton,
                     styles.knewButton,
-                    { backgroundColor: colors.background.secondary },
+                    {backgroundColor: colors.background.secondary},
                   ]}
                   onPress={handleKnewIt}
-                  activeOpacity={0.7}>
-                  <Text style={[styles.knewButtonText, { color: colors.text.secondary }]}>
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.knewButtonText, {color: colors.text.secondary}]}>
                     ✓ I knew this
                   </Text>
                 </TouchableOpacity>
@@ -249,14 +256,16 @@ export function TranslationPopup({
                   ]}
                   onPress={handleSave}
                   disabled={isAlreadySaved}
-                  activeOpacity={0.7}>
+                  activeOpacity={0.7}
+                >
                   <Text
                     style={[
                       styles.saveButtonText,
                       {
                         color: isAlreadySaved ? colors.text.tertiary : colors.text.inverted,
                       },
-                    ]}>
+                    ]}
+                  >
                     {isAlreadySaved ? '✓ Saved' : '+ Save word'}
                   </Text>
                 </TouchableOpacity>
@@ -274,29 +283,97 @@ export function TranslationPopup({
 // ============================================================================
 
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  backdropPressable: {
+  actionButton: {
+    alignItems: 'center',
+    borderRadius: 12,
     flex: 1,
     justifyContent: 'center',
+    paddingVertical: 14,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    flex: 1,
+  },
+  backdropPressable: {
     alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
     padding: 20,
   },
   container: {
-    width: '100%',
     maxWidth: 340,
+    width: '100%',
+  },
+  contextContainer: {
+    borderRadius: 12,
+    marginBottom: 16,
+    padding: 12,
+    width: '100%',
+  },
+  contextHighlight: {
+    fontStyle: 'normal',
+    fontWeight: '600',
+  },
+  contextLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    marginBottom: 6,
+    textTransform: 'uppercase',
+  },
+  contextText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    lineHeight: 20,
+  },
+  divider: {
+    borderRadius: 1,
+    height: 2,
+    marginBottom: 16,
+    width: 60,
+  },
+  foreignWord: {
+    fontSize: 32,
+    fontWeight: '700',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  knewButton: {},
+  knewButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  levelBadge: {
+    borderRadius: 12,
+    marginBottom: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  levelText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  originalWord: {
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 16,
+    textAlign: 'center',
   },
   popup: {
-    borderRadius: 20,
-    padding: 24,
     alignItems: 'center',
+    borderRadius: 20,
     borderWidth: 1,
+    padding: 24,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
+        shadowOffset: {width: 0, height: 10},
         shadowOpacity: 0.25,
         shadowRadius: 20,
       },
@@ -305,89 +382,21 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  foreignWord: {
-    fontSize: 32,
-    fontWeight: '700',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  pronunciation: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    marginBottom: 8,
-  },
   posBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
     borderRadius: 12,
     marginBottom: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
   posText: {
     fontSize: 12,
     fontWeight: '500',
     textTransform: 'lowercase',
   },
-  divider: {
-    width: 60,
-    height: 2,
-    borderRadius: 1,
-    marginBottom: 16,
-  },
-  originalWord: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  contextContainer: {
-    width: '100%',
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: 16,
-  },
-  contextLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 6,
-  },
-  contextText: {
-    fontSize: 14,
-    lineHeight: 20,
+  pronunciation: {
+    fontSize: 16,
     fontStyle: 'italic',
-  },
-  contextHighlight: {
-    fontWeight: '600',
-    fontStyle: 'normal',
-  },
-  levelBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  levelText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-    width: '100%',
-  },
-  actionButton: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  knewButton: {},
-  knewButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
+    marginBottom: 8,
   },
   saveButton: {},
   saveButtonText: {

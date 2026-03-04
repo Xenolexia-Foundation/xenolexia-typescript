@@ -7,18 +7,25 @@
  * Electron Import Service - Wraps ImportService for Electron with file dialog
  */
 
-import { getCore } from '@xenolexia/shared';
+import {getCore} from '@xenolexia/shared';
 import {
   BookParserService,
   MetadataExtractor,
   extractEPUBMetadata,
 } from '@xenolexia/shared/services/BookParser';
-import type {ImportProgress} from '@xenolexia/shared/services/ImportService';
-import {openFileDialog, readFileAsArrayBuffer, getAppDataPath, writeFileToAppData} from './ElectronFileService';
 import {useLibraryStore} from '@xenolexia/shared/stores/libraryStore';
 import {useUserStore} from '@xenolexia/shared/stores/userStore';
-import type {Book} from '@xenolexia/shared/types';
 import {v4 as uuidv4} from 'uuid';
+
+import {
+  openFileDialog,
+  readFileAsArrayBuffer,
+  getAppDataPath,
+  writeFileToAppData,
+} from './ElectronFileService';
+
+import type {ImportProgress} from '@xenolexia/shared/services/ImportService';
+import type {Book} from '@xenolexia/shared/types';
 
 /**
  * Select and import a book file using Electron's native file dialog
@@ -46,7 +53,7 @@ export async function importBookFromFile(
     // Get books directory
     const booksDir = await getAppDataPath();
     const booksPath = `${booksDir}/books`;
-    
+
     // Ensure books directory exists (if Electron API available)
     if (window.electronAPI) {
       try {
@@ -130,8 +137,12 @@ export async function importBookFromFile(
     }
 
     // Determine format from extension (remove leading dot)
-    const format = fileExtension.toLowerCase() === '.epub' ? 'epub' :
-                   fileExtension.toLowerCase() === '.mobi' ? 'mobi' : 'txt';
+    const format =
+      fileExtension.toLowerCase() === '.epub'
+        ? 'epub'
+        : fileExtension.toLowerCase() === '.mobi'
+          ? 'mobi'
+          : 'txt';
 
     // Use default language and reader settings from preferences (Settings / Onboarding)
     const preferences = useUserStore.getState().preferences;

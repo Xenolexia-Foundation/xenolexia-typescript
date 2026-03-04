@@ -9,6 +9,7 @@
  */
 
 import React, {forwardRef, useImperativeHandle, useRef} from 'react';
+
 import {View, StyleProp, ViewStyle} from 'react-native';
 
 export interface WebViewMessageEvent {
@@ -41,24 +42,14 @@ export interface WebViewRef {
 }
 
 const WebView = forwardRef<WebViewRef, WebViewProps>((props, ref) => {
-  const {
-    source,
-    style,
-    onMessage,
-    onLoad,
-    onLoadEnd,
-    injectedJavaScript,
-  } = props;
+  const {source, style, onMessage, onLoad, onLoadEnd, injectedJavaScript} = props;
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useImperativeHandle(ref, () => ({
     injectJavaScript: (script: string) => {
       try {
-        iframeRef.current?.contentWindow?.postMessage(
-          {type: 'injectJS', script},
-          '*',
-        );
+        iframeRef.current?.contentWindow?.postMessage({type: 'injectJS', script}, '*');
       } catch (e) {
         console.warn('Failed to inject JavaScript:', e);
       }

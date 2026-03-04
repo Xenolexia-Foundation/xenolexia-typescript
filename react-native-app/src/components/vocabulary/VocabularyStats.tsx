@@ -8,13 +8,10 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
 
-import { useTheme } from '@theme/index';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
+
+import {useTheme} from '@theme/index';
 
 // ============================================================================
 // Types
@@ -45,27 +42,27 @@ export function VocabularyStats({
   onStartReview,
   onViewStats,
 }: VocabularyStatsProps): React.JSX.Element {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
 
   // Calculate percentages for progress bar
   const getPercentage = (count: number) => (total > 0 ? (count / total) * 100 : 0);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background.secondary }]}>
+    <View style={[styles.container, {backgroundColor: colors.background.secondary}]}>
       {/* Progress Bar */}
       <View style={styles.progressSection}>
         <View style={styles.progressHeader}>
           <TextDisplay
             text="Learning Progress"
-            style={[styles.sectionTitle, { color: colors.text.secondary }]}
+            style={[styles.sectionTitle, {color: colors.text.secondary}]}
           />
           <TextDisplay
             text={`${total} words`}
-            style={[styles.totalCount, { color: colors.text.tertiary }]}
+            style={[styles.totalCount, {color: colors.text.tertiary}]}
           />
         </View>
 
-        <View style={[styles.progressBar, { backgroundColor: colors.background.tertiary }]}>
+        <View style={[styles.progressBar, {backgroundColor: colors.background.tertiary}]}>
           {/* Learned */}
           <View
             style={[
@@ -121,35 +118,26 @@ export function VocabularyStats({
       <View style={styles.actions}>
         {dueCount > 0 && onStartReview && (
           <TouchableOpacity
-            style={[styles.reviewButton, { backgroundColor: colors.primary[500] }]}
+            style={[styles.reviewButton, {backgroundColor: colors.primary[500]}]}
             onPress={onStartReview}
             activeOpacity={0.8}
           >
             <TextDisplay text="🎴" style={styles.reviewButtonIcon} />
             <View style={styles.reviewButtonContent}>
-              <TextDisplay
-                text="Start Review"
-                style={styles.reviewButtonText}
-              />
-              <TextDisplay
-                text={`${dueCount} cards due`}
-                style={styles.reviewButtonSubtext}
-              />
+              <TextDisplay text="Start Review" style={styles.reviewButtonText} />
+              <TextDisplay text={`${dueCount} cards due`} style={styles.reviewButtonSubtext} />
             </View>
-            <View style={[styles.dueBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-              <TextDisplay
-                text={dueCount.toString()}
-                style={styles.dueBadgeText}
-              />
+            <View style={[styles.dueBadge, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              <TextDisplay text={dueCount.toString()} style={styles.dueBadgeText} />
             </View>
           </TouchableOpacity>
         )}
 
         {dueCount === 0 && total > 0 && (
-          <View style={[styles.allCaughtUp, { backgroundColor: '#10b981' + '20' }]}>
+          <View style={[styles.allCaughtUp, {backgroundColor: '#10b981' + '20'}]}>
             <TextDisplay
               text="🎉 All caught up! No cards due for review."
-              style={[styles.allCaughtUpText, { color: '#10b981' }]}
+              style={[styles.allCaughtUpText, {color: '#10b981'}]}
             />
           </View>
         )}
@@ -159,26 +147,18 @@ export function VocabularyStats({
 }
 
 // Legend Item sub-component
-function LegendItem({
-  color,
-  label,
-  count,
-}: {
-  color: string;
-  label: string;
-  count: number;
-}) {
+function LegendItem({color, label, count}: {color: string; label: string; count: number}) {
   return (
     <View style={styles.legendItem}>
-      <View style={[styles.legendDot, { backgroundColor: color }]} />
+      <View style={[styles.legendDot, {backgroundColor: color}]} />
       <TextDisplay text={`${label}: ${count}`} style={styles.legendText} />
     </View>
   );
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 
@@ -201,50 +181,41 @@ export function VocabularyStatsHeader({
   onStartReview,
   onExport,
 }: VocabularyStatsHeaderProps): React.JSX.Element {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
 
   return (
-    <View style={[styles.headerContainer, { backgroundColor: colors.background.secondary }]}>
+    <View style={[styles.headerContainer, {backgroundColor: colors.background.secondary}]}>
       {/* Stats Row */}
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <TextDisplay
             text={total.toString()}
-            style={[styles.statValue, { color: colors.text.primary }]}
+            style={[styles.statValue, {color: colors.text.primary}]}
           />
-          <TextDisplay
-            text="Total"
-            style={[styles.statLabel, { color: colors.text.tertiary }]}
-          />
+          <TextDisplay text="Total" style={[styles.statLabel, {color: colors.text.tertiary}]} />
         </View>
 
-        <View style={[styles.statDivider, { backgroundColor: colors.border.secondary }]} />
+        <View style={[styles.statDivider, {backgroundColor: colors.border.secondary}]} />
 
         <View style={styles.statItem}>
           <TextDisplay
             text={learnedCount.toString()}
-            style={[styles.statValue, { color: '#10b981' }]}
+            style={[styles.statValue, {color: '#10b981'}]}
           />
-          <TextDisplay
-            text="Mastered"
-            style={[styles.statLabel, { color: colors.text.tertiary }]}
-          />
+          <TextDisplay text="Mastered" style={[styles.statLabel, {color: colors.text.tertiary}]} />
         </View>
 
-        <View style={[styles.statDivider, { backgroundColor: colors.border.secondary }]} />
+        <View style={[styles.statDivider, {backgroundColor: colors.border.secondary}]} />
 
         <View style={styles.statItem}>
           <TextDisplay
             text={dueCount.toString()}
             style={[
               styles.statValue,
-              { color: dueCount > 0 ? colors.primary[500] : colors.text.tertiary },
+              {color: dueCount > 0 ? colors.primary[500] : colors.text.tertiary},
             ]}
           />
-          <TextDisplay
-            text="Due"
-            style={[styles.statLabel, { color: colors.text.tertiary }]}
-          />
+          <TextDisplay text="Due" style={[styles.statLabel, {color: colors.text.tertiary}]} />
         </View>
       </View>
 
@@ -252,26 +223,30 @@ export function VocabularyStatsHeader({
       <View style={styles.headerActions}>
         {onExport && (
           <TouchableOpacity
-            style={[styles.headerButton, { borderColor: colors.border.primary }]}
+            style={[styles.headerButton, {borderColor: colors.border.primary}]}
             onPress={onExport}
           >
             <TextDisplay text="📤" style={styles.headerButtonIcon} />
             <TextDisplay
               text="Export"
-              style={[styles.headerButtonText, { color: colors.text.primary }]}
+              style={[styles.headerButtonText, {color: colors.text.primary}]}
             />
           </TouchableOpacity>
         )}
 
         {onStartReview && dueCount > 0 && (
           <TouchableOpacity
-            style={[styles.headerButton, styles.reviewHeaderButton, { backgroundColor: colors.primary[500] }]}
+            style={[
+              styles.headerButton,
+              styles.reviewHeaderButton,
+              {backgroundColor: colors.primary[500]},
+            ]}
             onPress={onStartReview}
           >
             <TextDisplay text="🎴" style={styles.headerButtonIcon} />
             <TextDisplay
               text={`Review (${dueCount})`}
-              style={[styles.headerButtonText, { color: '#ffffff' }]}
+              style={[styles.headerButtonText, {color: '#ffffff'}]}
             />
           </TouchableOpacity>
         )}

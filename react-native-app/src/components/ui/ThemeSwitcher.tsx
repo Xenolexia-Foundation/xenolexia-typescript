@@ -12,10 +12,11 @@ import React from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 
 import {useTheme, useColors} from '@/theme/ThemeProvider';
-import type {ReaderTheme, ThemeMode} from '@/theme/themes';
 import {spacing, borderRadius} from '@/theme/tokens';
 
 import {Text} from './Text';
+
+import type {ReaderTheme, ThemeMode} from '@/theme/themes';
 
 // ============================================================================
 // Types

@@ -7,10 +7,13 @@
  * Test Utilities - Common testing patterns and helpers
  */
 
-import React, { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import React, {ReactElement} from 'react';
+
+import {render, RenderOptions} from '@testing-library/react-native';
+
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+
+import {NavigationContainer} from '@react-navigation/native';
 
 // ============================================================================
 // Test Wrapper
@@ -23,17 +26,15 @@ interface WrapperProps {
 /**
  * AllProviders wraps components with all necessary providers for testing
  */
-function AllProviders({ children }: WrapperProps): React.JSX.Element {
+function AllProviders({children}: WrapperProps): React.JSX.Element {
   return (
     <SafeAreaProvider
       initialMetrics={{
-        frame: { x: 0, y: 0, width: 375, height: 812 },
-        insets: { top: 47, left: 0, right: 0, bottom: 34 },
+        frame: {x: 0, y: 0, width: 375, height: 812},
+        insets: {top: 47, left: 0, right: 0, bottom: 34},
       }}
     >
-      <NavigationContainer>
-        {children}
-      </NavigationContainer>
+      <NavigationContainer>{children}</NavigationContainer>
     </SafeAreaProvider>
   );
 }
@@ -41,11 +42,8 @@ function AllProviders({ children }: WrapperProps): React.JSX.Element {
 /**
  * Custom render function that includes all providers
  */
-function customRender(
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
-) {
-  return render(ui, { wrapper: AllProviders, ...options });
+function customRender(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
+  return render(ui, {wrapper: AllProviders, ...options});
 }
 
 // ============================================================================
@@ -125,7 +123,7 @@ export function createMockReadingStats(overrides = {}): any {
  */
 export function createMockVocabularyList(count: number): any[] {
   const statuses = ['new', 'learning', 'review', 'learned'];
-  return Array.from({ length: count }, (_, i) =>
+  return Array.from({length: count}, (_, i) =>
     createMockVocabularyItem({
       id: `vocab-${i}`,
       sourceWord: `word${i}`,
@@ -139,7 +137,7 @@ export function createMockVocabularyList(count: number): any[] {
  * Generate a list of mock books
  */
 export function createMockBookList(count: number): any[] {
-  return Array.from({ length: count }, (_, i) =>
+  return Array.from({length: count}, (_, i) =>
     createMockBook({
       id: `book-${i}`,
       title: `Book ${i + 1}`,
@@ -236,7 +234,7 @@ export function createMockLibraryStore(overrides = {}) {
     error: null,
     isInitialized: true,
     currentFilter: null,
-    currentSort: { by: 'lastReadAt', order: 'desc' },
+    currentSort: {by: 'lastReadAt', order: 'desc'},
     addBook: jest.fn(),
     removeBook: jest.fn(),
     updateBook: jest.fn(),
@@ -295,33 +293,33 @@ export function createMockUserStore(overrides = {}) {
 export const SM2_TEST_CASES = [
   // First review - quality 0 (complete blackout)
   {
-    input: { quality: 0, easeFactor: 2.5, interval: 0, reviewCount: 0 },
-    expected: { easeFactor: 1.3, interval: 1, status: 'new' },
+    input: {quality: 0, easeFactor: 2.5, interval: 0, reviewCount: 0},
+    expected: {easeFactor: 1.3, interval: 1, status: 'new'},
   },
   // First review - quality 3 (correct with difficulty)
   {
-    input: { quality: 3, easeFactor: 2.5, interval: 0, reviewCount: 0 },
-    expected: { easeFactor: 2.36, interval: 1, status: 'learning' },
+    input: {quality: 3, easeFactor: 2.5, interval: 0, reviewCount: 0},
+    expected: {easeFactor: 2.36, interval: 1, status: 'learning'},
   },
   // First review - quality 5 (perfect response)
   {
-    input: { quality: 5, easeFactor: 2.5, interval: 0, reviewCount: 0 },
-    expected: { easeFactor: 2.6, interval: 1, status: 'learning' },
+    input: {quality: 5, easeFactor: 2.5, interval: 0, reviewCount: 0},
+    expected: {easeFactor: 2.6, interval: 1, status: 'learning'},
   },
   // Second review - quality 4 (correct with hesitation)
   {
-    input: { quality: 4, easeFactor: 2.5, interval: 1, reviewCount: 1 },
-    expected: { easeFactor: 2.5, interval: 6, status: 'review' },
+    input: {quality: 4, easeFactor: 2.5, interval: 1, reviewCount: 1},
+    expected: {easeFactor: 2.5, interval: 6, status: 'review'},
   },
   // Third+ review - quality 4
   {
-    input: { quality: 4, easeFactor: 2.5, interval: 6, reviewCount: 2 },
-    expected: { easeFactor: 2.5, interval: 15, status: 'review' },
+    input: {quality: 4, easeFactor: 2.5, interval: 6, reviewCount: 2},
+    expected: {easeFactor: 2.5, interval: 15, status: 'review'},
   },
   // Failed review
   {
-    input: { quality: 1, easeFactor: 2.5, interval: 10, reviewCount: 3 },
-    expected: { easeFactor: 1.66, interval: 1, status: 'learning' },
+    input: {quality: 1, easeFactor: 2.5, interval: 10, reviewCount: 3},
+    expected: {easeFactor: 1.66, interval: 1, status: 'learning'},
   },
 ];
 
@@ -330,4 +328,4 @@ export const SM2_TEST_CASES = [
 // ============================================================================
 
 export * from '@testing-library/react-native';
-export { customRender as render };
+export {customRender as render};

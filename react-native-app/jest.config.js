@@ -1,14 +1,14 @@
 module.exports = {
   preset: 'react-native',
-  
+
   // File extensions to consider
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  
+
   // Transform files
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },
-  
+
   // Module name mapping for path aliases
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -25,7 +25,7 @@ module.exports = {
     '^@navigation/(.*)$': '<rootDir>/src/navigation/$1',
     '^@theme(.*)$': '<rootDir>/src/theme$1',
   },
-  
+
   // Test patterns
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
   testPathIgnorePatterns: [
@@ -35,17 +35,12 @@ module.exports = {
     '/test-utils\\.(tsx?|jsx?)$',
     '/testUtils\\.(tsx?|jsx?)$',
   ],
-  
+
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  
+
   // Coverage
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/index.ts',
-    '!src/types/**',
-  ],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts', '!src/**/index.ts', '!src/types/**'],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
@@ -56,18 +51,18 @@ module.exports = {
       statements: 50,
     },
   },
-  
+
   // Mocking - transform these node_modules (some ship .js with TS syntax, e.g. react-native-fs)
   transformIgnorePatterns: [
     'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-reanimated|react-native-gesture-handler|react-native-screens|react-native-safe-area-context|@react-native-async-storage|react-native-fs)/)',
   ],
-  
+
   // Environment
   testEnvironment: 'node',
-  
+
   // Verbose output
   verbose: true,
-  
+
   // Clear mocks between tests
   clearMocks: true,
   resetMocks: true,

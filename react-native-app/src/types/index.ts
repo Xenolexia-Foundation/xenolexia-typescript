@@ -31,17 +31,17 @@ export type {
   UserPreferences,
   AppState,
 } from 'xenolexia-typescript';
-export { SUPPORTED_LANGUAGES, getLanguageInfo, getLanguageName } from 'xenolexia-typescript';
+export {SUPPORTED_LANGUAGES, getLanguageInfo, getLanguageName} from 'xenolexia-typescript';
 
 // ============================================================================
 // Navigation Types (React Native only)
 // ============================================================================
 
-import type { NavigatorScreenParams } from '@react-navigation/native';
+import type {NavigatorScreenParams} from '@react-navigation/native';
 
 export type MainTabsParamList = {
   Library: undefined;
-  Vocabulary: { filter?: 'all' | 'learning' | 'mastered' | 'new' };
+  Vocabulary: {filter?: 'all' | 'learning' | 'mastered' | 'new'};
   Statistics: undefined;
   Profile: undefined;
 };
@@ -49,11 +49,11 @@ export type MainTabsParamList = {
 export type RootStackParamList = {
   Onboarding: undefined;
   MainTabs: NavigatorScreenParams<MainTabsParamList> | undefined;
-  Reader: { bookId: string; initialLocation?: string };
-  BookDetail: { bookId: string };
-  BookDiscovery: { searchQuery?: string };
-  VocabularyDetail: { wordId: string };
-  VocabularyQuiz: { wordIds?: string[] };
+  Reader: {bookId: string; initialLocation?: string};
+  BookDetail: {bookId: string};
+  BookDiscovery: {searchQuery?: string};
+  VocabularyDetail: {wordId: string};
+  VocabularyQuiz: {wordIds?: string[]};
   Settings: undefined;
   LanguageSettings: undefined;
   ReaderSettings: undefined;

@@ -8,6 +8,7 @@
  */
 
 import {format} from 'date-fns';
+
 import type {VocabularyItem} from '@xenolexia/shared/types';
 
 export type ExportFormat = 'csv' | 'anki' | 'json';
@@ -33,18 +34,13 @@ export function generateExportContent(
   const opts = {...defaultOptions, ...options};
 
   if (formatType === 'csv') {
-    const headers = [
-      'source_word',
-      'target_word',
-      'source_language',
-      'target_language',
-    ];
+    const headers = ['source_word', 'target_word', 'source_language', 'target_language'];
     if (opts.includeContext) headers.push('context_sentence');
     if (opts.includeBookInfo) headers.push('book_title');
     if (opts.includeSRSData) {
       headers.push('status', 'review_count', 'ease_factor', 'interval', 'added_at');
     }
-    const rows = vocabulary.map((item) => {
+    const rows = vocabulary.map(item => {
       const row: string[] = [
         escapeCSV(item.sourceWord),
         escapeCSV(item.targetWord),
@@ -68,7 +64,7 @@ export function generateExportContent(
   }
 
   if (formatType === 'anki') {
-    const rows = vocabulary.map((item) => {
+    const rows = vocabulary.map(item => {
       const front = item.targetWord;
       let back = item.sourceWord;
       if (opts.includeContext && item.contextSentence) {
@@ -88,7 +84,7 @@ export function generateExportContent(
     exportedAt: new Date().toISOString(),
     itemCount: vocabulary.length,
     format: 'xenolexia-vocabulary-v1',
-    items: vocabulary.map((item) => {
+    items: vocabulary.map(item => {
       const exportItem: Record<string, unknown> = {
         sourceWord: item.sourceWord,
         targetWord: item.targetWord,

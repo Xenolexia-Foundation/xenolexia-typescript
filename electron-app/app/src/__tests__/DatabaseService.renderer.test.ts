@@ -11,27 +11,27 @@ const mockDbInvoke = jest.fn();
 
 beforeEach(() => {
   mockDbInvoke.mockReset();
-  (global as unknown as { window?: { electronAPI?: { dbInvoke: typeof mockDbInvoke } } }).window = {
-    electronAPI: { dbInvoke: mockDbInvoke },
+  (global as unknown as {window?: {electronAPI?: {dbInvoke: typeof mockDbInvoke}}}).window = {
+    electronAPI: {dbInvoke: mockDbInvoke},
   };
 });
 
 afterAll(() => {
-  delete (global as unknown as { window?: unknown }).window;
+  delete (global as unknown as {window?: unknown}).window;
 });
 
 describe('DatabaseService.renderer', () => {
   it('should forward initialize to dbInvoke', async () => {
     mockDbInvoke.mockResolvedValue(undefined);
-    const { databaseService } = require('../services/DatabaseService.renderer');
+    const {databaseService} = require('../services/DatabaseService.renderer');
     await databaseService.initialize();
     expect(mockDbInvoke).toHaveBeenCalledWith('initialize');
   });
 
   it('should forward getBookById and return result', async () => {
-    const mockBook = { id: 'b1', title: 'Test', author: 'Author' };
+    const mockBook = {id: 'b1', title: 'Test', author: 'Author'};
     mockDbInvoke.mockResolvedValue(mockBook);
-    const { databaseService } = require('../services/DatabaseService.renderer');
+    const {databaseService} = require('../services/DatabaseService.renderer');
     const result = await databaseService.getBookById('b1');
     expect(mockDbInvoke).toHaveBeenCalledWith('getBookById', 'b1');
     expect(result).toEqual(mockBook);
@@ -39,25 +39,41 @@ describe('DatabaseService.renderer', () => {
 
   it('should forward getBooks with options', async () => {
     mockDbInvoke.mockResolvedValue([]);
-    const { databaseService } = require('../services/DatabaseService.renderer');
-    await databaseService.getBooks({ sort: { by: 'title', order: 'asc' }, limit: 10 });
+    const {databaseService} = require('../services/DatabaseService.renderer');
+    await databaseService.getBooks({sort: {by: 'title', order: 'asc'}, limit: 10});
     expect(mockDbInvoke).toHaveBeenCalledWith('getBooks', {
-      sort: { by: 'title', order: 'asc' },
+      sort: {by: 'title', order: 'asc'},
       limit: 10,
     });
   });
 
   it('should forward addBook and not return value', async () => {
     mockDbInvoke.mockResolvedValue(undefined);
-    const { databaseService } = require('../services/DatabaseService.renderer');
-    const row = { id: 'b1', title: 'T', author: null, file_path: '/x', format: 'epub', added_at: 0, last_read_at: null, progress: 0, current_location: null, source_lang: 'en', target_lang: 'es', proficiency: 'intermediate', word_density: 0.3, cover_path: null, is_downloaded: 0 };
+    const {databaseService} = require('../services/DatabaseService.renderer');
+    const row = {
+      id: 'b1',
+      title: 'T',
+      author: null,
+      file_path: '/x',
+      format: 'epub',
+      added_at: 0,
+      last_read_at: null,
+      progress: 0,
+      current_location: null,
+      source_lang: 'en',
+      target_lang: 'es',
+      proficiency: 'intermediate',
+      word_density: 0.3,
+      cover_path: null,
+      is_downloaded: 0,
+    };
     await databaseService.addBook(row);
     expect(mockDbInvoke).toHaveBeenCalledWith('addBook', row);
   });
 
   it('should forward setPreference and getPreference', async () => {
     mockDbInvoke.mockResolvedValue(undefined);
-    const { databaseService } = require('../services/DatabaseService.renderer');
+    const {databaseService} = require('../services/DatabaseService.renderer');
     await databaseService.setPreference('key', 'value');
     expect(mockDbInvoke).toHaveBeenCalledWith('setPreference', 'key', 'value');
 
@@ -69,10 +85,10 @@ describe('DatabaseService.renderer', () => {
 
   it('should forward runTransaction with operations array', async () => {
     mockDbInvoke.mockResolvedValue(undefined);
-    const { databaseService } = require('../services/DatabaseService.renderer');
+    const {databaseService} = require('../services/DatabaseService.renderer');
     const ops = [
-      { method: 'deleteAllVocabulary', args: [] },
-      { method: 'deleteAllBooks', args: [] },
+      {method: 'deleteAllVocabulary', args: []},
+      {method: 'deleteAllBooks', args: []},
     ];
     await databaseService.runTransaction(ops);
     expect(mockDbInvoke).toHaveBeenCalledWith('runTransaction', ops);
@@ -90,7 +106,7 @@ describe('DatabaseService.renderer', () => {
       wordsSavedToday: 2,
     };
     mockDbInvoke.mockResolvedValue(mockStats);
-    const { databaseService } = require('../services/DatabaseService.renderer');
+    const {databaseService} = require('../services/DatabaseService.renderer');
     const result = await databaseService.getSessionStatistics();
     expect(mockDbInvoke).toHaveBeenCalledWith('getSessionStatistics');
     expect(result).toEqual(mockStats);
@@ -98,7 +114,7 @@ describe('DatabaseService.renderer', () => {
 
   it('should forward word list methods', async () => {
     mockDbInvoke.mockResolvedValue(null);
-    const { databaseService } = require('../services/DatabaseService.renderer');
+    const {databaseService} = require('../services/DatabaseService.renderer');
     await databaseService.getWordListEntry('hello', 'en', 'es');
     expect(mockDbInvoke).toHaveBeenCalledWith('getWordListEntry', 'hello', 'en', 'es');
 
@@ -109,12 +125,12 @@ describe('DatabaseService.renderer', () => {
   });
 
   it('isReady should return true', () => {
-    const { databaseService } = require('../services/DatabaseService.renderer');
+    const {databaseService} = require('../services/DatabaseService.renderer');
     expect(databaseService.isReady()).toBe(true);
   });
 
   it('getInstance should return same singleton', () => {
-    const { databaseService, DatabaseService } = require('../services/DatabaseService.renderer');
+    const {databaseService, DatabaseService} = require('../services/DatabaseService.renderer');
     const instance = DatabaseService.getInstance();
     expect(instance).toBe(databaseService);
   });

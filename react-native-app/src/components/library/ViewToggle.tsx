@@ -8,7 +8,9 @@
  */
 
 import React from 'react';
+
 import {View, TouchableOpacity, StyleSheet} from 'react-native';
+
 import Svg, {Path} from 'react-native-svg';
 
 import {useColors} from '@/theme';
@@ -62,11 +64,7 @@ function ListIcon({color, size = 20}: {color: string; size?: number}) {
 // Component
 // ============================================================================
 
-export function ViewToggle({
-  mode,
-  onChange,
-  size = 'md',
-}: ViewToggleProps): React.JSX.Element {
+export function ViewToggle({mode, onChange, size = 'md'}: ViewToggleProps): React.JSX.Element {
   const colors = useColors();
 
   const buttonSize = size === 'sm' ? 32 : 40;
@@ -83,10 +81,7 @@ export function ViewToggle({
         onPress={() => onChange('grid')}
         activeOpacity={0.7}
       >
-        <GridIcon
-          color={mode === 'grid' ? colors.primary : colors.textTertiary}
-          size={iconSize}
-        />
+        <GridIcon color={mode === 'grid' ? colors.primary : colors.textTertiary} size={iconSize} />
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -98,10 +93,7 @@ export function ViewToggle({
         onPress={() => onChange('list')}
         activeOpacity={0.7}
       >
-        <ListIcon
-          color={mode === 'list' ? colors.primary : colors.textTertiary}
-          size={iconSize}
-        />
+        <ListIcon color={mode === 'list' ? colors.primary : colors.textTertiary} size={iconSize} />
       </TouchableOpacity>
     </View>
   );

@@ -21,7 +21,7 @@ interface UseAsyncReturn<T, Args extends any[]> extends AsyncState<T> {
 }
 
 export function useAsync<T, Args extends any[] = []>(
-  asyncFunction: (...args: Args) => Promise<T>,
+  asyncFunction: (...args: Args) => Promise<T>
 ): UseAsyncReturn<T, Args> {
   const [state, setState] = useState<AsyncState<T>>({
     data: null,
@@ -43,7 +43,7 @@ export function useAsync<T, Args extends any[] = []>(
         return null;
       }
     },
-    [asyncFunction],
+    [asyncFunction]
   );
 
   const reset = useCallback(() => {

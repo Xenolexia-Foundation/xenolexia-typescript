@@ -8,8 +8,8 @@
  */
 
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
-import {Button} from '../components/ui';
+
+import {useBack} from '../hooks/useBack';
 import './AboutScreen.css';
 
 const APP_VERSION = '1.0.0';
@@ -37,7 +37,7 @@ const ACKNOWLEDGMENTS = [
 ];
 
 export function AboutScreen(): React.JSX.Element {
-  const navigate = useNavigate();
+  const goBack = useBack();
 
   const handleOpenLink = (url: string) => {
     if (window.electronAPI) {
@@ -53,7 +53,7 @@ export function AboutScreen(): React.JSX.Element {
   return (
     <div className="about-screen">
       <div className="about-header">
-        <button onClick={() => navigate(-1)} className="about-back-button">
+        <button onClick={goBack} className="about-back-button">
           ← Back
         </button>
         <h1>About Xenolexia</h1>
@@ -65,15 +65,18 @@ export function AboutScreen(): React.JSX.Element {
         <div className="about-app-info">
           <img src={LOGO_IMAGE} alt="Xenolexia" className="about-app-icon about-app-logo" />
           <h2 className="about-app-name">Xenolexia</h2>
-          <p className="about-app-version">Version {APP_VERSION} ({BUILD_NUMBER})</p>
+          <p className="about-app-version">
+            Version {APP_VERSION} ({BUILD_NUMBER})
+          </p>
           <p className="about-app-tagline">Learn languages through reading</p>
         </div>
 
         {/* Description */}
         <div className="about-description-card">
           <p className="about-description-text">
-            Xenolexia helps you learn foreign languages naturally by replacing words in the books you read. 
-            As you encounter words in context, you build vocabulary without traditional flashcard memorization.
+            Xenolexia helps you learn foreign languages naturally by replacing words in the books
+            you read. As you encounter words in context, you build vocabulary without traditional
+            flashcard memorization.
           </p>
         </div>
 
@@ -112,8 +115,10 @@ export function AboutScreen(): React.JSX.Element {
           <h3 className="about-section-title">ACKNOWLEDGMENTS</h3>
           <div className="about-section-card">
             <div className="about-acknowledge-content">
-              <p className="about-acknowledge-intro">Built with these amazing open source projects:</p>
-              {ACKNOWLEDGMENTS.map((item) => (
+              <p className="about-acknowledge-intro">
+                Built with these amazing open source projects:
+              </p>
+              {ACKNOWLEDGMENTS.map(item => (
                 <button
                   key={item.name}
                   className="about-acknowledge-item"

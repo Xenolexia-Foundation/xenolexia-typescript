@@ -19,7 +19,8 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { Language } from '@/types';
+
+import type {Language} from '@/types';
 
 // ============================================================================
 // Types
@@ -89,19 +90,19 @@ const LIBRETRANSLATE_MIRRORS = [
 /**
  * Maps our internal language codes to API-specific codes
  */
-const LANGUAGE_CODES: Record<Language, { iso639_1: string; name: string }> = {
-  en: { iso639_1: 'en', name: 'English' },
-  el: { iso639_1: 'el', name: 'Greek' },
-  es: { iso639_1: 'es', name: 'Spanish' },
-  fr: { iso639_1: 'fr', name: 'French' },
-  de: { iso639_1: 'de', name: 'German' },
-  it: { iso639_1: 'it', name: 'Italian' },
-  pt: { iso639_1: 'pt', name: 'Portuguese' },
-  ru: { iso639_1: 'ru', name: 'Russian' },
-  ja: { iso639_1: 'ja', name: 'Japanese' },
-  zh: { iso639_1: 'zh', name: 'Chinese' },
-  ko: { iso639_1: 'ko', name: 'Korean' },
-  ar: { iso639_1: 'ar', name: 'Arabic' },
+const LANGUAGE_CODES: Record<Language, {iso639_1: string; name: string}> = {
+  en: {iso639_1: 'en', name: 'English'},
+  el: {iso639_1: 'el', name: 'Greek'},
+  es: {iso639_1: 'es', name: 'Spanish'},
+  fr: {iso639_1: 'fr', name: 'French'},
+  de: {iso639_1: 'de', name: 'German'},
+  it: {iso639_1: 'it', name: 'Italian'},
+  pt: {iso639_1: 'pt', name: 'Portuguese'},
+  ru: {iso639_1: 'ru', name: 'Russian'},
+  ja: {iso639_1: 'ja', name: 'Japanese'},
+  zh: {iso639_1: 'zh', name: 'Chinese'},
+  ko: {iso639_1: 'ko', name: 'Korean'},
+  ar: {iso639_1: 'ar', name: 'Arabic'},
 };
 
 // ============================================================================
@@ -118,7 +119,7 @@ const RATE_LIMIT_PREFIX = '@xenolexia/rate_limit_';
 export class TranslationAPIService {
   private providers: TranslationAPIConfig[];
   private cache: Map<string, TranslationResult> = new Map();
-  private rateLimitCounters: Map<string, { count: number; resetTime: number }> = new Map();
+  private rateLimitCounters: Map<string, {count: number; resetTime: number}> = new Map();
   private currentMirrorIndex: number = 0;
 
   constructor(customProviders?: TranslationAPIConfig[]) {
@@ -137,7 +138,7 @@ export class TranslationAPIService {
     const cacheKey = this.getCacheKey(text, sourceLanguage, targetLanguage);
     const cached = await this.getFromCache(cacheKey);
     if (cached) {
-      return { ...cached, cached: true };
+      return {...cached, cached: true};
     }
 
     // Try each provider in order
@@ -213,7 +214,7 @@ export class TranslationAPIService {
       }
     }
 
-    return { translations, provider: usedProvider, failed };
+    return {translations, provider: usedProvider, failed};
   }
 
   /**
@@ -392,9 +393,7 @@ export class TranslationAPIService {
 
       const supported: Language[] = [];
       for (const lang of data) {
-        const match = Object.entries(LANGUAGE_CODES).find(
-          ([, v]) => v.iso639_1 === lang.code
-        );
+        const match = Object.entries(LANGUAGE_CODES).find(([, v]) => v.iso639_1 === lang.code);
         if (match) {
           supported.push(match[0] as Language);
         }
@@ -412,9 +411,7 @@ export class TranslationAPIService {
 
       const supported: Language[] = [];
       for (const lang of data.languages) {
-        const match = Object.entries(LANGUAGE_CODES).find(
-          ([, v]) => v.iso639_1 === lang.code
-        );
+        const match = Object.entries(LANGUAGE_CODES).find(([, v]) => v.iso639_1 === lang.code);
         if (match) {
           supported.push(match[0] as Language);
         }
@@ -484,10 +481,10 @@ export class TranslationAPIService {
    */
   async clearCache(): Promise<void> {
     this.cache.clear();
-    
+
     try {
       const keys = await AsyncStorage.getAllKeys();
-      const cacheKeys = keys.filter((k) => k.startsWith(CACHE_PREFIX));
+      const cacheKeys = keys.filter(k => k.startsWith(CACHE_PREFIX));
       await AsyncStorage.multiRemove(cacheKeys);
     } catch (error) {
       console.warn('Failed to clear cache:', error);
@@ -497,12 +494,12 @@ export class TranslationAPIService {
   /**
    * Get cache statistics
    */
-  async getCacheStats(): Promise<{ memorySize: number; persistentSize: number }> {
+  async getCacheStats(): Promise<{memorySize: number; persistentSize: number}> {
     let persistentSize = 0;
-    
+
     try {
       const keys = await AsyncStorage.getAllKeys();
-      persistentSize = keys.filter((k) => k.startsWith(CACHE_PREFIX)).length;
+      persistentSize = keys.filter(k => k.startsWith(CACHE_PREFIX)).length;
     } catch (error) {
       // Ignore
     }
@@ -526,7 +523,7 @@ export class TranslationAPIService {
       return false;
     }
 
-    const config = this.providers.find((p) => p.provider === provider);
+    const config = this.providers.find(p => p.provider === provider);
     return counter.count >= (config?.rateLimit || 60);
   }
 
@@ -549,14 +546,14 @@ export class TranslationAPIService {
   // ============================================================================
 
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
    * Enable or disable a provider
    */
   setProviderEnabled(provider: TranslationProvider, enabled: boolean): void {
-    const config = this.providers.find((p) => p.provider === provider);
+    const config = this.providers.find(p => p.provider === provider);
     if (config) {
       config.enabled = enabled;
     }
@@ -566,7 +563,7 @@ export class TranslationAPIService {
    * Set API key for a provider
    */
   setApiKey(provider: TranslationProvider, apiKey: string): void {
-    const config = this.providers.find((p) => p.provider === provider);
+    const config = this.providers.find(p => p.provider === provider);
     if (config) {
       config.apiKey = apiKey;
     }
@@ -582,7 +579,7 @@ export class TranslationAPIService {
   /**
    * Get all supported language codes
    */
-  static getAllLanguages(): Array<{ code: Language; name: string }> {
+  static getAllLanguages(): Array<{code: Language; name: string}> {
     return Object.entries(LANGUAGE_CODES).map(([code, data]) => ({
       code: code as Language,
       name: data.name,

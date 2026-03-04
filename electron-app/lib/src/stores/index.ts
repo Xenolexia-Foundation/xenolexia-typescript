@@ -12,3 +12,7 @@ export {useVocabularyStore} from './vocabularyStore';
 export {useUserStore} from './userStore';
 export {useReaderStore} from './readerStore';
 export {useStatisticsStore} from './statisticsStore';
+export {useFavouritesStore} from './favouritesStore';
+export {useExcludeReplacementStore} from './excludeReplacementStore';
+export {useBookmarksStore} from './bookmarksStore';
+export type {Bookmark} from './bookmarksStore';

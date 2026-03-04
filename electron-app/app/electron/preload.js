@@ -1,6 +1,4 @@
 const {contextBridge, ipcRenderer, shell} = require('electron');
-const fs = require('fs').promises;
-const path = require('path');
 
 // Log that preload script is loading
 console.log('Preload script loading...');
@@ -9,79 +7,84 @@ console.log('Preload script loading...');
 // the ipcRenderer without exposing the entire object
 try {
   contextBridge.exposeInMainWorld('electronAPI', {
-  // Platform info
-  platform: process.platform,
+    // Platform info
+    platform: process.platform,
 
-  // Menu actions (callback receives event, action)
-  onMenuAction: callback => {
-    ipcRenderer.on('menu-import-book', (e) => callback(e, 'menu-import-book'));
-    ipcRenderer.on('menu-about', (e) => callback(e, 'menu-about'));
-    ipcRenderer.on('menu-search-books', (e) => callback(e, 'menu-search-books'));
-    ipcRenderer.on('menu-statistics', (e) => callback(e, 'menu-statistics'));
-    ipcRenderer.on('menu-settings', (e) => callback(e, 'menu-settings'));
-    ipcRenderer.on('menu-my-library', (e) => callback(e, 'menu-my-library'));
-  },
+    // Menu actions (callback receives event, action)
+    onMenuAction: callback => {
+      ipcRenderer.on('menu-import-book', e => callback(e, 'menu-import-book'));
+      ipcRenderer.on('menu-about', e => callback(e, 'menu-about'));
+      ipcRenderer.on('menu-search-books', e => callback(e, 'menu-search-books'));
+      ipcRenderer.on('menu-statistics', e => callback(e, 'menu-statistics'));
+      ipcRenderer.on('menu-settings', e => callback(e, 'menu-settings'));
+      ipcRenderer.on('menu-my-library', e => callback(e, 'menu-my-library'));
+      ipcRenderer.on('menu-favourites', e => callback(e, 'menu-favourites'));
+    },
 
-  // File dialog
-  showOpenDialog: options => {
-    return ipcRenderer.invoke('dialog:showOpenDialog', options);
-  },
+    // File dialog
+    showOpenDialog: options => {
+      return ipcRenderer.invoke('dialog:showOpenDialog', options);
+    },
 
-  showSaveDialog: options => {
-    return ipcRenderer.invoke('dialog:showSaveDialog', options);
-  },
+    showSaveDialog: options => {
+      return ipcRenderer.invoke('dialog:showSaveDialog', options);
+    },
 
-  // File operations
-  readFile: filePath => {
-    return ipcRenderer.invoke('file:readFile', filePath);
-  },
+    // File operations
+    readFile: filePath => {
+      return ipcRenderer.invoke('file:readFile', filePath);
+    },
 
-  readFileText: filePath => {
-    return ipcRenderer.invoke('file:readFileText', filePath);
-  },
+    readFileText: filePath => {
+      return ipcRenderer.invoke('file:readFileText', filePath);
+    },
 
-  writeFile: (filePath, content) => {
-    return ipcRenderer.invoke('file:writeFile', filePath, content);
-  },
+    writeFile: (filePath, content) => {
+      return ipcRenderer.invoke('file:writeFile', filePath, content);
+    },
 
-  fileExists: filePath => {
-    return ipcRenderer.invoke('file:exists', filePath);
-  },
+    fileExists: filePath => {
+      return ipcRenderer.invoke('file:exists', filePath);
+    },
 
-  getAppDataPath: () => {
-    return ipcRenderer.invoke('app:getPath', 'userData');
-  },
+    getAppDataPath: () => {
+      return ipcRenderer.invoke('app:getPath', 'userData');
+    },
 
-  getBooksDirectory: () => {
-    return ipcRenderer.invoke('app:getBooksDirectory');
-  },
+    getBooksDirectory: () => {
+      return ipcRenderer.invoke('app:getBooksDirectory');
+    },
 
-  dbInvoke: (method, ...args) => {
-    return ipcRenderer.invoke('db:invoke', method, ...args);
-  },
+    dbInvoke: (method, ...args) => {
+      return ipcRenderer.invoke('db:invoke', method, ...args);
+    },
 
-  translateBulk: (words, sourceLanguage, targetLanguage) => {
-    return ipcRenderer.invoke('translation:translateBulk', { words, sourceLanguage, targetLanguage });
-  },
+    translateBulk: (words, sourceLanguage, targetLanguage) => {
+      return ipcRenderer.invoke('translation:translateBulk', {
+        words,
+        sourceLanguage,
+        targetLanguage,
+      });
+    },
 
-  downloadDictionary: (url) => {
-    return ipcRenderer.invoke('dictionary:download', { url });
-  },
+    downloadDictionary: url => {
+      return ipcRenderer.invoke('dictionary:download', {url});
+    },
 
-  // Directory operations
-  readDir: (dirPath) => {
-    return ipcRenderer.invoke('file:readDir', dirPath);
-  },
+    // Directory operations
+    readDir: dirPath => {
+      return ipcRenderer.invoke('file:readDir', dirPath);
+    },
 
-  unlink: (filePath) => {
-    return ipcRenderer.invoke('file:unlink', filePath);
-  },
+    unlink: filePath => {
+      return ipcRenderer.invoke('file:unlink', filePath);
+    },
 
-  // Open external URL
-  openExternal: (url) => {
-    shell.openExternal(url);
-  },
-});
+    // Open external URL
+    openExternal: url => {
+      shell.openExternal(url);
+    },
+  });
 
   console.log('Electron API exposed successfully');
 } catch (error) {

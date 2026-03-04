@@ -15,6 +15,9 @@
 
 import RNFS from 'react-native-fs';
 
+import {ImageCache} from './ImageCache';
+import {ThumbnailGenerator} from './ThumbnailGenerator';
+
 import type {
   ImageSource,
   ImageLoadResult,
@@ -22,8 +25,6 @@ import type {
   PlaceholderOptions,
   CacheStats,
 } from './types';
-import {ImageCache} from './ImageCache';
-import {ThumbnailGenerator} from './ThumbnailGenerator';
 
 // ============================================================================
 // Constants
@@ -191,10 +192,7 @@ export class ImageService {
   /**
    * Get cover thumbnail for a book
    */
-  async getCoverThumbnail(
-    bookId: string,
-    size: ThumbnailSize = 'medium',
-  ): Promise<string | null> {
+  async getCoverThumbnail(bookId: string, size: ThumbnailSize = 'medium'): Promise<string | null> {
     await this.ensureInitialized();
 
     const coverPath = await this.getCoverPath(bookId);
@@ -210,7 +208,7 @@ export class ImageService {
    */
   async generateCoverThumbnail(
     bookId: string,
-    size: ThumbnailSize = 'medium',
+    size: ThumbnailSize = 'medium'
   ): Promise<string | null> {
     await this.ensureInitialized();
 
@@ -225,9 +223,7 @@ export class ImageService {
   /**
    * Generate all cover thumbnails for a book
    */
-  async generateAllCoverThumbnails(
-    bookId: string,
-  ): Promise<Record<ThumbnailSize, string> | null> {
+  async generateAllCoverThumbnails(bookId: string): Promise<Record<ThumbnailSize, string> | null> {
     await this.ensureInitialized();
 
     const coverPath = await this.getCoverPath(bookId);
@@ -272,7 +268,7 @@ export class ImageService {
   async storeCoverBase64(
     bookId: string,
     base64Data: string,
-    mimeType: string = 'image/jpeg',
+    mimeType: string = 'image/jpeg'
   ): Promise<string> {
     await this.ensureInitialized();
 
@@ -330,17 +326,11 @@ export class ImageService {
    * Generate a placeholder SVG for missing images
    */
   generatePlaceholderSVG(options: PlaceholderOptions = {}): string {
-    const {
-      type = 'book',
-      backgroundColor = '#E2E8F0',
-      foregroundColor = '#64748B',
-    } = options;
+    const {type = 'book', backgroundColor = '#E2E8F0', foregroundColor = '#64748B'} = options;
 
     const template = PLACEHOLDER_TEMPLATES[type] || PLACEHOLDER_TEMPLATES.generic;
 
-    return template
-      .replace(/#BG_COLOR#/g, backgroundColor)
-      .replace(/#FG_COLOR#/g, foregroundColor);
+    return template.replace(/#BG_COLOR#/g, backgroundColor).replace(/#FG_COLOR#/g, foregroundColor);
   }
 
   /**
@@ -357,7 +347,7 @@ export class ImageService {
    */
   generateInitialsPlaceholder(
     text: string,
-    options: Omit<PlaceholderOptions, 'type' | 'text'> = {},
+    options: Omit<PlaceholderOptions, 'type' | 'text'> = {}
   ): string {
     const {backgroundColor = '#0EA5E9', foregroundColor = '#FFFFFF'} = options;
 

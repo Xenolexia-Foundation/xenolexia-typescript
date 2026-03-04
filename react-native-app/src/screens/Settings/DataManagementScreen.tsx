@@ -7,7 +7,8 @@
  * Data Management Screen - Export, import, and clear data
  */
 
-import React, { useState, useCallback } from 'react';
+import React, {useState, useCallback} from 'react';
+
 import {
   View,
   StyleSheet,
@@ -16,14 +17,18 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 
-import { useTheme } from '@theme/index';
-import { useLibraryStore } from '@stores/libraryStore';
-import { useVocabularyStore } from '@stores/vocabularyStore';
-import { useStatisticsStore } from '@stores/statisticsStore';
-import { exportService } from '@services/ExportService';
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+import {useNavigation} from '@react-navigation/native';
+
+import {useLibraryStore} from '@stores/libraryStore';
+import {useStatisticsStore} from '@stores/statisticsStore';
+import {useVocabularyStore} from '@stores/vocabularyStore';
+
+import {exportService} from '@services/ExportService';
+
+import {useTheme} from '@theme/index';
 
 // ============================================================================
 // Component
@@ -31,11 +36,11 @@ import { exportService } from '@services/ExportService';
 
 export function DataManagementScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const { colors } = useTheme();
-  
-  const { books, clearLibrary } = useLibraryStore();
-  const { vocabulary, clearVocabulary } = useVocabularyStore();
-  const { stats } = useStatisticsStore();
+  const {colors} = useTheme();
+
+  const {books, clearLibrary} = useLibraryStore();
+  const {vocabulary, clearVocabulary} = useVocabularyStore();
+  const {stats} = useStatisticsStore();
 
   const [isExporting, setIsExporting] = useState(false);
 
@@ -73,7 +78,7 @@ export function DataManagementScreen(): React.JSX.Element {
       'Clear Vocabulary',
       `This will permanently delete all ${wordCount} saved words and their learning progress. This cannot be undone.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Delete All',
           style: 'destructive',
@@ -92,7 +97,7 @@ export function DataManagementScreen(): React.JSX.Element {
       'Clear Library',
       `This will remove all ${bookCount} books from your library. Book files will be deleted. This cannot be undone.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Delete All',
           style: 'destructive',
@@ -111,7 +116,7 @@ export function DataManagementScreen(): React.JSX.Element {
       '⚠️ Clear All Data',
       'This will permanently delete:\n\n• All books and reading progress\n• All vocabulary and learning progress\n• All statistics and streaks\n\nThis action cannot be undone!',
       [
-        { text: 'Cancel', style: 'cancel' },
+        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Delete Everything',
           style: 'destructive',
@@ -126,48 +131,66 @@ export function DataManagementScreen(): React.JSX.Element {
   }, [clearLibrary, clearVocabulary]);
 
   const dynamicStyles = {
-    container: { backgroundColor: colors.background.primary },
-    section: { backgroundColor: colors.background.secondary },
-    label: { color: colors.text.primary },
-    value: { color: colors.text.secondary },
+    container: {backgroundColor: colors.background.primary},
+    section: {backgroundColor: colors.background.secondary},
+    label: {color: colors.text.primary},
+    value: {color: colors.text.secondary},
   };
 
   return (
     <SafeAreaView style={[styles.container, dynamicStyles.container]} edges={['top']}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border.secondary }]}>
+      <View style={[styles.header, {borderBottomColor: colors.border.secondary}]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <TextDisplay text="←" style={[styles.backText, { color: colors.primary[500] }]} />
+          <TextDisplay text="←" style={[styles.backText, {color: colors.primary[500]}]} />
         </TouchableOpacity>
-        <TextDisplay text="Data Management" style={[styles.title, { color: colors.text.primary }]} />
+        <TextDisplay text="Data Management" style={[styles.title, {color: colors.text.primary}]} />
         <View style={styles.backButton} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Storage Info */}
         <View style={styles.sectionContainer}>
-          <TextDisplay text="STORAGE" style={[styles.sectionTitle, { color: colors.text.tertiary }]} />
+          <TextDisplay
+            text="STORAGE"
+            style={[styles.sectionTitle, {color: colors.text.tertiary}]}
+          />
           <View style={[styles.section, dynamicStyles.section]}>
             <View style={styles.storageGrid}>
               <View style={styles.storageItem}>
                 <TextDisplay text="📚" style={styles.storageIcon} />
-                <TextDisplay text={bookCount.toString()} style={[styles.storageValue, { color: colors.text.primary }]} />
-                <TextDisplay text="Books" style={[styles.storageLabel, { color: colors.text.tertiary }]} />
+                <TextDisplay
+                  text={bookCount.toString()}
+                  style={[styles.storageValue, {color: colors.text.primary}]}
+                />
+                <TextDisplay
+                  text="Books"
+                  style={[styles.storageLabel, {color: colors.text.tertiary}]}
+                />
               </View>
-              <View style={[styles.storageDivider, { backgroundColor: colors.border.secondary }]} />
+              <View style={[styles.storageDivider, {backgroundColor: colors.border.secondary}]} />
               <View style={styles.storageItem}>
                 <TextDisplay text="📝" style={styles.storageIcon} />
-                <TextDisplay text={wordCount.toString()} style={[styles.storageValue, { color: colors.text.primary }]} />
-                <TextDisplay text="Words" style={[styles.storageLabel, { color: colors.text.tertiary }]} />
+                <TextDisplay
+                  text={wordCount.toString()}
+                  style={[styles.storageValue, {color: colors.text.primary}]}
+                />
+                <TextDisplay
+                  text="Words"
+                  style={[styles.storageLabel, {color: colors.text.tertiary}]}
+                />
               </View>
-              <View style={[styles.storageDivider, { backgroundColor: colors.border.secondary }]} />
+              <View style={[styles.storageDivider, {backgroundColor: colors.border.secondary}]} />
               <View style={styles.storageItem}>
                 <TextDisplay text="⏱️" style={styles.storageIcon} />
                 <TextDisplay
                   text={`${Math.floor((stats?.totalReadingTime || 0) / 60)}h`}
-                  style={[styles.storageValue, { color: colors.text.primary }]}
+                  style={[styles.storageValue, {color: colors.text.primary}]}
                 />
-                <TextDisplay text="Read" style={[styles.storageLabel, { color: colors.text.tertiary }]} />
+                <TextDisplay
+                  text="Read"
+                  style={[styles.storageLabel, {color: colors.text.tertiary}]}
+                />
               </View>
             </View>
           </View>
@@ -175,47 +198,54 @@ export function DataManagementScreen(): React.JSX.Element {
 
         {/* Export Section */}
         <View style={styles.sectionContainer}>
-          <TextDisplay text="EXPORT" style={[styles.sectionTitle, { color: colors.text.tertiary }]} />
+          <TextDisplay text="EXPORT" style={[styles.sectionTitle, {color: colors.text.tertiary}]} />
           <View style={[styles.section, dynamicStyles.section]}>
-            <TouchableOpacity
-              style={styles.row}
-              onPress={handleExportAll}
-              disabled={isExporting}
-            >
+            <TouchableOpacity style={styles.row} onPress={handleExportAll} disabled={isExporting}>
               <TextDisplay text="📤" style={styles.rowIcon} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Export All Data" style={[styles.rowLabel, dynamicStyles.label]} />
+                <TextDisplay
+                  text="Export All Data"
+                  style={[styles.rowLabel, dynamicStyles.label]}
+                />
                 <TextDisplay
                   text="Create a backup of vocabulary and settings"
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
               {isExporting ? (
                 <ActivityIndicator size="small" color={colors.primary[500]} />
               ) : (
-                <TextDisplay text="›" style={[styles.chevron, { color: colors.text.tertiary }]} />
+                <TextDisplay text="›" style={[styles.chevron, {color: colors.text.tertiary}]} />
               )}
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+            <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
-            <TouchableOpacity style={styles.row} onPress={() => Alert.alert('Coming Soon', 'Import functionality will be available in a future update.')}>
+            <TouchableOpacity
+              style={styles.row}
+              onPress={() =>
+                Alert.alert(
+                  'Coming Soon',
+                  'Import functionality will be available in a future update.'
+                )
+              }
+            >
               <TextDisplay text="📥" style={styles.rowIcon} />
               <View style={styles.rowContent}>
                 <TextDisplay text="Import Backup" style={[styles.rowLabel, dynamicStyles.label]} />
                 <TextDisplay
                   text="Restore data from a backup file"
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
-              <TextDisplay text="›" style={[styles.chevron, { color: colors.text.tertiary }]} />
+              <TextDisplay text="›" style={[styles.chevron, {color: colors.text.tertiary}]} />
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Clear Data Section */}
         <View style={styles.sectionContainer}>
-          <TextDisplay text="CLEAR DATA" style={[styles.sectionTitle, { color: '#ef4444' }]} />
+          <TextDisplay text="CLEAR DATA" style={[styles.sectionTitle, {color: '#ef4444'}]} />
           <View style={[styles.section, dynamicStyles.section]}>
             <TouchableOpacity
               style={styles.row}
@@ -226,16 +256,21 @@ export function DataManagementScreen(): React.JSX.Element {
               <View style={styles.rowContent}>
                 <TextDisplay
                   text="Clear Vocabulary"
-                  style={[styles.rowLabel, { color: wordCount > 0 ? '#f59e0b' : colors.text.tertiary }]}
+                  style={[
+                    styles.rowLabel,
+                    {color: wordCount > 0 ? '#f59e0b' : colors.text.tertiary},
+                  ]}
                 />
                 <TextDisplay
-                  text={wordCount > 0 ? `Delete all ${wordCount} saved words` : 'No vocabulary to clear'}
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  text={
+                    wordCount > 0 ? `Delete all ${wordCount} saved words` : 'No vocabulary to clear'
+                  }
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+            <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
             <TouchableOpacity
               style={styles.row}
@@ -246,24 +281,27 @@ export function DataManagementScreen(): React.JSX.Element {
               <View style={styles.rowContent}>
                 <TextDisplay
                   text="Clear Library"
-                  style={[styles.rowLabel, { color: bookCount > 0 ? '#f59e0b' : colors.text.tertiary }]}
+                  style={[
+                    styles.rowLabel,
+                    {color: bookCount > 0 ? '#f59e0b' : colors.text.tertiary},
+                  ]}
                 />
                 <TextDisplay
                   text={bookCount > 0 ? `Remove all ${bookCount} books` : 'No books to clear'}
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+            <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
             <TouchableOpacity style={styles.row} onPress={handleClearAll}>
               <TextDisplay text="⚠️" style={styles.rowIcon} />
               <View style={styles.rowContent}>
-                <TextDisplay text="Clear All Data" style={[styles.rowLabel, { color: '#ef4444' }]} />
+                <TextDisplay text="Clear All Data" style={[styles.rowLabel, {color: '#ef4444'}]} />
                 <TextDisplay
                   text="Delete everything and start fresh"
-                  style={[styles.rowHint, { color: colors.text.tertiary }]}
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
                 />
               </View>
             </TouchableOpacity>
@@ -274,7 +312,7 @@ export function DataManagementScreen(): React.JSX.Element {
         <View style={styles.warningContainer}>
           <TextDisplay
             text="⚠️ Deleted data cannot be recovered. Export a backup before clearing data."
-            style={[styles.warningText, { color: colors.text.tertiary }]}
+            style={[styles.warningText, {color: colors.text.tertiary}]}
           />
         </View>
       </ScrollView>
@@ -283,8 +321,8 @@ export function DataManagementScreen(): React.JSX.Element {
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 

@@ -16,14 +16,5 @@ export {databaseService} from './DatabaseService';
 export type {QueryResult, MigrationDefinition} from './DatabaseService';
 
 // Repositories
-export {
-  bookRepository,
-  vocabularyRepository,
-  sessionRepository,
-} from './repositories';
-export type {
-  BookFilter,
-  BookSort,
-  VocabularyFilter,
-  VocabularySort,
-} from './repositories';
+export {bookRepository, vocabularyRepository, sessionRepository} from './repositories';
+export type {BookFilter, BookSort, VocabularyFilter, VocabularySort} from './repositories';

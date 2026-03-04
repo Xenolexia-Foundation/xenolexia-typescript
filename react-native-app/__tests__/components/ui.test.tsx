@@ -9,11 +9,13 @@
  */
 
 import React from 'react';
-import {renderWithTheme, screen, fireEvent} from '../test-utils';
-import {Text, Heading, Body, Caption} from '@components/ui/Text';
+
 import {Button, PrimaryButton, OutlineButton} from '@components/ui/Button';
 import {Card, PressableCard} from '@components/ui/Card';
 import {Input, SearchInput} from '@components/ui/Input';
+import {Text, Heading, Body, Caption} from '@components/ui/Text';
+
+import {renderWithTheme, screen, fireEvent} from '../test-utils';
 
 describe('UI Components', () => {
   describe('Text', () => {
@@ -28,7 +30,7 @@ describe('UI Components', () => {
           <Heading level={1}>Main Title</Heading>
           <Body>Body text content</Body>
           <Caption>Small caption</Caption>
-        </>,
+        </>
       );
 
       expect(screen.getByText('Main Title')).toBeTruthy();
@@ -56,7 +58,7 @@ describe('UI Components', () => {
       renderWithTheme(
         <Button onPress={onPress} disabled>
           Disabled
-        </Button>,
+        </Button>
       );
 
       fireEvent.press(screen.getByText('Disabled'));
@@ -74,7 +76,7 @@ describe('UI Components', () => {
         <>
           <PrimaryButton>Primary</PrimaryButton>
           <OutlineButton>Outline</OutlineButton>
-        </>,
+        </>
       );
 
       expect(screen.getByText('Primary')).toBeTruthy();
@@ -87,7 +89,7 @@ describe('UI Components', () => {
       renderWithTheme(
         <Card>
           <Text>Card content</Text>
-        </Card>,
+        </Card>
       );
 
       expect(screen.getByText('Card content')).toBeTruthy();
@@ -98,7 +100,7 @@ describe('UI Components', () => {
       renderWithTheme(
         <PressableCard onPress={onPress}>
           <Text>Pressable content</Text>
-        </PressableCard>,
+        </PressableCard>
       );
 
       fireEvent.press(screen.getByText('Pressable content'));
@@ -114,14 +116,9 @@ describe('UI Components', () => {
 
     it('calls onChangeText when text changes', () => {
       const onChangeText = jest.fn();
-      renderWithTheme(
-        <Input placeholder="Enter text" onChangeText={onChangeText} />,
-      );
+      renderWithTheme(<Input placeholder="Enter text" onChangeText={onChangeText} />);
 
-      fireEvent.changeText(
-        screen.getByPlaceholderText('Enter text'),
-        'New text',
-      );
+      fireEvent.changeText(screen.getByPlaceholderText('Enter text'), 'New text');
       expect(onChangeText).toHaveBeenCalledWith('New text');
     });
 
@@ -136,9 +133,7 @@ describe('UI Components', () => {
     });
 
     it('renders with error message', () => {
-      renderWithTheme(
-        <Input placeholder="Enter value" error="This field is required" />,
-      );
+      renderWithTheme(<Input placeholder="Enter value" error="This field is required" />);
       expect(screen.getByText('This field is required')).toBeTruthy();
     });
   });

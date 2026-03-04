@@ -8,20 +8,24 @@
  */
 
 import React from 'react';
+
 import {View, StyleSheet, ScrollView, TouchableOpacity} from 'react-native';
 
 import {SafeAreaView} from 'react-native-safe-area-context';
+
 import {useNavigation} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
-import type {RootStackParamList} from '@/types';
+
+import {ScreenHeader} from '@components/common';
+import {ChevronRightIcon} from '@components/common/TabBarIcon';
+import {Text, Card, ThemeSwitcher} from '@components/ui';
 
 import {useUserStore} from '@stores/userStore';
-import {ScreenHeader} from '@components/common';
-import {Text, Card, ThemeSwitcher} from '@components/ui';
-import {ChevronRightIcon} from '@components/common/TabBarIcon';
+
+import type {RootStackParamList} from '@/types';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type ProfileNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -208,16 +212,8 @@ export function ProfileScreen(): React.JSX.Element {
               subtitle={`${preferences.dailyGoal} minutes`}
               onPress={handleNavigateSettings}
             />
-            <MenuItem
-              icon="💾"
-              title="Data & Storage"
-              onPress={handleExportData}
-            />
-            <MenuItem
-              icon="ℹ️"
-              title="About Xenolexia"
-              onPress={handleNavigateAbout}
-            />
+            <MenuItem icon="💾" title="Data & Storage" onPress={handleExportData} />
+            <MenuItem icon="ℹ️" title="About Xenolexia" onPress={handleNavigateAbout} />
           </Card>
         </View>
 

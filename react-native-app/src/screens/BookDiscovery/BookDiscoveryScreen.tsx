@@ -8,6 +8,7 @@
  */
 
 import React, {useState, useCallback, useEffect} from 'react';
+
 import {
   View,
   StyleSheet,
@@ -18,20 +19,30 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+
 import {SafeAreaView} from 'react-native-safe-area-context';
+
 import {useNavigation} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
+
+import {ScreenHeader} from '@components/common';
 import {Text, SearchInput, Button} from '@components/ui';
 import {Card} from '@components/ui/Card';
-import {ScreenHeader} from '@components/common';
 
-import type {RootStackParamList} from '@types/index';
-import {BookDownloadService, EBOOK_SOURCES} from '@services/BookDownloadService';
-import type {EbookSearchResult, EbookSource, SearchResponse, DownloadProgress} from '@services/BookDownloadService';
 import {useLibraryStore} from '@stores/libraryStore';
+
+import {BookDownloadService, EBOOK_SOURCES} from '@services/BookDownloadService';
+
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import type {
+  EbookSearchResult,
+  EbookSource,
+  SearchResponse,
+  DownloadProgress,
+} from '@services/BookDownloadService';
+import type {RootStackParamList} from '@types/index';
 
 type DiscoveryNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -97,63 +108,76 @@ export function BookDiscoveryScreen(): React.JSX.Element {
     }
   }, []);
 
-  const handleDownload = useCallback(async (book: EbookSearchResult, promptForLocation: boolean = false) => {
-    setDownloadingId(book.id);
-    setDownloadProgress(0);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-
-    // Ensure file system access on web
-    if (Platform.OS === 'web') {
-      const hasAccess = await BookDownloadService.hasFileSystemAccess();
-      if (!hasAccess) {
-        const message = 'Xenolexia needs access to a folder to save downloaded books.\n\n' +
-          'Please select or create a folder (e.g., "Xenolexia Books" in your Documents).';
-        
-        const proceed = window.confirm(message + '\n\nClick OK to choose a folder.');
-        if (!proceed) {
-          setDownloadingId(null);
-          return;
-        }
-
-        const granted = await BookDownloadService.requestFileSystemAccess();
-        if (!granted) {
-          showAlert('Access Required', 'A folder is required to save books. Please try again and select a folder.');
-          setDownloadingId(null);
-          return;
-        }
-      }
-    }
-
-    const onProgress = (progress: DownloadProgress) => {
-      setDownloadProgress(progress.percentage);
-    };
-
-    try {
-      const result = await BookDownloadService.downloadBook(book, onProgress, promptForLocation);
-
-      if (result.success && result.book) {
-        await addBook(result.book);
-        setResults(prev => prev.filter(r => r.id !== book.id));
-        navigation.navigate('Reader', {bookId: result.book.id});
-      } else {
-        setErrorMessage(result.error || 'Download failed');
-        showAlert('Download Failed', result.error || 'An error occurred while downloading the book.');
-      }
-    } catch (error) {
-      console.error('Download error:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Download failed';
-      setErrorMessage(errorMsg);
-      showAlert('Download Error', errorMsg);
-    } finally {
-      setDownloadingId(null);
+  const handleDownload = useCallback(
+    async (book: EbookSearchResult, promptForLocation: boolean = false) => {
+      setDownloadingId(book.id);
       setDownloadProgress(0);
-    }
-  }, [addBook, showAlert, navigation]);
+      setErrorMessage(null);
+      setSuccessMessage(null);
 
-  const handleDownloadWithPicker = useCallback((book: EbookSearchResult) => {
-    handleDownload(book, true);
-  }, [handleDownload]);
+      // Ensure file system access on web
+      if (Platform.OS === 'web') {
+        const hasAccess = await BookDownloadService.hasFileSystemAccess();
+        if (!hasAccess) {
+          const message =
+            'Xenolexia needs access to a folder to save downloaded books.\n\n' +
+            'Please select or create a folder (e.g., "Xenolexia Books" in your Documents).';
+
+          const proceed = window.confirm(message + '\n\nClick OK to choose a folder.');
+          if (!proceed) {
+            setDownloadingId(null);
+            return;
+          }
+
+          const granted = await BookDownloadService.requestFileSystemAccess();
+          if (!granted) {
+            showAlert(
+              'Access Required',
+              'A folder is required to save books. Please try again and select a folder.'
+            );
+            setDownloadingId(null);
+            return;
+          }
+        }
+      }
+
+      const onProgress = (progress: DownloadProgress) => {
+        setDownloadProgress(progress.percentage);
+      };
+
+      try {
+        const result = await BookDownloadService.downloadBook(book, onProgress, promptForLocation);
+
+        if (result.success && result.book) {
+          await addBook(result.book);
+          setResults(prev => prev.filter(r => r.id !== book.id));
+          navigation.navigate('Reader', {bookId: result.book.id});
+        } else {
+          setErrorMessage(result.error || 'Download failed');
+          showAlert(
+            'Download Failed',
+            result.error || 'An error occurred while downloading the book.'
+          );
+        }
+      } catch (error) {
+        console.error('Download error:', error);
+        const errorMsg = error instanceof Error ? error.message : 'Download failed';
+        setErrorMessage(errorMsg);
+        showAlert('Download Error', errorMsg);
+      } finally {
+        setDownloadingId(null);
+        setDownloadProgress(0);
+      }
+    },
+    [addBook, showAlert, navigation]
+  );
+
+  const handleDownloadWithPicker = useCallback(
+    (book: EbookSearchResult) => {
+      handleDownload(book, true);
+    },
+    [handleDownload]
+  );
 
   const handleSourceChange = useCallback((source: EbookSource['type']) => {
     setSelectedSource(source);
@@ -175,10 +199,12 @@ export function BookDiscoveryScreen(): React.JSX.Element {
         styles.sourceTab,
         {backgroundColor: selectedSource === type ? colors.primary : colors.surfaceHover},
       ]}
-      onPress={() => handleSourceChange(type)}>
+      onPress={() => handleSourceChange(type)}
+    >
       <Text
         variant="labelMedium"
-        customColor={selectedSource === type ? colors.onPrimary : colors.textSecondary}>
+        customColor={selectedSource === type ? colors.onPrimary : colors.textSecondary}
+      >
         {name}
       </Text>
     </TouchableOpacity>
@@ -206,7 +232,12 @@ export function BookDiscoveryScreen(): React.JSX.Element {
             {item.language && ` • ${item.language.toUpperCase()}`}
           </Text>
           {item.description && (
-            <Text variant="bodySmall" color="secondary" numberOfLines={2} style={styles.descriptionText}>
+            <Text
+              variant="bodySmall"
+              color="secondary"
+              numberOfLines={2}
+              style={styles.descriptionText}
+            >
               {item.description}
             </Text>
           )}
@@ -215,7 +246,12 @@ export function BookDiscoveryScreen(): React.JSX.Element {
           {isDownloading(item.id) && downloadProgress > 0 && (
             <View style={styles.progressWrapper}>
               <View style={[styles.progressContainer, {backgroundColor: colors.surfaceHover}]}>
-                <View style={[styles.progressBar, {width: `${downloadProgress}%`, backgroundColor: colors.primary}]} />
+                <View
+                  style={[
+                    styles.progressBar,
+                    {width: `${downloadProgress}%`, backgroundColor: colors.primary},
+                  ]}
+                />
               </View>
               <Text variant="labelSmall" color="tertiary" style={styles.progressText}>
                 {downloadProgress}%
@@ -238,7 +274,11 @@ export function BookDiscoveryScreen(): React.JSX.Element {
                   Add to Library
                 </Button>
                 {Platform.OS === 'web' && (
-                  <Button size="sm" variant="outline" onPress={() => handleDownloadWithPicker(item)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onPress={() => handleDownloadWithPicker(item)}
+                  >
                     Save As...
                   </Button>
                 )}
@@ -267,7 +307,9 @@ export function BookDiscoveryScreen(): React.JSX.Element {
     if (errorMessage && hasSearched) {
       return (
         <View style={styles.centerContainer}>
-          <Text variant="headlineLarge" style={styles.emptyEmoji}>⚠️</Text>
+          <Text variant="headlineLarge" style={styles.emptyEmoji}>
+            ⚠️
+          </Text>
           <Text variant="titleLarge" color="error" style={styles.emptyTitle}>
             Search Issue
           </Text>
@@ -284,7 +326,9 @@ export function BookDiscoveryScreen(): React.JSX.Element {
     if (!hasSearched) {
       return (
         <View style={styles.centerContainer}>
-          <Text variant="headlineLarge" style={styles.emptyEmoji}>🔍</Text>
+          <Text variant="headlineLarge" style={styles.emptyEmoji}>
+            🔍
+          </Text>
           <Text variant="titleLarge" style={styles.emptyTitle}>
             Find Free Ebooks
           </Text>
@@ -298,7 +342,9 @@ export function BookDiscoveryScreen(): React.JSX.Element {
 
     return (
       <View style={styles.centerContainer}>
-        <Text variant="headlineLarge" style={styles.emptyEmoji}>📚</Text>
+        <Text variant="headlineLarge" style={styles.emptyEmoji}>
+          📚
+        </Text>
         <Text variant="titleLarge" style={styles.emptyTitle}>
           No Results Found
         </Text>
@@ -311,12 +357,7 @@ export function BookDiscoveryScreen(): React.JSX.Element {
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['top']}>
-      <ScreenHeader
-        title="Discover Books"
-        showBack
-        onBack={handleBack}
-        large={false}
-      />
+      <ScreenHeader title="Discover Books" showBack onBack={handleBack} large={false} />
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
@@ -334,18 +375,23 @@ export function BookDiscoveryScreen(): React.JSX.Element {
       </View>
 
       {/* Source Tabs */}
-      <View style={styles.sourceTabs}>
-        {searchableSources.map(renderSourceTab)}
-      </View>
+      <View style={styles.sourceTabs}>{searchableSources.map(renderSourceTab)}</View>
 
       {/* Success Message */}
       {successMessage && (
-        <View style={[styles.successBanner, {backgroundColor: colors.success + '20', borderColor: colors.success}]}>
+        <View
+          style={[
+            styles.successBanner,
+            {backgroundColor: colors.success + '20', borderColor: colors.success},
+          ]}
+        >
           <Text variant="bodyMedium" customColor={colors.success} style={styles.successText}>
             ✓ {successMessage}
           </Text>
           <TouchableOpacity onPress={() => setSuccessMessage(null)}>
-            <Text variant="titleMedium" customColor={colors.success}>✕</Text>
+            <Text variant="titleMedium" customColor={colors.success}>
+              ✕
+            </Text>
           </TouchableOpacity>
         </View>
       )}

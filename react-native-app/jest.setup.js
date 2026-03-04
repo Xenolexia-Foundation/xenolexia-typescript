@@ -58,16 +58,18 @@ jest.mock('react-native-safe-area-context', () => ({
 
 // Mock react-native-sqlite-storage (NativeModules.SQLite not available in Jest)
 const mockExecuteSql = jest.fn(() =>
-  Promise.resolve([{ rows: { _array: [] }, rowsAffected: 0, insertId: 0 }])
+  Promise.resolve([{rows: {_array: []}, rowsAffected: 0, insertId: 0}])
 );
-const mockTx = { executeSql: jest.fn(() => Promise.resolve([{ rows: { _array: [] }, rowsAffected: 0 }])) };
+const mockTx = {
+  executeSql: jest.fn(() => Promise.resolve([{rows: {_array: []}, rowsAffected: 0}])),
+};
 jest.mock('react-native-sqlite-storage', () => ({
   DEBUG: jest.fn(),
   enablePromise: jest.fn(),
   openDatabase: jest.fn(() =>
     Promise.resolve({
       executeSql: mockExecuteSql,
-      transaction: jest.fn((fn) => fn(mockTx)),
+      transaction: jest.fn(fn => fn(mockTx)),
       close: jest.fn(() => Promise.resolve()),
     })
   ),

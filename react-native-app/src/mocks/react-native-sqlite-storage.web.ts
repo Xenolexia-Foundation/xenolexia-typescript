@@ -23,7 +23,7 @@ interface Transaction {
     sql: string,
     params?: unknown[],
     success?: (tx: Transaction, results: ResultSet) => void,
-    error?: (tx: Transaction, error: Error) => void,
+    error?: (tx: Transaction, error: Error) => void
   ) => void;
 }
 
@@ -31,12 +31,9 @@ interface SQLiteDatabase {
   transaction: (
     callback: (tx: Transaction) => void,
     error?: (error: Error) => void,
-    success?: () => void,
+    success?: () => void
   ) => void;
-  executeSql: (
-    sql: string,
-    params?: unknown[],
-  ) => Promise<[ResultSet]>;
+  executeSql: (sql: string, params?: unknown[]) => Promise<[ResultSet]>;
   close: () => Promise<void>;
 }
 
@@ -56,7 +53,7 @@ const createResultSet = (rows: unknown[]): ResultSet => ({
 export const openDatabase = (
   params: {name: string; location?: string},
   successCallback?: (db: SQLiteDatabase) => void,
-  errorCallback?: (error: Error) => void,
+  errorCallback?: (error: Error) => void
 ): SQLiteDatabase => {
   const dbName = params.name;
 

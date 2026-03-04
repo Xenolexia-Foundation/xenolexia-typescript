@@ -10,11 +10,7 @@
  * Provides connection management, migrations, and query helpers.
  */
 
-import SQLite, {
-  SQLiteDatabase,
-  ResultSet,
-  Transaction,
-} from 'react-native-sqlite-storage';
+import SQLite, {SQLiteDatabase, ResultSet, Transaction} from 'react-native-sqlite-storage';
 
 // Enable debug mode in development
 if (__DEV__) {
@@ -146,7 +142,7 @@ class DatabaseService {
    */
   async execute<T = Record<string, unknown>>(
     sql: string,
-    params: (string | number | null)[] = [],
+    params: (string | number | null)[] = []
   ): Promise<QueryResult<T>> {
     const db = await this.getDatabase();
 
@@ -162,14 +158,12 @@ class DatabaseService {
   /**
    * Execute multiple SQL statements in a transaction
    */
-  async transaction<T>(
-    callback: (tx: Transaction) => Promise<T>,
-  ): Promise<T> {
+  async transaction<T>(callback: (tx: Transaction) => Promise<T>): Promise<T> {
     const db = await this.getDatabase();
 
     return new Promise((resolve, reject) => {
       db.transaction(
-        async (tx) => {
+        async tx => {
           try {
             const result = await callback(tx);
             resolve(result);
@@ -177,10 +171,10 @@ class DatabaseService {
             reject(error);
           }
         },
-        (error) => {
+        error => {
           console.error('[Database] Transaction failed:', error);
           reject(error);
-        },
+        }
       );
     });
   }
@@ -189,9 +183,9 @@ class DatabaseService {
    * Execute a batch of SQL statements
    */
   async executeBatch(
-    statements: Array<{sql: string; params?: (string | number | null)[]}>,
+    statements: Array<{sql: string; params?: (string | number | null)[]}>
   ): Promise<void> {
-    await this.transaction(async (tx) => {
+    await this.transaction(async tx => {
       for (const statement of statements) {
         await new Promise<void>((resolve, reject) => {
           tx.executeSql(
@@ -201,7 +195,7 @@ class DatabaseService {
             (_, error) => {
               reject(error);
               return false;
-            },
+            }
           );
         });
       }
@@ -213,7 +207,7 @@ class DatabaseService {
    */
   async getOne<T = Record<string, unknown>>(
     sql: string,
-    params: (string | number | null)[] = [],
+    params: (string | number | null)[] = []
   ): Promise<T | null> {
     const result = await this.execute<T>(sql, params);
     return result.rows.length > 0 ? result.rows[0] : null;
@@ -224,7 +218,7 @@ class DatabaseService {
    */
   async getAll<T = Record<string, unknown>>(
     sql: string,
-    params: (string | number | null)[] = [],
+    params: (string | number | null)[] = []
   ): Promise<T[]> {
     const result = await this.execute<T>(sql, params);
     return result.rows;
@@ -235,7 +229,7 @@ class DatabaseService {
    */
   async insert(
     table: string,
-    data: Record<string, string | number | null>,
+    data: Record<string, string | number | null>
   ): Promise<number | undefined> {
     const columns = Object.keys(data);
     const values = Object.values(data);
@@ -254,10 +248,10 @@ class DatabaseService {
     table: string,
     data: Record<string, string | number | null>,
     where: string,
-    whereParams: (string | number | null)[] = [],
+    whereParams: (string | number | null)[] = []
   ): Promise<number> {
     const setClause = Object.keys(data)
-      .map((key) => `${key} = ?`)
+      .map(key => `${key} = ?`)
       .join(', ');
     const values = Object.values(data);
 
@@ -273,7 +267,7 @@ class DatabaseService {
   async delete(
     table: string,
     where: string,
-    whereParams: (string | number | null)[] = [],
+    whereParams: (string | number | null)[] = []
   ): Promise<number> {
     const sql = `DELETE FROM ${table} WHERE ${where}`;
     const result = await this.execute(sql, whereParams);
@@ -300,16 +294,16 @@ class DatabaseService {
 
     // Get current version
     const current = await this.getOne<{version: number}>(
-      'SELECT MAX(version) as version FROM _migrations',
+      'SELECT MAX(version) as version FROM _migrations'
     );
     const currentVersion = current?.version ?? 0;
 
     console.log(`[Database] Current version: ${currentVersion}`);
 
     // Get pending migrations
-    const pendingMigrations = MIGRATIONS.filter(
-      (m) => m.version > currentVersion,
-    ).sort((a, b) => a.version - b.version);
+    const pendingMigrations = MIGRATIONS.filter(m => m.version > currentVersion).sort(
+      (a, b) => a.version - b.version
+    );
 
     if (pendingMigrations.length === 0) {
       console.log('[Database] No pending migrations');
@@ -318,16 +312,14 @@ class DatabaseService {
 
     // Run pending migrations
     for (const migration of pendingMigrations) {
-      console.log(
-        `[Database] Running migration ${migration.version}: ${migration.description}`,
-      );
+      console.log(`[Database] Running migration ${migration.version}: ${migration.description}`);
 
       try {
         // Split and execute statements
         const statements = migration.up
           .split(';')
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0);
+          .map(s => s.trim())
+          .filter(s => s.length > 0);
 
         for (const statement of statements) {
           await this.execute(statement);
@@ -336,7 +328,7 @@ class DatabaseService {
         // Record migration
         await this.execute(
           'INSERT INTO _migrations (version, description, applied_at) VALUES (?, ?, ?)',
-          [migration.version, migration.description, Date.now()],
+          [migration.version, migration.description, Date.now()]
         );
 
         console.log(`[Database] Migration ${migration.version} complete`);
@@ -355,7 +347,7 @@ class DatabaseService {
   async getSchemaVersion(): Promise<number> {
     try {
       const result = await this.getOne<{version: number}>(
-        'SELECT MAX(version) as version FROM _migrations',
+        'SELECT MAX(version) as version FROM _migrations'
       );
       return result?.version ?? 0;
     } catch {
@@ -390,7 +382,7 @@ class DatabaseService {
   async tableExists(tableName: string): Promise<boolean> {
     const result = await this.getOne<{name: string}>(
       "SELECT name FROM sqlite_master WHERE type='table' AND name=?",
-      [tableName],
+      [tableName]
     );
     return result !== null;
   }

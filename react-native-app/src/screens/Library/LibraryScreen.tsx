@@ -8,23 +8,27 @@
  */
 
 import React, {useState, useCallback} from 'react';
+
 import {View, StyleSheet, FlatList, RefreshControl, TouchableOpacity} from 'react-native';
 
 import {SafeAreaView} from 'react-native-safe-area-context';
+
 import {useNavigation} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
-import type {Book, RootStackParamList} from '@/types';
 
-import {useLibraryStore} from '@stores/libraryStore';
+import {ScreenHeader, LoadingBookGrid} from '@components/common';
 import {BookCard} from '@components/library/BookCard';
 import {BookContextMenu} from '@components/library/BookContextMenu';
 import {EmptyLibrary} from '@components/library/EmptyLibrary';
 import {ImportBookButton} from '@components/library/ImportBookButton';
-import {ScreenHeader, LoadingBookGrid} from '@components/common';
 import {SearchInput, Text} from '@components/ui';
+
+import {useLibraryStore} from '@stores/libraryStore';
+
+import type {Book, RootStackParamList} from '@/types';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type LibraryNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -72,17 +76,23 @@ export function LibraryScreen(): React.JSX.Element {
     navigation.navigate('BookDiscovery', {});
   }, [navigation]);
 
-  const HeaderButtons = useCallback(() => (
-    <View style={headerStyles.container}>
-      <TouchableOpacity
-        style={[headerStyles.discoverButton, {backgroundColor: colors.primaryLight}]}
-        onPress={handleBrowseBooks}
-        activeOpacity={0.8}>
-        <Text variant="labelMedium" customColor={colors.primary}>🔍</Text>
-      </TouchableOpacity>
-      <ImportBookButton />
-    </View>
-  ), [colors, handleBrowseBooks]);
+  const HeaderButtons = useCallback(
+    () => (
+      <View style={headerStyles.container}>
+        <TouchableOpacity
+          style={[headerStyles.discoverButton, {backgroundColor: colors.primaryLight}]}
+          onPress={handleBrowseBooks}
+          activeOpacity={0.8}
+        >
+          <Text variant="labelMedium" customColor={colors.primary}>
+            🔍
+          </Text>
+        </TouchableOpacity>
+        <ImportBookButton />
+      </View>
+    ),
+    [colors, handleBrowseBooks]
+  );
 
   const renderBook = useCallback(
     ({item}: {item: Book}) => (

@@ -33,7 +33,7 @@ function calculateSM2(
 } {
   let newEF = easeFactor;
   let newInterval = interval;
-  let newReviewCount = reviewCount + 1;
+  const newReviewCount = reviewCount + 1;
   let newStatus: 'new' | 'learning' | 'review' | 'learned' = 'learning';
 
   if (quality >= 3) {
@@ -47,10 +47,7 @@ function calculateSM2(
     }
 
     // Update ease factor
-    newEF = Math.max(
-      1.3,
-      easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
-    );
+    newEF = Math.max(1.3, easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
 
     // Update status
     if (newReviewCount >= 5 && quality >= 4) {
@@ -78,7 +75,7 @@ describe('SM-2 Algorithm', () => {
   describe('First review (interval = 0)', () => {
     it('should set interval to 1 on first correct response', () => {
       const result = calculateSM2(3, 2.5, 0, 0);
-      
+
       expect(result.interval).toBe(1);
       expect(result.reviewCount).toBe(1);
       expect(result.status).toBe('learning');
@@ -86,7 +83,7 @@ describe('SM-2 Algorithm', () => {
 
     it('should reset interval on incorrect response', () => {
       const result = calculateSM2(2, 2.5, 0, 0);
-      
+
       expect(result.interval).toBe(0);
       expect(result.status).toBe('learning');
     });
@@ -95,7 +92,7 @@ describe('SM-2 Algorithm', () => {
   describe('Second review (interval = 1)', () => {
     it('should set interval to 6 on correct response', () => {
       const result = calculateSM2(4, 2.5, 1, 1);
-      
+
       expect(result.interval).toBe(6);
       expect(result.reviewCount).toBe(2);
       expect(result.status).toBe('review');
@@ -103,7 +100,7 @@ describe('SM-2 Algorithm', () => {
 
     it('should reset interval on incorrect response', () => {
       const result = calculateSM2(1, 2.5, 1, 1);
-      
+
       expect(result.interval).toBe(0);
       expect(result.status).toBe('learning');
     });
@@ -112,19 +109,19 @@ describe('SM-2 Algorithm', () => {
   describe('Subsequent reviews (interval > 1)', () => {
     it('should multiply interval by ease factor', () => {
       const result = calculateSM2(4, 2.5, 6, 2);
-      
+
       expect(result.interval).toBe(15); // round(6 * 2.5)
       expect(result.status).toBe('review');
     });
 
     it('should calculate longer intervals over time', () => {
-      let state = { ef: 2.5, interval: 6, reviews: 2 };
-      
+      let state = {ef: 2.5, interval: 6, reviews: 2};
+
       // Review 3
       let result = calculateSM2(4, state.ef, state.interval, state.reviews);
       expect(result.interval).toBe(15);
-      state = { ef: result.easeFactor, interval: result.interval, reviews: result.reviewCount };
-      
+      state = {ef: result.easeFactor, interval: result.interval, reviews: result.reviewCount};
+
       // Review 4
       result = calculateSM2(4, state.ef, state.interval, state.reviews);
       expect(result.interval).toBe(38); // round(15 * 2.5)
@@ -134,20 +131,20 @@ describe('SM-2 Algorithm', () => {
   describe('Ease factor adjustments', () => {
     it('should increase ease factor for quality 5', () => {
       const result = calculateSM2(5, 2.5, 0, 0);
-      
+
       expect(result.easeFactor).toBeGreaterThan(2.5);
       expect(result.easeFactor).toBeCloseTo(2.6, 1);
     });
 
     it('should maintain ease factor for quality 4', () => {
       const result = calculateSM2(4, 2.5, 0, 0);
-      
+
       expect(result.easeFactor).toBeCloseTo(2.5, 1);
     });
 
     it('should decrease ease factor for quality 3', () => {
       const result = calculateSM2(3, 2.5, 0, 0);
-      
+
       expect(result.easeFactor).toBeLessThan(2.5);
       expect(result.easeFactor).toBeCloseTo(2.36, 1);
     });
@@ -159,13 +156,13 @@ describe('SM-2 Algorithm', () => {
         const result = calculateSM2(3, ef, 0, 0);
         ef = result.easeFactor;
       }
-      
+
       expect(ef).toBeGreaterThanOrEqual(1.3);
     });
 
     it('should not update ease factor on incorrect response', () => {
       const result = calculateSM2(2, 2.5, 6, 3);
-      
+
       // Ease factor should remain the same on failure
       expect(result.easeFactor).toBe(2.5);
     });
@@ -174,31 +171,31 @@ describe('SM-2 Algorithm', () => {
   describe('Status transitions', () => {
     it('should be "learning" on first review', () => {
       const result = calculateSM2(4, 2.5, 0, 0);
-      
+
       expect(result.status).toBe('learning');
     });
 
     it('should be "review" after 2+ reviews', () => {
       const result = calculateSM2(4, 2.5, 1, 1);
-      
+
       expect(result.status).toBe('review');
     });
 
     it('should be "learned" after 5+ reviews with quality >= 4', () => {
       const result = calculateSM2(4, 2.5, 38, 4);
-      
+
       expect(result.status).toBe('learned');
     });
 
     it('should stay "review" after 5+ reviews with quality 3', () => {
       const result = calculateSM2(3, 2.5, 38, 4);
-      
+
       expect(result.status).toBe('review');
     });
 
     it('should reset to "learning" on incorrect response', () => {
       const result = calculateSM2(2, 2.5, 38, 4);
-      
+
       expect(result.status).toBe('learning');
     });
   });
@@ -206,14 +203,14 @@ describe('SM-2 Algorithm', () => {
   describe('Quality edge cases', () => {
     it('should handle quality 0 (complete blackout)', () => {
       const result = calculateSM2(0, 2.5, 10, 3);
-      
+
       expect(result.interval).toBe(0);
       expect(result.status).toBe('learning');
     });
 
     it('should handle quality 5 (perfect)', () => {
       const result = calculateSM2(5, 2.5, 6, 2);
-      
+
       expect(result.easeFactor).toBeCloseTo(2.6, 1);
       expect(result.interval).toBe(15);
     });
@@ -266,36 +263,36 @@ describe('SM-2 Algorithm', () => {
   describe('Grading button mappings', () => {
     // Map our button labels to SM-2 quality
     const gradeMap = {
-      'Again': 1,
-      'Hard': 2,
-      'Good': 3,
-      'Easy': 5,
+      Again: 1,
+      Hard: 2,
+      Good: 3,
+      Easy: 5,
     };
 
     it('should handle "Again" grade', () => {
       const result = calculateSM2(gradeMap['Again'], 2.5, 10, 3);
-      
+
       expect(result.interval).toBe(0); // Reset
       expect(result.status).toBe('learning');
     });
 
     it('should handle "Hard" grade', () => {
       const result = calculateSM2(gradeMap['Hard'], 2.5, 10, 3);
-      
+
       expect(result.interval).toBe(0); // Reset
       expect(result.status).toBe('learning');
     });
 
     it('should handle "Good" grade', () => {
       const result = calculateSM2(gradeMap['Good'], 2.5, 6, 2);
-      
+
       expect(result.interval).toBe(15); // Continue
       expect(result.easeFactor).toBeLessThan(2.5); // Slightly decrease
     });
 
     it('should handle "Easy" grade', () => {
       const result = calculateSM2(gradeMap['Easy'], 2.5, 6, 2);
-      
+
       expect(result.interval).toBe(15); // Continue
       expect(result.easeFactor).toBeGreaterThan(2.5); // Increase
     });

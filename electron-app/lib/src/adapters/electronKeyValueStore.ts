@@ -8,11 +8,18 @@
  */
 
 import Store from 'electron-store';
-import type { IKeyValueStore } from 'xenolexia-typescript';
+
+import type {IKeyValueStore} from 'xenolexia-typescript';
 
 let storeInstance: InstanceType<typeof Store> | null = null;
 
-function getStore(): InstanceType<typeof Store> & { get: (k: string) => unknown; set: (k: string, v: unknown) => void; delete: (k: string) => void; clear: () => void; store?: Record<string, unknown> } {
+function getStore(): InstanceType<typeof Store> & {
+  get: (k: string) => unknown;
+  set: (k: string, v: unknown) => void;
+  delete: (k: string) => void;
+  clear: () => void;
+  store?: Record<string, unknown>;
+} {
   if (!storeInstance) {
     storeInstance = new Store() as any;
   }
@@ -40,7 +47,7 @@ export function createElectronKeyValueStore(): IKeyValueStore {
     },
     async multiGet(keys: string[]): Promise<Array<[string, string | null]>> {
       const s = getStore();
-      return keys.map((k) => [k, (s.get(k) as string) ?? null]);
+      return keys.map(k => [k, (s.get(k) as string) ?? null]);
     },
     async multiSet(pairs: Array<[string, string]>): Promise<void> {
       const s = getStore();

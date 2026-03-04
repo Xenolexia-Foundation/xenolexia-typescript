@@ -8,9 +8,12 @@
  */
 
 import React from 'react';
-import {render, screen, fireEvent, waitFor} from '../test-utils';
+
 import {LibraryScreen} from '@screens/Library/LibraryScreen';
+
 import {useLibraryStore} from '@stores/libraryStore';
+
+import {render, screen, fireEvent, waitFor} from '../test-utils';
 
 import type {Book} from '@/types';
 
@@ -168,9 +171,7 @@ describe('LibraryScreen', () => {
     it('filters books by title', async () => {
       render(<LibraryScreen />);
 
-      const searchInput = await screen.findByPlaceholderText(
-        'Search your library...',
-      );
+      const searchInput = await screen.findByPlaceholderText('Search your library...');
       fireEvent.changeText(searchInput, 'Pride');
 
       await waitFor(() => {
@@ -182,9 +183,7 @@ describe('LibraryScreen', () => {
     it('filters books by author', async () => {
       render(<LibraryScreen />);
 
-      const searchInput = await screen.findByPlaceholderText(
-        'Search your library...',
-      );
+      const searchInput = await screen.findByPlaceholderText('Search your library...');
       fireEvent.changeText(searchInput, 'Dickens');
 
       await waitFor(() => {

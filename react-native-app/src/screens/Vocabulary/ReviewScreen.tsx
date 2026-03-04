@@ -7,30 +7,30 @@
  * Review Screen - Spaced repetition flashcard review
  */
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  Animated,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RouteProp } from '@react-navigation/native';
+import React, {useState, useCallback, useEffect, useRef} from 'react';
 
-import { useTheme } from '@theme/index';
-import type { VocabularyItem, RootStackParamList } from '@/types';
-import { useVocabularyStore } from '@stores/vocabularyStore';
-import { useStatisticsStore } from '@stores/statisticsStore';
+import {View, StyleSheet, TouchableOpacity, Alert, Animated} from 'react-native';
+
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+import {useNavigation, useRoute} from '@react-navigation/native';
+
+import {EmptyState} from '@components/common';
 import {
   FlashCard,
   GradingButtons,
   ReviewProgress,
   ReviewSessionSummary,
 } from '@components/vocabulary';
-import { EmptyState } from '@components/common';
+
+import {useStatisticsStore} from '@stores/statisticsStore';
+import {useVocabularyStore} from '@stores/vocabularyStore';
+
+import {useTheme} from '@theme/index';
+
+import type {VocabularyItem, RootStackParamList} from '@/types';
+import type {RouteProp} from '@react-navigation/native';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 // ============================================================================
 // Types
@@ -56,10 +56,10 @@ interface SessionStats {
 export function ReviewScreen(): React.JSX.Element {
   const navigation = useNavigation<ReviewScreenNavigationProp>();
   const route = useRoute<ReviewScreenRouteProp>();
-  const { colors } = useTheme();
+  const {colors} = useTheme();
 
-  const { getDueForReview, recordReview, vocabulary } = useVocabularyStore();
-  const { recordReviewSession } = useStatisticsStore();
+  const {getDueForReview, recordReview, vocabulary} = useVocabularyStore();
+  const {recordReviewSession} = useStatisticsStore();
 
   // State
   const [cards, setCards] = useState<VocabularyItem[]>([]);
@@ -94,7 +94,7 @@ export function ReviewScreen(): React.JSX.Element {
 
       let reviewCards: VocabularyItem[];
       if (wordIds && wordIds.length > 0) {
-        reviewCards = vocabulary.filter((v) => wordIds.includes(v.id));
+        reviewCards = vocabulary.filter(v => wordIds.includes(v.id));
       } else {
         reviewCards = await getDueForReview();
       }
@@ -103,7 +103,7 @@ export function ReviewScreen(): React.JSX.Element {
       const shuffled = [...reviewCards].sort(() => Math.random() - 0.5);
 
       setCards(shuffled);
-      setSessionStats((prev) => ({
+      setSessionStats(prev => ({
         ...prev,
         totalCards: shuffled.length,
         startTime: Date.now(),
@@ -119,7 +119,7 @@ export function ReviewScreen(): React.JSX.Element {
   const currentCard = cards[currentIndex];
 
   const handleFlip = useCallback(() => {
-    setIsFlipped((prev) => !prev);
+    setIsFlipped(prev => !prev);
   }, []);
 
   const handleGrade = useCallback(
@@ -134,8 +134,8 @@ export function ReviewScreen(): React.JSX.Element {
       }
 
       // Update session stats
-      setSessionStats((prev) => {
-        const newStats = { ...prev };
+      setSessionStats(prev => {
+        const newStats = {...prev};
         if (quality >= 2) {
           newStats.correctCount += 1;
         }
@@ -171,7 +171,7 @@ export function ReviewScreen(): React.JSX.Element {
       ]).start(() => {
         // Move to next card or complete
         if (currentIndex < cards.length - 1) {
-          setCurrentIndex((prev) => prev + 1);
+          setCurrentIndex(prev => prev + 1);
           setIsFlipped(false);
 
           // Reset animation
@@ -191,7 +191,16 @@ export function ReviewScreen(): React.JSX.Element {
         }
       });
     },
-    [currentCard, currentIndex, cards.length, cardOpacity, cardTranslateX, recordReview, sessionStats, recordReviewSession]
+    [
+      currentCard,
+      currentIndex,
+      cards.length,
+      cardOpacity,
+      cardTranslateX,
+      recordReview,
+      sessionStats,
+      recordReviewSession,
+    ]
   );
 
   const handleContinue = useCallback(() => {
@@ -206,7 +215,7 @@ export function ReviewScreen(): React.JSX.Element {
         // This is a simplification - in a real app we'd track which cards failed
         return true;
       })
-      .map((c) => c.id);
+      .map(c => c.id);
 
     // Reset for another round
     setCurrentIndex(0);
@@ -228,14 +237,10 @@ export function ReviewScreen(): React.JSX.Element {
 
   const handleBack = useCallback(() => {
     if (currentIndex > 0 && !isComplete) {
-      Alert.alert(
-        'End Review?',
-        'Your progress in this session will be saved.',
-        [
-          { text: 'Continue Review', style: 'cancel' },
-          { text: 'End Review', onPress: () => navigation.goBack() },
-        ]
-      );
+      Alert.alert('End Review?', 'Your progress in this session will be saved.', [
+        {text: 'Continue Review', style: 'cancel'},
+        {text: 'End Review', onPress: () => navigation.goBack()},
+      ]);
     } else {
       navigation.goBack();
     }
@@ -244,11 +249,11 @@ export function ReviewScreen(): React.JSX.Element {
   // Loading state
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
         <View style={styles.loadingContainer}>
           <TextDisplay
             text="Loading cards..."
-            style={[styles.loadingText, { color: colors.text.secondary }]}
+            style={[styles.loadingText, {color: colors.text.secondary}]}
           />
         </View>
       </SafeAreaView>
@@ -258,18 +263,12 @@ export function ReviewScreen(): React.JSX.Element {
   // Empty state
   if (cards.length === 0) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
         <View style={styles.header}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <TextDisplay
-              text="←"
-              style={[styles.backButtonText, { color: colors.text.primary }]}
-            />
+            <TextDisplay text="←" style={[styles.backButtonText, {color: colors.text.primary}]} />
           </TouchableOpacity>
-          <TextDisplay
-            text="Review"
-            style={[styles.headerTitle, { color: colors.text.primary }]}
-          />
+          <TextDisplay text="Review" style={[styles.headerTitle, {color: colors.text.primary}]} />
           <View style={styles.headerSpacer} />
         </View>
 
@@ -289,7 +288,7 @@ export function ReviewScreen(): React.JSX.Element {
     const timeSpent = Math.floor((Date.now() - sessionStats.startTime) / 1000);
 
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+      <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
         <ReviewSessionSummary
           totalCards={sessionStats.totalCards}
           correctCount={sessionStats.correctCount}
@@ -307,19 +306,13 @@ export function ReviewScreen(): React.JSX.Element {
 
   // Main review UI
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background.primary }]}>
+    <SafeAreaView style={[styles.container, {backgroundColor: colors.background.primary}]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <TextDisplay
-            text="←"
-            style={[styles.backButtonText, { color: colors.text.primary }]}
-          />
+          <TextDisplay text="←" style={[styles.backButtonText, {color: colors.text.primary}]} />
         </TouchableOpacity>
-        <TextDisplay
-          text="Review"
-          style={[styles.headerTitle, { color: colors.text.primary }]}
-        />
+        <TextDisplay text="Review" style={[styles.headerTitle, {color: colors.text.primary}]} />
         <View style={styles.headerSpacer} />
       </View>
 
@@ -337,21 +330,17 @@ export function ReviewScreen(): React.JSX.Element {
             styles.cardWrapper,
             {
               opacity: cardOpacity,
-              transform: [{ translateX: cardTranslateX }],
+              transform: [{translateX: cardTranslateX}],
             },
           ]}
         >
-          <FlashCard
-            word={currentCard}
-            isFlipped={isFlipped}
-            onFlip={handleFlip}
-          />
+          <FlashCard word={currentCard} isFlipped={isFlipped} onFlip={handleFlip} />
         </Animated.View>
       </View>
 
       {/* Grading buttons (only show when flipped) */}
       {isFlipped && (
-        <View style={[styles.gradingContainer, { backgroundColor: colors.background.primary }]}>
+        <View style={[styles.gradingContainer, {backgroundColor: colors.background.primary}]}>
           <GradingButtons onGrade={handleGrade} />
         </View>
       )}
@@ -361,7 +350,7 @@ export function ReviewScreen(): React.JSX.Element {
         <View style={styles.flipHintContainer}>
           <TextDisplay
             text="Tap the card to reveal the answer"
-            style={[styles.flipHint, { color: colors.text.tertiary }]}
+            style={[styles.flipHint, {color: colors.text.tertiary}]}
           />
         </View>
       )}
@@ -370,8 +359,8 @@ export function ReviewScreen(): React.JSX.Element {
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 

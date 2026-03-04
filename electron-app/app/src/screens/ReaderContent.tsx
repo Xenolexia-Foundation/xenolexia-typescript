@@ -8,8 +8,13 @@
  */
 
 import React, {useEffect, useRef, useCallback} from 'react';
+
+import {
+  generateInjectedScript,
+  generateForeignWordStyles,
+} from '@xenolexia/shared/services/TranslationEngine';
+
 import type {Book, ForeignWordData} from '@xenolexia/shared/types';
-import {generateInjectedScript, generateForeignWordStyles} from '@xenolexia/shared/services/TranslationEngine';
 import './ReaderContent.css';
 
 interface ReaderContentProps {
@@ -19,6 +24,10 @@ interface ReaderContentProps {
   onWordHover: (word: ForeignWordData) => void;
   onWordHoverEnd: () => void;
   onProgressChange?: (progress: number) => void;
+  /** Search within text: query and current match index (0-based). */
+  searchQuery?: string;
+  searchMatchIndex?: number;
+  onSearchMatchesCount?: (count: number) => void;
 }
 
 export function ReaderContent({
@@ -28,6 +37,9 @@ export function ReaderContent({
   onWordHover,
   onWordHoverEnd,
   onProgressChange,
+  searchQuery,
+  searchMatchIndex = 0,
+  onSearchMatchesCount,
 }: ReaderContentProps): React.JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -90,7 +102,7 @@ export function ReaderContent({
       const target = e.target as HTMLElement;
       if (target && target.classList.contains('foreign-word')) {
         hoveredElementRef.current = target;
-        
+
         // Clear any existing timeout
         if (hoverTimeoutRef.current) {
           clearTimeout(hoverTimeoutRef.current);
@@ -116,6 +128,12 @@ export function ReaderContent({
                 variants: [],
                 pronunciation: target.dataset.pronunciation || undefined,
               },
+              ...(target.dataset.alternatives && {
+                alternatives: target.dataset.alternatives
+                  .split('|')
+                  .map(s => s.trim())
+                  .filter(Boolean),
+              }),
             };
             onWordHover(wordData);
           }
@@ -140,7 +158,7 @@ export function ReaderContent({
       if (target && target.classList.contains('foreign-word')) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         const wordData: ForeignWordData = {
           originalWord: target.dataset.original || '',
           foreignWord: target.textContent || '',
@@ -158,6 +176,12 @@ export function ReaderContent({
             variants: [],
             pronunciation: target.dataset.pronunciation || undefined,
           },
+          ...(target.dataset.alternatives && {
+            alternatives: target.dataset.alternatives
+              .split('|')
+              .map(s => s.trim())
+              .filter(Boolean),
+          }),
         };
         onWordClick(wordData);
       }
@@ -188,7 +212,8 @@ export function ReaderContent({
 
     if (!html || html.trim().length === 0) {
       console.warn('ReaderContent: HTML is empty');
-      container.innerHTML = '<div style="padding: 2em; text-align: center;"><p>No content available</p></div>';
+      container.innerHTML =
+        '<div style="padding: 2em; text-align: center;"><p>No content available</p></div>';
       return;
     }
 
@@ -197,7 +222,7 @@ export function ReaderContent({
     // Extract body content from full HTML document
     const bodyContent = extractBodyContent(html);
     console.log('ReaderContent: Body content length:', bodyContent.length);
-    
+
     // If the HTML is a full document, we should render it in an iframe or extract body
     // For now, let's check if it's a full document
     if (html.includes('<!DOCTYPE') || html.includes('<html')) {
@@ -235,6 +260,69 @@ export function ReaderContent({
 
     console.log('ReaderContent: HTML rendered successfully');
   }, [html, extractBodyContent]);
+
+  // Search highlight: apply/clear highlights and scroll to current match
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const SEARCH_CLASS = 'reader-search-hit';
+
+    const clearHighlights = () => {
+      container.querySelectorAll(`.${SEARCH_CLASS}`).forEach(el => {
+        const parent = el.parentNode;
+        if (!parent) return;
+        while (el.firstChild) parent.insertBefore(el.firstChild, el);
+        parent.removeChild(el);
+      });
+    };
+
+    if (!searchQuery || !searchQuery.trim()) {
+      clearHighlights();
+      onSearchMatchesCount?.(0);
+      return;
+    }
+
+    clearHighlights();
+    const q = searchQuery.trim();
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escaped, 'gi');
+    let count = 0;
+    const matches: Element[] = [];
+
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+    const textNodes: Text[] = [];
+    let n: Node | null;
+    while ((n = walker.nextNode()) !== null) {
+      const text = (n as Text).textContent;
+      if (text && regex.test(text)) textNodes.push(n as Text);
+    }
+
+    textNodes.forEach(textNode => {
+      const text = textNode.textContent || '';
+      regex.lastIndex = 0;
+      let lastIndex = 0;
+      const fragment = document.createDocumentFragment();
+      let m: RegExpExecArray | null;
+      while ((m = regex.exec(text)) !== null) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, m.index)));
+        const mark = document.createElement('mark');
+        mark.className = SEARCH_CLASS;
+        mark.appendChild(document.createTextNode(m[0]));
+        fragment.appendChild(mark);
+        matches.push(mark);
+        count++;
+        lastIndex = m.index + m[0].length;
+      }
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+      textNode.parentNode?.replaceChild(fragment, textNode);
+    });
+
+    onSearchMatchesCount?.(count);
+    const idx = count > 0 ? Math.min(searchMatchIndex, count - 1) : 0;
+    const target = matches[idx];
+    if (target) target.scrollIntoView({behavior: 'smooth', block: 'center'});
+  }, [html, searchQuery, searchMatchIndex, onSearchMatchesCount]);
 
   return <div ref={containerRef} className="reader-html-content" />;
 }

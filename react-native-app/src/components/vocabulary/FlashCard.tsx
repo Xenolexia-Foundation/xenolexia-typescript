@@ -13,19 +13,15 @@
  * - Swipe gestures for grading
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  Animated,
-  Platform,
-} from 'react-native';
+import React, {useState, useCallback, useEffect} from 'react';
 
-import { useTheme } from '@theme/index';
-import type { VocabularyItem } from '@/types';
-import { getLanguageInfo } from '@/types';
+import {View, StyleSheet, TouchableOpacity, Dimensions, Animated, Platform} from 'react-native';
+
+import {getLanguageInfo} from '@/types';
+
+import {useTheme} from '@theme/index';
+
+import type {VocabularyItem} from '@/types';
 
 // ============================================================================
 // Types
@@ -43,15 +39,11 @@ interface FlashCardProps {
 // Component
 // ============================================================================
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const {width: SCREEN_WIDTH} = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH - 48;
 
-export function FlashCard({
-  word,
-  isFlipped,
-  onFlip,
-}: FlashCardProps): React.JSX.Element {
-  const { colors } = useTheme();
+export function FlashCard({word, isFlipped, onFlip}: FlashCardProps): React.JSX.Element {
+  const {colors} = useTheme();
   const flipAnim = React.useRef(new Animated.Value(0)).current;
 
   // Animate flip
@@ -105,11 +97,7 @@ export function FlashCard({
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.95}
-      onPress={onFlip}
-      style={styles.container}
-    >
+    <TouchableOpacity activeOpacity={0.95} onPress={onFlip} style={styles.container}>
       {/* Front of card */}
       <Animated.View
         style={[
@@ -118,27 +106,27 @@ export function FlashCard({
           {
             backgroundColor: colors.background.primary,
             borderColor: colors.border.primary,
-            transform: [{ rotateY: frontRotate }],
+            transform: [{rotateY: frontRotate}],
             opacity: frontOpacity,
           },
         ]}
       >
         {/* Language badge */}
-        <View style={[styles.languageBadge, { backgroundColor: colors.background.secondary }]}>
+        <View style={[styles.languageBadge, {backgroundColor: colors.background.secondary}]}>
           <TextDisplay
             text={`${targetLanguage?.flag || ''} ${targetLanguage?.name || ''}`}
-            style={[styles.languageText, { color: colors.text.secondary }]}
+            style={[styles.languageText, {color: colors.text.secondary}]}
           />
         </View>
 
         {/* Status indicator */}
-        <View style={[styles.statusIndicator, { backgroundColor: getStatusColor() }]} />
+        <View style={[styles.statusIndicator, {backgroundColor: getStatusColor()}]} />
 
         {/* Foreign word */}
         <View style={styles.wordContainer}>
           <TextDisplay
             text={word.targetWord}
-            style={[styles.foreignWord, { color: colors.primary[500] }]}
+            style={[styles.foreignWord, {color: colors.primary[500]}]}
           />
         </View>
 
@@ -146,15 +134,15 @@ export function FlashCard({
         <View style={styles.hintContainer}>
           <TextDisplay
             text="Tap to reveal"
-            style={[styles.hintText, { color: colors.text.tertiary }]}
+            style={[styles.hintText, {color: colors.text.tertiary}]}
           />
         </View>
 
         {/* Review count */}
-        <View style={[styles.reviewBadge, { backgroundColor: colors.background.secondary }]}>
+        <View style={[styles.reviewBadge, {backgroundColor: colors.background.secondary}]}>
           <TextDisplay
             text={`${word.reviewCount} reviews`}
-            style={[styles.reviewText, { color: colors.text.tertiary }]}
+            style={[styles.reviewText, {color: colors.text.tertiary}]}
           />
         </View>
       </Animated.View>
@@ -167,16 +155,16 @@ export function FlashCard({
           {
             backgroundColor: colors.background.primary,
             borderColor: colors.border.primary,
-            transform: [{ rotateY: backRotate }],
+            transform: [{rotateY: backRotate}],
             opacity: backOpacity,
           },
         ]}
       >
         {/* Language badge */}
-        <View style={[styles.languageBadge, { backgroundColor: colors.background.secondary }]}>
+        <View style={[styles.languageBadge, {backgroundColor: colors.background.secondary}]}>
           <TextDisplay
             text={`${sourceLanguage?.flag || ''} ${sourceLanguage?.name || ''}`}
-            style={[styles.languageText, { color: colors.text.secondary }]}
+            style={[styles.languageText, {color: colors.text.secondary}]}
           />
         </View>
 
@@ -184,7 +172,7 @@ export function FlashCard({
         <View style={styles.wordContainer}>
           <TextDisplay
             text={word.sourceWord}
-            style={[styles.originalWord, { color: colors.text.primary }]}
+            style={[styles.originalWord, {color: colors.text.primary}]}
           />
         </View>
 
@@ -192,16 +180,16 @@ export function FlashCard({
         <View style={styles.reminderContainer}>
           <TextDisplay
             text={word.targetWord}
-            style={[styles.reminderWord, { color: colors.primary[500] }]}
+            style={[styles.reminderWord, {color: colors.primary[500]}]}
           />
         </View>
 
         {/* Context sentence */}
         {word.contextSentence && (
-          <View style={[styles.contextContainer, { backgroundColor: colors.background.secondary }]}>
+          <View style={[styles.contextContainer, {backgroundColor: colors.background.secondary}]}>
             <TextDisplay
               text={`"${word.contextSentence}"`}
-              style={[styles.contextText, { color: colors.text.secondary }]}
+              style={[styles.contextText, {color: colors.text.secondary}]}
             />
           </View>
         )}
@@ -211,7 +199,7 @@ export function FlashCard({
           <View style={styles.bookContainer}>
             <TextDisplay
               text={`📖 ${word.bookTitle}`}
-              style={[styles.bookText, { color: colors.text.tertiary }]}
+              style={[styles.bookText, {color: colors.text.tertiary}]}
             />
           </View>
         )}
@@ -221,8 +209,8 @@ export function FlashCard({
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 
@@ -251,7 +239,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
+        shadowOffset: {width: 0, height: 8},
         shadowOpacity: 0.15,
         shadowRadius: 16,
       },

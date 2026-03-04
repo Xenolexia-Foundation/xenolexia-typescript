@@ -10,17 +10,14 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Modal,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+
+import {View, StyleSheet, Modal, Pressable, ActivityIndicator} from 'react-native';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
+
 import {Text, Button} from '@components/ui';
+
 import type {ImportProgress, ImportStatus} from '@services/ImportService';
 
 // ============================================================================
@@ -38,19 +35,17 @@ interface ImportProgressModalProps {
 // Status Config
 // ============================================================================
 
-const STATUS_CONFIG: Record<
-  ImportStatus,
-  {icon: string; color: 'primary' | 'success' | 'error'}
-> = {
-  idle: {icon: '📁', color: 'primary'},
-  selecting: {icon: '🔍', color: 'primary'},
-  copying: {icon: '📥', color: 'primary'},
-  parsing: {icon: '📖', color: 'primary'},
-  extracting_cover: {icon: '🖼️', color: 'primary'},
-  saving: {icon: '💾', color: 'primary'},
-  complete: {icon: '✅', color: 'success'},
-  error: {icon: '❌', color: 'error'},
-};
+const STATUS_CONFIG: Record<ImportStatus, {icon: string; color: 'primary' | 'success' | 'error'}> =
+  {
+    idle: {icon: '📁', color: 'primary'},
+    selecting: {icon: '🔍', color: 'primary'},
+    copying: {icon: '📥', color: 'primary'},
+    parsing: {icon: '📖', color: 'primary'},
+    extracting_cover: {icon: '🖼️', color: 'primary'},
+    saving: {icon: '💾', color: 'primary'},
+    complete: {icon: '✅', color: 'success'},
+    error: {icon: '❌', color: 'error'},
+  };
 
 // ============================================================================
 // Component
@@ -78,15 +73,12 @@ export function ImportProgressModal({
   };
 
   return (
-    <Modal
-      transparent
-      visible={visible}
-      animationType="fade"
-      onRequestClose={handleDismiss}>
+    <Modal transparent visible={visible} animationType="fade" onRequestClose={handleDismiss}>
       <Pressable style={styles.backdrop} onPress={handleDismiss}>
         <Pressable
           style={[styles.container, {backgroundColor: colors.surface}]}
-          onPress={e => e.stopPropagation()}>
+          onPress={e => e.stopPropagation()}
+        >
           {/* Icon */}
           <View
             style={[
@@ -99,7 +91,8 @@ export function ImportProgressModal({
                       ? colors.errorLight
                       : colors.primaryLight,
               },
-            ]}>
+            ]}
+          >
             <Text style={styles.icon}>{statusConfig.icon}</Text>
           </View>
 
@@ -112,18 +105,15 @@ export function ImportProgressModal({
           <Text
             variant="bodyMedium"
             color={isError ? 'error' : 'secondary'}
-            style={styles.statusText}>
+            style={styles.statusText}
+          >
             {progress.error || progress.currentStep}
           </Text>
 
           {/* Progress Bar */}
           {isInProgress && (
             <View style={styles.progressContainer}>
-              <View
-                style={[
-                  styles.progressBar,
-                  {backgroundColor: colors.primaryLight},
-                ]}>
+              <View style={[styles.progressBar, {backgroundColor: colors.primaryLight}]}>
                 <View
                   style={[
                     styles.progressFill,
@@ -142,11 +132,7 @@ export function ImportProgressModal({
 
           {/* Loading Indicator */}
           {isInProgress && (
-            <ActivityIndicator
-              color={colors.primary}
-              size="small"
-              style={styles.loader}
-            />
+            <ActivityIndicator color={colors.primary} size="small" style={styles.loader} />
           )}
 
           {/* Actions */}
@@ -158,9 +144,7 @@ export function ImportProgressModal({
             )}
 
             {(isComplete || isError) && (
-              <Button
-                variant={isError ? 'outline' : 'primary'}
-                onPress={onDismiss}>
+              <Button variant={isError ? 'outline' : 'primary'} onPress={onDismiss}>
                 {isError ? 'Try Again' : 'Done'}
               </Button>
             )}

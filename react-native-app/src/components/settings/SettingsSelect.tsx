@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 interface Option {
@@ -21,11 +22,7 @@ interface SettingsSelectProps {
   onSelect: (value: string) => void;
 }
 
-export function SettingsSelect({
-  value,
-  options,
-  onSelect,
-}: SettingsSelectProps): React.JSX.Element {
+export function SettingsSelect({value, options, onSelect}: SettingsSelectProps): React.JSX.Element {
   return (
     <View style={styles.container}>
       {options.map((option, index) => {
@@ -42,7 +39,8 @@ export function SettingsSelect({
               isFirst && styles.optionFirst,
               isLast && styles.optionLast,
             ]}
-            onPress={() => onSelect(option.value)}>
+            onPress={() => onSelect(option.value)}
+          >
             <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
               {option.label}
             </Text>
@@ -55,31 +53,31 @@ export function SettingsSelect({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
     backgroundColor: '#f3f4f6',
     borderRadius: 10,
+    flexDirection: 'row',
     padding: 4,
   },
   option: {
-    flex: 1,
-    paddingVertical: 10,
     alignItems: 'center',
     borderRadius: 8,
+    flex: 1,
+    paddingVertical: 10,
   },
+  optionFirst: {},
+  optionLast: {},
   optionSelected: {
     backgroundColor: '#ffffff',
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 2,
   },
-  optionFirst: {},
-  optionLast: {},
   optionText: {
+    color: '#6b7280',
     fontSize: 14,
     fontWeight: '500',
-    color: '#6b7280',
   },
   optionTextSelected: {
     color: '#1f2937',

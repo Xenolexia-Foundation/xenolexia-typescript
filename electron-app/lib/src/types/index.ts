@@ -24,19 +24,34 @@ export type {
   ReaderTheme,
   ReaderSettings,
   ForeignWordData,
+  FavouriteWord,
   ProcessedChapter,
   ReadingSession,
   ReadingStats,
   UserPreferences,
   AppState,
 } from 'xenolexia-typescript';
-export { SUPPORTED_LANGUAGES, getLanguageInfo, getLanguageName } from 'xenolexia-typescript';
+export {SUPPORTED_LANGUAGES, getLanguageInfo, getLanguageName} from 'xenolexia-typescript';
+
+export type {
+  IDataStore,
+  BookRow,
+  VocabularyRow,
+  SessionRow,
+  WordListRow,
+  BookSort,
+  BookFilter,
+  VocabularySort,
+  VocabularyFilter,
+  QueryResult,
+  MigrationDefinition,
+} from 'xenolexia-typescript';
 
 // Electron app navigation param lists (used by navigation.ts)
 export interface RootStackParamList {
   MainTabs: undefined;
   Onboarding: undefined;
-  Reader: { bookId: string };
+  Reader: {bookId: string};
   Settings: undefined;
   About: undefined;
 }
@@ -48,3 +63,5 @@ export interface MainTabsParamList {
 }
 
 export * from './navigation';
+
+export type {ElectronAPI} from './electron';

@@ -59,10 +59,7 @@ export function Modal({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div
-        className={`modal-content modal-${size}`}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={`modal-content modal-${size}`} onClick={e => e.stopPropagation()}>
         {(title || showCloseButton) && (
           <div className="modal-header">
             {title && <h2 className="modal-title">{title}</h2>}

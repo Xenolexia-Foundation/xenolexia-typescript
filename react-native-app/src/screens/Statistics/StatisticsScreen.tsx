@@ -8,17 +8,8 @@
  */
 
 import React, {useMemo} from 'react';
+
 import {View, StyleSheet, ScrollView, RefreshControl} from 'react-native';
-
-import {SafeAreaView} from 'react-native-safe-area-context';
-
-import {useColors} from '@/theme';
-import {spacing, borderRadius} from '@/theme/tokens';
-
-import {useStatisticsStore} from '@stores/statisticsStore';
-import {StatCard} from '@components/statistics/StatCard';
-import {ScreenHeader, LoadingStats} from '@components/common';
-import {Text, Card} from '@components/ui';
 
 import {
   getLevelFromXp,
@@ -26,6 +17,17 @@ import {
   getXpToNextLevel,
   getAllAchievementsWithProgress,
 } from 'xenolexia-typescript';
+
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+import {useColors} from '@/theme';
+import {spacing, borderRadius} from '@/theme/tokens';
+
+import {ScreenHeader, LoadingStats} from '@components/common';
+import {StatCard} from '@components/statistics/StatCard';
+import {Text, Card} from '@components/ui';
+
+import {useStatisticsStore} from '@stores/statisticsStore';
 
 export function StatisticsScreen(): React.JSX.Element {
   const colors = useColors();
@@ -62,7 +64,10 @@ export function StatisticsScreen(): React.JSX.Element {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['top']}>
+      <SafeAreaView
+        style={[styles.container, {backgroundColor: colors.background}]}
+        edges={['top']}
+      >
         <ScreenHeader title="Statistics" subtitle="Track your learning journey" />
         <LoadingStats />
       </SafeAreaView>
@@ -253,7 +258,13 @@ export function StatisticsScreen(): React.JSX.Element {
                 <Text variant="labelMedium" numberOfLines={1}>
                   {definition.name}
                 </Text>
-                <View style={[styles.progressBar, styles.achievementProgress, {backgroundColor: colors.border}]}>
+                <View
+                  style={[
+                    styles.progressBar,
+                    styles.achievementProgress,
+                    {backgroundColor: colors.border},
+                  ]}
+                >
                   <View
                     style={[
                       styles.progressFill,
@@ -274,6 +285,23 @@ export function StatisticsScreen(): React.JSX.Element {
 }
 
 const styles = StyleSheet.create({
+  achievementCard: {
+    alignItems: 'center',
+    minWidth: 140,
+    width: '47%',
+  },
+  achievementGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing[3],
+  },
+  achievementIcon: {
+    marginBottom: spacing[2],
+  },
+  achievementProgress: {
+    marginTop: spacing[2],
+    width: '100%',
+  },
   container: {
     flex: 1,
   },
@@ -285,6 +313,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  levelCard: {
+    marginTop: spacing[4],
+  },
+  levelRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: spacing[2],
   },
   progressBar: {
     borderRadius: borderRadius.full,
@@ -337,33 +374,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 60,
   },
-  levelCard: {
-    marginTop: spacing[4],
-  },
-  levelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing[2],
-  },
   xpToNext: {
     marginTop: spacing[2],
-  },
-  achievementGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing[3],
-  },
-  achievementCard: {
-    width: '47%',
-    minWidth: 140,
-    alignItems: 'center',
-  },
-  achievementIcon: {
-    marginBottom: spacing[2],
-  },
-  achievementProgress: {
-    marginTop: spacing[2],
-    width: '100%',
   },
 });

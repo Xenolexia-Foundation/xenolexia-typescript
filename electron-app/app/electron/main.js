@@ -19,7 +19,13 @@ async function loadWindowState() {
     const state = JSON.parse(data);
     const {width, height, x, y, isMaximized} = state;
     if (typeof width === 'number' && typeof height === 'number' && width >= 800 && height >= 600) {
-      return {width, height, x: typeof x === 'number' ? x : undefined, y: typeof y === 'number' ? y : undefined, isMaximized: !!isMaximized};
+      return {
+        width,
+        height,
+        x: typeof x === 'number' ? x : undefined,
+        y: typeof y === 'number' ? y : undefined,
+        isMaximized: !!isMaximized,
+      };
     }
   } catch (_) {
     // Ignore missing or invalid state
@@ -83,33 +89,39 @@ async function createWindow() {
   const htmlPath = app.isPackaged
     ? path.join(process.resourcesPath, 'dist', 'index.html')
     : path.join(__dirname, '..', 'dist', 'index.html');
-  
+
   // Verify preload script exists
   const preloadPath = path.join(__dirname, 'preload.js');
   fs.access(preloadPath)
     .then(() => {
       console.log('Preload script found at:', preloadPath);
     })
-    .catch((err) => {
+    .catch(err => {
       console.error('Preload script not found at:', preloadPath);
       console.error('Error:', err);
     });
-  
-  mainWindow.loadFile(htmlPath).catch((err) => {
+
+  mainWindow.loadFile(htmlPath).catch(err => {
     console.error('Failed to load file:', err);
     // Show error in window
-    mainWindow.loadURL(`data:text/html,<html><body style="font-family: sans-serif; padding: 20px;"><h1>Build Not Found</h1><p>Failed to load ${htmlPath}</p><p>Please run: <code>npm run build:assets</code> first</p></body></html>`);
+    mainWindow.loadURL(
+      `data:text/html,<html><body style="font-family: sans-serif; padding: 20px;"><h1>Build Not Found</h1><p>Failed to load ${htmlPath}</p><p>Please run: <code>npm run build:assets</code> first</p></body></html>`
+    );
   });
 
   // Verify electronAPI is available after page loads
   mainWindow.webContents.once('did-finish-load', () => {
-    mainWindow.webContents.executeJavaScript(`
+    mainWindow.webContents
+      .executeJavaScript(
+        `
       if (window.electronAPI) {
         console.log('Electron API is available');
       } else {
         console.error('Electron API is NOT available - preload script may have failed to load');
       }
-    `).catch(err => console.error('Failed to check electronAPI:', err));
+    `
+      )
+      .catch(err => console.error('Failed to check electronAPI:', err));
   });
 
   // Open DevTools in development mode
@@ -134,7 +146,6 @@ async function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-
 }
 
 // IPC Handlers
@@ -212,7 +223,7 @@ function setupIpcHandlers() {
   ipcMain.handle('app:getBooksDirectory', async () => {
     const userDataPath = app.getPath('userData');
     const booksDir = path.join(userDataPath, 'books');
-    
+
     // Ensure directory exists
     try {
       await fs.mkdir(booksDir, {recursive: true});
@@ -226,9 +237,9 @@ function setupIpcHandlers() {
   // Directory operations
   ipcMain.handle('file:readDir', async (event, dirPath) => {
     try {
-      const entries = await fs.readdir(dirPath, { withFileTypes: true });
+      const entries = await fs.readdir(dirPath, {withFileTypes: true});
       return Promise.all(
-        entries.map(async (entry) => {
+        entries.map(async entry => {
           const fullPath = path.join(dirPath, entry.name);
           const stat = entry.isFile() ? await fs.stat(fullPath) : null;
           return {
@@ -270,7 +281,10 @@ function setupIpcHandlers() {
     if (!databaseService) {
       // Lib path relative to this script (app/electron/main.js -> ../lib)
       const sharedRoot = path.resolve(__dirname, '..', '..', 'lib');
-      const dbPath = path.join(sharedRoot, 'src/services/StorageService/DatabaseService.electron.ts');
+      const dbPath = path.join(
+        sharedRoot,
+        'src/services/StorageService/DatabaseService.electron.ts'
+      );
       databaseService = require(dbPath).databaseService;
     }
     return databaseService;
@@ -287,59 +301,76 @@ function setupIpcHandlers() {
   });
 
   // Translation API in main process (avoids renderer fetch/CSP issues)
-  const ISO_LANGS = { en: 'en', el: 'el', es: 'es', fr: 'fr', de: 'de', it: 'it', pt: 'pt', ru: 'ru', ja: 'ja', zh: 'zh', ko: 'ko', ar: 'ar' };
-  ipcMain.handle('translation:translateBulk', async (event, { words, sourceLanguage, targetLanguage }) => {
-    const source = ISO_LANGS[sourceLanguage] || sourceLanguage;
-    const target = ISO_LANGS[targetLanguage] || targetLanguage;
-    const translations = {};
-    const failed = [];
-    const mirrors = ['https://libretranslate.com', 'https://translate.argosopentech.com'];
-    for (const word of words) {
-      let done = false;
-      for (const baseUrl of mirrors) {
-        try {
-          const res = await fetch(`${baseUrl}/translate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ q: word, source, target, format: 'text' }),
-          });
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (data.translatedText != null) {
-            translations[word] = data.translatedText;
-            done = true;
-            break;
+  const ISO_LANGS = {
+    en: 'en',
+    el: 'el',
+    es: 'es',
+    fr: 'fr',
+    de: 'de',
+    it: 'it',
+    pt: 'pt',
+    ru: 'ru',
+    ja: 'ja',
+    zh: 'zh',
+    ko: 'ko',
+    ar: 'ar',
+  };
+  ipcMain.handle(
+    'translation:translateBulk',
+    async (event, {words, sourceLanguage, targetLanguage}) => {
+      const source = ISO_LANGS[sourceLanguage] || sourceLanguage;
+      const target = ISO_LANGS[targetLanguage] || targetLanguage;
+      const translations = {};
+      const failed = [];
+      const mirrors = ['https://libretranslate.com', 'https://translate.argosopentech.com'];
+      for (const word of words) {
+        let done = false;
+        for (const baseUrl of mirrors) {
+          try {
+            const res = await fetch(`${baseUrl}/translate`, {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({q: word, source, target, format: 'text'}),
+            });
+            if (!res.ok) continue;
+            const data = await res.json();
+            if (data.translatedText != null) {
+              translations[word] = data.translatedText;
+              done = true;
+              break;
+            }
+          } catch (err) {
+            continue;
           }
-        } catch (err) {
-          continue;
         }
+        if (!done) failed.push(word);
       }
-      if (!done) failed.push(word);
+      return {translations, provider: 'libretranslate', failed};
     }
-    return { translations, provider: 'libretranslate', failed };
-  });
+  );
 
   // Dictionary download (main process fetch to avoid renderer CSP)
   const MAX_DICT_SIZE = 5 * 1024 * 1024; // 5MB
-  ipcMain.handle('dictionary:download', async (event, { url }) => {
+  ipcMain.handle('dictionary:download', async (event, {url}) => {
     if (!url || typeof url !== 'string') {
-      return { error: 'Invalid URL' };
+      return {error: 'Invalid URL'};
     }
     const u = url.trim();
     if (!u.startsWith('http://') && !u.startsWith('https://')) {
-      return { error: 'URL must be http or https' };
+      return {error: 'URL must be http or https'};
     }
     try {
-      const res = await fetch(u, { signal: AbortSignal.timeout(60000) });
-      if (!res.ok) return { error: `HTTP ${res.status}` };
+      const res = await fetch(u, {signal: AbortSignal.timeout(60000)});
+      if (!res.ok) return {error: `HTTP ${res.status}`};
       const contentLength = res.headers.get('content-length');
       if (contentLength && parseInt(contentLength, 10) > MAX_DICT_SIZE) {
-        return { error: 'Dictionary file too large (max 5MB)' };
+        return {error: 'Dictionary file too large (max 5MB)'};
       }
       const text = await res.text();
-      if (text.length > MAX_DICT_SIZE) return { error: 'Dictionary file too large (max 5MB)' };
+      if (text.length > MAX_DICT_SIZE) return {error: 'Dictionary file too large (max 5MB)'};
       const data = JSON.parse(text);
-      if (!Array.isArray(data)) return { error: 'JSON must be an array of { source, target } entries' };
+      if (!Array.isArray(data))
+        return {error: 'JSON must be an array of { source, target } entries'};
       const words = [];
       for (let i = 0; i < data.length; i++) {
         const row = data[i];
@@ -356,10 +387,10 @@ function setupIpcHandlers() {
           pronunciation: typeof row.pronunciation === 'string' ? row.pronunciation : undefined,
         });
       }
-      return { words };
+      return {words};
     } catch (err) {
       const msg = err && err.message ? err.message : String(err);
-      return { error: msg };
+      return {error: msg};
     }
   });
 }
@@ -370,7 +401,15 @@ function createTray() {
     tray = new Tray(iconPath);
     tray.setToolTip('Xenolexia');
     const contextMenu = Menu.buildFromTemplate([
-      {label: 'Show Xenolexia', click: () => { if (mainWindow) { mainWindow.show(); mainWindow.focus(); } }},
+      {
+        label: 'Show Xenolexia',
+        click: () => {
+          if (mainWindow) {
+            mainWindow.show();
+            mainWindow.focus();
+          }
+        },
+      },
       {type: 'separator'},
       {label: 'Quit', click: () => app.quit()},
     ]);
@@ -463,6 +502,15 @@ function createMenu(win) {
           click: () => {
             if (mainWindow) {
               mainWindow.webContents.send('menu-my-library');
+            }
+          },
+        },
+        {
+          label: 'Favourite Words',
+          accelerator: 'CmdOrCtrl+2',
+          click: () => {
+            if (mainWindow) {
+              mainWindow.webContents.send('menu-favourites');
             }
           },
         },

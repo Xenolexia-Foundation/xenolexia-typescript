@@ -29,8 +29,4 @@ export {
   injectedScript,
   foreignWordStyles,
 } from 'xenolexia-typescript';
-export type {
-  TranslationOptions,
-  ProcessedText,
-  InjectedScriptOptions,
-} from 'xenolexia-typescript';
+export type {TranslationOptions, ProcessedText, InjectedScriptOptions} from 'xenolexia-typescript';

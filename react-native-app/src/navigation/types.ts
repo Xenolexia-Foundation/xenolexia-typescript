@@ -7,16 +7,19 @@
  * Navigation Types - Comprehensive type definitions for app navigation
  */
 
+import type {RootStackParamList, MainTabsParamList} from '@/types';
+import type {BottomTabNavigationProp, BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import type {
   CompositeNavigationProp,
   CompositeScreenProps,
   RouteProp,
 } from '@react-navigation/native';
-import type {NativeStackNavigationProp, NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {BottomTabNavigationProp, BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+import type {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 
 // Import base types from central types
-import type {RootStackParamList, MainTabsParamList} from '@/types';
 
 // Re-export for convenience
 export type {RootStackParamList, MainTabsParamList};
@@ -60,8 +63,14 @@ export type ProfileScreenNavigationProp = CompositeNavigationProp<
 >;
 
 export type ReaderScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Reader'>;
-export type SettingsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Settings'>;
-export type BookDiscoveryNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BookDiscovery'>;
+export type SettingsScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'Settings'
+>;
+export type BookDiscoveryNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'BookDiscovery'
+>;
 
 // ============================================================================
 // Route Props - For useRoute hook
@@ -82,7 +91,10 @@ export type OnboardingScreenProps = NativeStackScreenProps<RootStackParamList, '
 export type ReaderScreenProps = NativeStackScreenProps<RootStackParamList, 'Reader'>;
 export type BookDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'BookDetail'>;
 export type BookDiscoveryScreenProps = NativeStackScreenProps<RootStackParamList, 'BookDiscovery'>;
-export type VocabularyDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'VocabularyDetail'>;
+export type VocabularyDetailScreenProps = NativeStackScreenProps<
+  RootStackParamList,
+  'VocabularyDetail'
+>;
 export type SettingsScreenProps = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
 // Tab screens (with composite props for accessing stack navigator)

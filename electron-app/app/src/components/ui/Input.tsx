@@ -13,7 +13,7 @@ import './Input.css';
 export type InputVariant = 'outlined' | 'filled' | 'underlined';
 export type InputSize = 'sm' | 'md' | 'lg';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   variant?: InputVariant;
   size?: InputSize;
   label?: string;
@@ -68,7 +68,7 @@ export function Input({
   const handleClear = () => {
     if (onChange) {
       const event = {
-        target: { value: '' },
+        target: {value: ''},
       } as React.ChangeEvent<HTMLInputElement>;
       onChange(event);
     }
@@ -77,9 +77,7 @@ export function Input({
   return (
     <div className={containerClasses}>
       {label && (
-        <label className={`input-label ${hasError ? 'input-label-error' : ''}`}>
-          {label}
-        </label>
+        <label className={`input-label ${hasError ? 'input-label-error' : ''}`}>{label}</label>
       )}
 
       <div className="input-wrapper">
@@ -89,11 +87,11 @@ export function Input({
           className={inputClasses}
           value={value}
           onChange={onChange}
-          onFocus={(e) => {
+          onFocus={e => {
             setIsFocused(true);
             props.onFocus?.(e);
           }}
-          onBlur={(e) => {
+          onBlur={e => {
             setIsFocused(false);
             props.onBlur?.(e);
           }}

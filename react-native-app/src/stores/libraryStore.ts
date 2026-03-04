@@ -7,12 +7,14 @@
  * Library Store - Manages book collection with database persistence
  */
 
-import {create} from 'zustand';
-import {persist, createJSONStorage} from 'zustand/middleware';
 import {Platform} from 'react-native';
 
-import type {Book} from '@/types';
+import {create} from 'zustand';
+import {persist, createJSONStorage} from 'zustand/middleware';
+
 import {bookRepository} from '@services/StorageService/repositories';
+
+import type {Book} from '@/types';
 import type {BookFilter, BookSort} from '@services/StorageService/repositories';
 
 // Check if we're on web
@@ -65,7 +67,7 @@ interface LibraryState {
     progress: number,
     location: string | null,
     chapter?: number,
-    page?: number,
+    page?: number
   ) => Promise<void>;
   updateReadingTime: (bookId: string, minutes: number) => Promise<void>;
 
@@ -194,7 +196,7 @@ const createLibraryStore = () => {
 
         // Delete the book files
         try {
-          const { ImportService } = await import('@services/ImportService');
+          const {ImportService} = await import('@services/ImportService');
           await ImportService.deleteBook(bookId);
         } catch (deleteError) {
           console.warn('[LibraryStore] Failed to delete book files:', deleteError);
@@ -222,9 +224,7 @@ const createLibraryStore = () => {
         }
 
         set((state: LibraryState) => ({
-          books: state.books.map(book =>
-            book.id === bookId ? {...book, ...updates} : book,
-          ),
+          books: state.books.map(book => (book.id === bookId ? {...book, ...updates} : book)),
         }));
       } catch (error) {
         console.error('[LibraryStore] Failed to update book:', error);
@@ -245,7 +245,7 @@ const createLibraryStore = () => {
 
     refreshBooks: async () => {
       const state = get();
-      
+
       // On web, books are already in state from localStorage
       if (IS_WEB) {
         return;
@@ -257,10 +257,7 @@ const createLibraryStore = () => {
         let books: Book[];
 
         if (state.currentFilter) {
-          books = await bookRepository.getFiltered(
-            state.currentFilter,
-            state.currentSort,
-          );
+          books = await bookRepository.getFiltered(state.currentFilter, state.currentSort);
         } else {
           books = await bookRepository.getAll(state.currentSort);
         }
@@ -338,7 +335,7 @@ const createLibraryStore = () => {
       progress: number,
       location: string | null,
       chapter?: number,
-      page?: number,
+      page?: number
     ) => {
       try {
         if (!IS_WEB) {
@@ -356,7 +353,7 @@ const createLibraryStore = () => {
                   currentPage: page ?? book.currentPage,
                   lastReadAt: new Date(),
                 }
-              : book,
+              : book
           ),
         }));
       } catch (error) {
@@ -378,7 +375,7 @@ const createLibraryStore = () => {
                   readingTimeMinutes: book.readingTimeMinutes + minutes,
                   lastReadAt: new Date(),
                 }
-              : book,
+              : book
           ),
         }));
       } catch (error) {
@@ -449,11 +446,11 @@ const createLibraryStore = () => {
       persist(storeLogic, {
         name: 'xenolexia-library',
         storage: createJSONStorage(() => webStorage),
-        partialize: (state) => ({
+        partialize: state => ({
           books: state.books.map(serializeBook),
           currentSort: state.currentSort,
         }),
-        onRehydrateStorage: () => (state) => {
+        onRehydrateStorage: () => state => {
           if (state) {
             // Deserialize dates in books
             state.books = state.books.map(deserializeBook);
@@ -490,9 +487,7 @@ export const selectCompletedBooks = (state: LibraryState) =>
  * Get recently added books
  */
 export const selectRecentlyAdded = (state: LibraryState, limit: number = 5) =>
-  [...state.books]
-    .sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime())
-    .slice(0, limit);
+  [...state.books].sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime()).slice(0, limit);
 
 /**
  * Get recently read books

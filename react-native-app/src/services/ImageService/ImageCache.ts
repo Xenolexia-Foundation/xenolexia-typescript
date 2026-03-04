@@ -202,7 +202,7 @@ export class ImageCache {
   async set(
     key: string,
     sourcePath: string,
-    options: {ttl?: number; move?: boolean} = {},
+    options: {ttl?: number; move?: boolean} = {}
   ): Promise<string> {
     await this.ensureInitialized();
 
@@ -258,7 +258,7 @@ export class ImageCache {
     key: string,
     base64Data: string,
     mimeType: string = 'image/jpeg',
-    options: {ttl?: number} = {},
+    options: {ttl?: number} = {}
   ): Promise<string> {
     await this.ensureInitialized();
 
@@ -411,7 +411,7 @@ export class ImageCache {
 
     // Sort by last access time (oldest first)
     const entries = Array.from(this.manifest.entries()).sort(
-      ([, a], [, b]) => a.lastAccessedAt - b.lastAccessedAt,
+      ([, a], [, b]) => a.lastAccessedAt - b.lastAccessedAt
     );
 
     // Delete oldest until under target

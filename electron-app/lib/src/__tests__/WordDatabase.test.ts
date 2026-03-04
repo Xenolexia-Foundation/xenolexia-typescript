@@ -7,9 +7,9 @@
  * Tests for WordDatabaseService (xenolexia-typescript core) - Dictionary installation and word lookup
  */
 
-import { WordDatabaseService } from '../services/TranslationEngine';
-import type { WordEntry } from 'xenolexia-typescript';
-import type { IDataStore } from 'xenolexia-typescript';
+import {WordDatabaseService} from '../services/TranslationEngine';
+
+import type {WordEntry, IDataStore} from 'xenolexia-typescript';
 
 function createMockDataStore(): IDataStore {
   const noop = jest.fn().mockResolvedValue(undefined);
@@ -28,7 +28,9 @@ function createMockDataStore(): IDataStore {
     deleteBook: noop,
     deleteAllBooks: noop,
     getBookCount: noopNumber,
-    getBookStatistics: jest.fn().mockResolvedValue({ total: 0, in_progress: 0, completed: 0, total_time: 0 }),
+    getBookStatistics: jest
+      .fn()
+      .mockResolvedValue({total: 0, in_progress: 0, completed: 0, total_time: 0}),
     getVocabularyById: noopNull,
     getVocabulary: noopArray,
     addVocabulary: noop,
@@ -78,7 +80,7 @@ function createMockDataStore(): IDataStore {
     deleteWordListByPair: noop,
     getWordListProficiencyCounts: jest.fn().mockResolvedValue({}),
     getWordListPosCounts: jest.fn().mockResolvedValue({}),
-    getWordListStats: jest.fn().mockResolvedValue({ total: 0, pairs: [] }),
+    getWordListStats: jest.fn().mockResolvedValue({total: 0, pairs: []}),
     getWordListSearch: noopArray,
     runTransaction: noop,
   } as IDataStore;

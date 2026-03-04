@@ -23,9 +23,15 @@ async function getStore() {
       const memoryStore: Record<string, string> = {};
       storeInstance = {
         get: (key: string, defaultValue: any) => memoryStore[key] ?? defaultValue,
-        set: (key: string, value: any) => { memoryStore[key] = value; },
-        delete: (key: string) => { delete memoryStore[key]; },
-        clear: () => { Object.keys(memoryStore).forEach(k => delete memoryStore[k]); },
+        set: (key: string, value: any) => {
+          memoryStore[key] = value;
+        },
+        delete: (key: string) => {
+          delete memoryStore[key];
+        },
+        clear: () => {
+          Object.keys(memoryStore).forEach(k => delete memoryStore[k]);
+        },
       };
     }
   }

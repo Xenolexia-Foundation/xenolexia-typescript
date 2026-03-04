@@ -13,6 +13,7 @@ import {
   getSaveDialogFilters,
   type ExportFormat,
 } from '../utils/exportVocabulary';
+
 import type {VocabularyItem} from '@xenolexia/shared/types';
 
 const baseItem: VocabularyItem = {
@@ -35,9 +36,7 @@ const baseItem: VocabularyItem = {
 describe('exportVocabulary', () => {
   describe('generateExportContent', () => {
     it('should generate CSV with default options', () => {
-      const vocabulary: VocabularyItem[] = [
-        { ...baseItem, sourceWord: 'cat', targetWord: 'gato' },
-      ];
+      const vocabulary: VocabularyItem[] = [{...baseItem, sourceWord: 'cat', targetWord: 'gato'}];
       const result = generateExportContent(vocabulary, 'csv');
       expect(result).toContain('source_word,target_word,source_language,target_language');
       expect(result).toContain('context_sentence');
@@ -48,14 +47,14 @@ describe('exportVocabulary', () => {
 
     it('should escape CSV fields with commas and quotes', () => {
       const vocabulary: VocabularyItem[] = [
-        { ...baseItem, sourceWord: 'say', targetWord: 'decir', contextSentence: 'She said, "hello"' },
+        {...baseItem, sourceWord: 'say', targetWord: 'decir', contextSentence: 'She said, "hello"'},
       ];
       const result = generateExportContent(vocabulary, 'csv');
       expect(result).toContain('"She said, ""hello"""');
     });
 
     it('should respect options.includeContext and includeSRSData', () => {
-      const vocabulary: VocabularyItem[] = [{ ...baseItem }];
+      const vocabulary: VocabularyItem[] = [{...baseItem}];
       const result = generateExportContent(vocabulary, 'csv', {
         includeContext: false,
         includeSRSData: false,
@@ -68,9 +67,7 @@ describe('exportVocabulary', () => {
     });
 
     it('should generate Anki format with tab separator and tags', () => {
-      const vocabulary: VocabularyItem[] = [
-        { ...baseItem, sourceWord: 'dog', targetWord: 'perro' },
-      ];
+      const vocabulary: VocabularyItem[] = [{...baseItem, sourceWord: 'dog', targetWord: 'perro'}];
       const result = generateExportContent(vocabulary, 'anki');
       expect(result).toContain('#separator:tab');
       expect(result).toContain('#html:true');
@@ -86,15 +83,18 @@ describe('exportVocabulary', () => {
           bookTitle: 'My Book',
         },
       ];
-      const result = generateExportContent(vocabulary, 'anki', { includeContext: true, includeBookInfo: true });
+      const result = generateExportContent(vocabulary, 'anki', {
+        includeContext: true,
+        includeBookInfo: true,
+      });
       expect(result).toContain('"The dog ran."');
       expect(result).toContain('From: My Book');
     });
 
     it('should generate JSON with exportedAt and itemCount', () => {
       const vocabulary: VocabularyItem[] = [
-        { ...baseItem, sourceWord: 'one', targetWord: 'uno' },
-        { ...baseItem, id: 'v2', sourceWord: 'two', targetWord: 'dos' },
+        {...baseItem, sourceWord: 'one', targetWord: 'uno'},
+        {...baseItem, id: 'v2', sourceWord: 'two', targetWord: 'dos'},
       ];
       const result = generateExportContent(vocabulary, 'json');
       const parsed = JSON.parse(result);
@@ -107,8 +107,8 @@ describe('exportVocabulary', () => {
     });
 
     it('should include SRS fields in JSON when includeSRSData true', () => {
-      const vocabulary: VocabularyItem[] = [{ ...baseItem }];
-      const result = generateExportContent(vocabulary, 'json', { includeSRSData: true });
+      const vocabulary: VocabularyItem[] = [{...baseItem}];
+      const result = generateExportContent(vocabulary, 'json', {includeSRSData: true});
       const parsed = JSON.parse(result);
       expect(parsed.items[0].status).toBe('new');
       expect(parsed.items[0].reviewCount).toBe(0);
@@ -141,22 +141,22 @@ describe('exportVocabulary', () => {
   describe('getSaveDialogFilters', () => {
     it('should return CSV filter with .csv extension', () => {
       const filters = getSaveDialogFilters('csv');
-      expect(filters).toEqual([{ name: 'CSV', extensions: ['csv'] }]);
+      expect(filters).toEqual([{name: 'CSV', extensions: ['csv']}]);
     });
 
     it('should return Anki filter with .txt', () => {
       const filters = getSaveDialogFilters('anki');
-      expect(filters).toEqual([{ name: 'Text (Anki)', extensions: ['txt'] }]);
+      expect(filters).toEqual([{name: 'Text (Anki)', extensions: ['txt']}]);
     });
 
     it('should return JSON filter with .json', () => {
       const filters = getSaveDialogFilters('json');
-      expect(filters).toEqual([{ name: 'JSON', extensions: ['json'] }]);
+      expect(filters).toEqual([{name: 'JSON', extensions: ['json']}]);
     });
 
     it('should return All filter for unknown format', () => {
       const filters = getSaveDialogFilters('unknown' as ExportFormat);
-      expect(filters).toEqual([{ name: 'All', extensions: ['*'] }]);
+      expect(filters).toEqual([{name: 'All', extensions: ['*']}]);
     });
   });
 });

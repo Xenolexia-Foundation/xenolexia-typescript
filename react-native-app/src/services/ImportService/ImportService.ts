@@ -11,17 +11,17 @@
  */
 
 import {Platform} from 'react-native';
-import DocumentPicker, {types} from 'react-native-document-picker';
-import RNFS from 'react-native-fs';
+
 import {v4 as uuidv4} from 'uuid';
 
-import type {BookFormat} from '@/types';
-import {
-  rnfsFileSystem,
-  extractEPUBInfo,
-  extractEPUBCover,
-} from '@services/BookParser';
+import DocumentPicker, {types} from 'react-native-document-picker';
+import RNFS from 'react-native-fs';
+
+import {rnfsFileSystem, extractEPUBInfo, extractEPUBCover} from '@services/BookParser';
 import {FileSystemService} from '@services/FileSystemService';
+
+import {SUPPORTED_EXTENSIONS} from './types';
+
 import type {
   ImportProgress,
   ImportResult,
@@ -30,7 +30,7 @@ import type {
   CopiedFileInfo,
   ImportedBookMetadata,
 } from './types';
-import {SUPPORTED_EXTENSIONS} from './types';
+import type {BookFormat} from '@/types';
 
 // ============================================================================
 // Constants
@@ -130,7 +130,7 @@ export class ImportService {
       const extension = this.getFileExtension(file.name || '');
       if (!this.isSupportedFormat(extension)) {
         throw new Error(
-          `Unsupported file format: ${extension}. Supported formats: ${SUPPORTED_EXTENSIONS.join(', ')}`,
+          `Unsupported file format: ${extension}. Supported formats: ${SUPPORTED_EXTENSIONS.join(', ')}`
         );
       }
 
@@ -152,10 +152,7 @@ export class ImportService {
   /**
    * Import a book file into the app
    */
-  static async importBook(
-    file: SelectedFile,
-    options: ImportOptions = {},
-  ): Promise<ImportResult> {
+  static async importBook(file: SelectedFile, options: ImportOptions = {}): Promise<ImportResult> {
     const {onProgress, extractCover = true, parseMetadata = true} = options;
 
     try {
@@ -193,7 +190,7 @@ export class ImportService {
         try {
           const parsedMetadata = await this.parseBookMetadata(
             copiedFile.localPath,
-            copiedFile.format,
+            copiedFile.format
           );
           metadata = {...metadata, ...parsedMetadata};
         } catch (parseError) {
@@ -235,8 +232,7 @@ export class ImportService {
         metadata,
       };
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Import failed';
+      const errorMessage = error instanceof Error ? error.message : 'Import failed';
 
       onProgress?.({
         status: 'error',
@@ -258,7 +254,7 @@ export class ImportService {
    */
   private static async copyFileToStorage(
     file: SelectedFile,
-    bookId: string,
+    bookId: string
   ): Promise<CopiedFileInfo> {
     const format = this.detectFormat(file.name);
     const filename = `book.${format}`;
@@ -279,7 +275,7 @@ export class ImportService {
     file: SelectedFile,
     bookId: string,
     filename: string,
-    format: BookFormat,
+    format: BookFormat
   ): Promise<CopiedFileInfo> {
     // Fetch the file content from blob URL
     const response = await fetch(file.uri);
@@ -313,7 +309,7 @@ export class ImportService {
     file: SelectedFile,
     bookId: string,
     filename: string,
-    format: BookFormat,
+    format: BookFormat
   ): Promise<CopiedFileInfo> {
     const bookDir = `${BOOKS_BASE_DIR}/${bookId}`;
     const destPath = `${bookDir}/${filename}`;
@@ -341,7 +337,7 @@ export class ImportService {
    */
   private static async parseBookMetadata(
     filePath: string,
-    format: BookFormat,
+    format: BookFormat
   ): Promise<Partial<ImportedBookMetadata>> {
     switch (format) {
       case 'epub':
@@ -356,9 +352,7 @@ export class ImportService {
   /**
    * Parse EPUB metadata using ts-shared-core (MetadataExtractor via rnfsFileSystem)
    */
-  private static async parseEPUBMetadata(
-    filePath: string,
-  ): Promise<Partial<ImportedBookMetadata>> {
+  private static async parseEPUBMetadata(filePath: string): Promise<Partial<ImportedBookMetadata>> {
     try {
       const info = await extractEPUBInfo(rnfsFileSystem, filePath);
       const m = info.metadata;
@@ -381,9 +375,7 @@ export class ImportService {
   /**
    * Parse TXT metadata (limited - just file info)
    */
-  private static async parseTXTMetadata(
-    filePath: string,
-  ): Promise<Partial<ImportedBookMetadata>> {
+  private static async parseTXTMetadata(filePath: string): Promise<Partial<ImportedBookMetadata>> {
     try {
       const stat = await RNFS.stat(filePath);
       // Read first few lines to try to extract title
@@ -391,9 +383,7 @@ export class ImportService {
       const firstLine = content.split('\n')[0]?.trim();
 
       return {
-        title: firstLine?.length > 0 && firstLine.length < 100
-          ? firstLine
-          : undefined,
+        title: firstLine?.length > 0 && firstLine.length < 100 ? firstLine : undefined,
         estimatedPages: Math.ceil(parseInt(String(stat.size), 10) / 2000), // Rough estimate
       };
     } catch {
@@ -404,10 +394,7 @@ export class ImportService {
   /**
    * Extract cover image from EPUB (ts-shared-core via rnfsFileSystem)
    */
-  private static async extractCoverImage(
-    bookId: string,
-    filePath: string,
-  ): Promise<string | null> {
+  private static async extractCoverImage(bookId: string, filePath: string): Promise<string | null> {
     try {
       const bookDir = `${BOOKS_BASE_DIR}/${bookId}`;
       return await extractEPUBCover(rnfsFileSystem, filePath, bookDir);

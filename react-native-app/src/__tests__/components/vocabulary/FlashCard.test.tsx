@@ -8,16 +8,18 @@
  */
 
 import React from 'react';
-import { fireEvent } from '@testing-library/react-native';
-import { render, createMockVocabularyItem } from '../../utils/testUtils';
+
+import {fireEvent} from '@testing-library/react-native';
+
+import {render, createMockVocabularyItem} from '../../utils/testUtils';
 
 // Mock theme
 jest.mock('@/theme', () => ({
   useTheme: () => ({
     colors: {
-      primary: { 500: '#0ea5e9' },
-      background: { primary: '#ffffff', secondary: '#f3f4f6' },
-      text: { primary: '#1f2937', secondary: '#6b7280' },
+      primary: {500: '#0ea5e9'},
+      background: {primary: '#ffffff', secondary: '#f3f4f6'},
+      text: {primary: '#1f2937', secondary: '#6b7280'},
     },
   }),
 }));
@@ -32,8 +34,8 @@ const MockFlashCard = ({
   isFlipped: boolean;
   onFlip: () => void;
 }) => {
-  const { View, Text, TouchableOpacity } = require('react-native');
-  
+  const {View, Text, TouchableOpacity} = require('react-native');
+
   return (
     <TouchableOpacity testID="flash-card" onPress={onFlip}>
       <View testID="card-container">
@@ -45,9 +47,7 @@ const MockFlashCard = ({
         ) : (
           <View testID="back-face">
             <Text testID="original-word">{item.sourceWord}</Text>
-            {item.contextSentence && (
-              <Text testID="context">{item.contextSentence}</Text>
-            )}
+            {item.contextSentence && <Text testID="context">{item.contextSentence}</Text>}
           </View>
         )}
       </View>
@@ -64,9 +64,9 @@ describe('FlashCard', () => {
 
   describe('Front face (not flipped)', () => {
     it('should show foreign word on front', () => {
-      const item = createMockVocabularyItem({ targetWord: 'hola' });
+      const item = createMockVocabularyItem({targetWord: 'hola'});
 
-      const { getByTestId } = render(
+      const {getByTestId} = render(
         <MockFlashCard item={item} isFlipped={false} onFlip={mockOnFlip} />
       );
 
@@ -77,7 +77,7 @@ describe('FlashCard', () => {
     it('should show tap hint', () => {
       const item = createMockVocabularyItem();
 
-      const { getByTestId } = render(
+      const {getByTestId} = render(
         <MockFlashCard item={item} isFlipped={false} onFlip={mockOnFlip} />
       );
 
@@ -87,7 +87,7 @@ describe('FlashCard', () => {
     it('should not show back face', () => {
       const item = createMockVocabularyItem();
 
-      const { queryByTestId } = render(
+      const {queryByTestId} = render(
         <MockFlashCard item={item} isFlipped={false} onFlip={mockOnFlip} />
       );
 
@@ -97,9 +97,9 @@ describe('FlashCard', () => {
 
   describe('Back face (flipped)', () => {
     it('should show original word on back', () => {
-      const item = createMockVocabularyItem({ sourceWord: 'hello' });
+      const item = createMockVocabularyItem({sourceWord: 'hello'});
 
-      const { getByTestId } = render(
+      const {getByTestId} = render(
         <MockFlashCard item={item} isFlipped={true} onFlip={mockOnFlip} />
       );
 
@@ -112,7 +112,7 @@ describe('FlashCard', () => {
         contextSentence: 'Hello, how are you?',
       });
 
-      const { getByTestId } = render(
+      const {getByTestId} = render(
         <MockFlashCard item={item} isFlipped={true} onFlip={mockOnFlip} />
       );
 
@@ -122,7 +122,7 @@ describe('FlashCard', () => {
     it('should not show front face', () => {
       const item = createMockVocabularyItem();
 
-      const { queryByTestId } = render(
+      const {queryByTestId} = render(
         <MockFlashCard item={item} isFlipped={true} onFlip={mockOnFlip} />
       );
 
@@ -134,7 +134,7 @@ describe('FlashCard', () => {
     it('should call onFlip when tapped', () => {
       const item = createMockVocabularyItem();
 
-      const { getByTestId } = render(
+      const {getByTestId} = render(
         <MockFlashCard item={item} isFlipped={false} onFlip={mockOnFlip} />
       );
 
@@ -146,7 +146,7 @@ describe('FlashCard', () => {
     it('should call onFlip when tapped while flipped', () => {
       const item = createMockVocabularyItem();
 
-      const { getByTestId } = render(
+      const {getByTestId} = render(
         <MockFlashCard item={item} isFlipped={true} onFlip={mockOnFlip} />
       );
 

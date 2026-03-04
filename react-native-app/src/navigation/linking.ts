@@ -12,20 +12,15 @@
  * - Path-based routing
  */
 
-import type {LinkingOptions} from '@react-navigation/native';
-
 import type {RootStackParamList} from './types';
+import type {LinkingOptions} from '@react-navigation/native';
 
 /**
  * URL scheme for the app
  * - Custom: xenolexia://
  * - Universal: https://xenolexia.app (when configured)
  */
-export const URL_PREFIXES = [
-  'xenolexia://',
-  'https://xenolexia.app',
-  'https://*.xenolexia.app',
-];
+export const URL_PREFIXES = ['xenolexia://', 'https://xenolexia.app', 'https://*.xenolexia.app'];
 
 /**
  * Deep linking configuration

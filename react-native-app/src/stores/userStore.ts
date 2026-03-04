@@ -10,6 +10,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {create} from 'zustand';
+
 import type {UserPreferences, ReaderSettings} from '@types/index';
 
 const USER_PREFERENCES_KEY = '@xenolexia/user_preferences';
@@ -101,10 +102,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
   savePreferences: async () => {
     try {
-      await AsyncStorage.setItem(
-        USER_PREFERENCES_KEY,
-        JSON.stringify(get().preferences),
-      );
+      await AsyncStorage.setItem(USER_PREFERENCES_KEY, JSON.stringify(get().preferences));
     } catch (error) {
       console.error('Failed to save preferences:', error);
     }

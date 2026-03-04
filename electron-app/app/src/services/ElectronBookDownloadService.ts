@@ -9,6 +9,10 @@
  */
 
 import {BookDownloadService} from '@xenolexia/shared/services/BookDownloadService';
+import {v4 as uuidv4} from 'uuid';
+
+import {getBooksDirectory, writeFileToAppData} from './ElectronFileService';
+
 import type {
   DownloadProgress,
   DownloadResult,
@@ -16,16 +20,11 @@ import type {
   SearchResponse,
 } from '@xenolexia/shared/services/BookDownloadService';
 import type {Book} from '@xenolexia/shared/types';
-import {getBooksDirectory, writeFileToAppData} from './ElectronFileService';
-import {v4 as uuidv4} from 'uuid';
 
 /**
  * CORS proxy for Electron (helps with cross-origin requests)
  */
-const CORS_PROXIES = [
-  'https://corsproxy.io/?',
-  'https://api.allorigins.win/raw?url=',
-];
+const CORS_PROXIES = ['https://corsproxy.io/?', 'https://api.allorigins.win/raw?url='];
 
 /**
  * Fetch with CORS proxy fallback
@@ -59,7 +58,9 @@ async function fetchWithCorsProxy(url: string, options?: RequestInit): Promise<R
   }
 
   // If all proxies fail, throw error
-  throw new Error('Failed to download: CORS blocked and all proxies failed. Try a different source.');
+  throw new Error(
+    'Failed to download: CORS blocked and all proxies failed. Try a different source.'
+  );
 }
 
 /**
@@ -139,6 +140,7 @@ export async function downloadBook(
     const chunks: Uint8Array[] = [];
     let bytesReceived = 0;
 
+    // eslint-disable-next-line no-constant-condition -- stream read loop
     while (true) {
       const {done, value} = await reader.read();
       if (done) break;
@@ -148,9 +150,8 @@ export async function downloadBook(
 
       progress.bytesDownloaded = bytesReceived;
       progress.totalBytes = contentLength;
-      progress.percentage = contentLength > 0
-        ? Math.round((bytesReceived / contentLength) * 100)
-        : 0;
+      progress.percentage =
+        contentLength > 0 ? Math.round((bytesReceived / contentLength) * 100) : 0;
       onProgress?.(progress);
     }
 

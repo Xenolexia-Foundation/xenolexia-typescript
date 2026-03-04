@@ -225,7 +225,12 @@ export class DatabaseService implements IDataStore {
     sourceLang: string,
     targetLang: string
   ): Promise<WordListRow | null> {
-    return getAPI()('getWordListEntry', word, sourceLang, targetLang) as Promise<WordListRow | null>;
+    return getAPI()(
+      'getWordListEntry',
+      word,
+      sourceLang,
+      targetLang
+    ) as Promise<WordListRow | null>;
   }
 
   async getWordListEntryByVariant(
@@ -233,9 +238,12 @@ export class DatabaseService implements IDataStore {
     sourceLang: string,
     targetLang: string
   ): Promise<WordListRow | null> {
-    return getAPI()('getWordListEntryByVariant', word, sourceLang, targetLang) as Promise<
-      WordListRow | null
-    >;
+    return getAPI()(
+      'getWordListEntryByVariant',
+      word,
+      sourceLang,
+      targetLang
+    ) as Promise<WordListRow | null>;
   }
 
   async getWordListByLevel(
@@ -244,13 +252,9 @@ export class DatabaseService implements IDataStore {
     proficiency: string,
     options?: {limit?: number; random?: boolean}
   ): Promise<WordListRow[]> {
-    return getAPI()(
-      'getWordListByLevel',
-      sourceLang,
-      targetLang,
-      proficiency,
-      options
-    ) as Promise<WordListRow[]>;
+    return getAPI()('getWordListByLevel', sourceLang, targetLang, proficiency, options) as Promise<
+      WordListRow[]
+    >;
   }
 
   async getWordListByLangs(sourceLang: string, targetLang: string): Promise<WordListRow[]> {
@@ -273,11 +277,9 @@ export class DatabaseService implements IDataStore {
     sourceLang: string,
     targetLang: string
   ): Promise<Record<string, number>> {
-    return getAPI()(
-      'getWordListProficiencyCounts',
-      sourceLang,
-      targetLang
-    ) as Promise<Record<string, number>>;
+    return getAPI()('getWordListProficiencyCounts', sourceLang, targetLang) as Promise<
+      Record<string, number>
+    >;
   }
 
   async getWordListPosCounts(
@@ -305,13 +307,9 @@ export class DatabaseService implements IDataStore {
     query: string,
     limit: number
   ): Promise<WordListRow[]> {
-    return getAPI()(
-      'getWordListSearch',
-      sourceLang,
-      targetLang,
-      query,
-      limit
-    ) as Promise<WordListRow[]>;
+    return getAPI()('getWordListSearch', sourceLang, targetLang, query, limit) as Promise<
+      WordListRow[]
+    >;
   }
 
   async runTransaction(operations: Array<{method: string; args: unknown[]}>): Promise<void> {

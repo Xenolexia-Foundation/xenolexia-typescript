@@ -29,5 +29,5 @@ export type {
   ProcessedChapterContent,
 } from 'xenolexia-typescript';
 
-export { bookParserService, chapterContentService } from './bookParserCore';
-export { rnfsFileSystem } from './rnfsAdapter';
+export {bookParserService, chapterContentService} from './bookParserCore';
+export {rnfsFileSystem} from './rnfsAdapter';

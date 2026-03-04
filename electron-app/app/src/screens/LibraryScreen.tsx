@@ -8,12 +8,15 @@
  */
 
 import React, {useState, useCallback, useEffect} from 'react';
-import {useNavigate, useLocation} from 'react-router-dom';
+
 import {useLibraryStore} from '@xenolexia/shared/stores/libraryStore';
-import type {Book} from '@xenolexia/shared/types';
 import {SUPPORTED_LANGUAGES, getLanguageInfo} from '@xenolexia/shared/types';
-import {Button, Card, PressableCard, Input, SearchInput} from '../components/ui';
+import {useNavigate, useLocation} from 'react-router-dom';
+
+import {Button, PressableCard, SearchInput} from '../components/ui';
 import {importBookFromFile} from '../services/ElectronImportService';
+
+import type {Book} from '@xenolexia/shared/types';
 import './LibraryScreen.css';
 
 export function LibraryScreen(): React.JSX.Element {
@@ -37,7 +40,7 @@ export function LibraryScreen(): React.JSX.Element {
       setIsImporting(true);
       setImportProgress('Selecting file...');
 
-      const book = await importBookFromFile((progress) => {
+      const book = await importBookFromFile(progress => {
         setImportProgress(progress.currentStep || 'Importing...');
       });
 
@@ -59,7 +62,8 @@ export function LibraryScreen(): React.JSX.Element {
   }, [isImporting, refreshBooks]);
 
   // When navigated from menu with openImport, open the import dialog
-  const openImportFromState = (location.state as {openImport?: boolean})?.openImport;
+  const location = useLocation();
+  const openImportFromState = (location as {state?: {openImport?: boolean}}).state?.openImport;
   useEffect(() => {
     if (openImportFromState) {
       navigate('/', {replace: true, state: {}});
@@ -72,12 +76,6 @@ export function LibraryScreen(): React.JSX.Element {
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.author.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    await refreshBooks();
-    setIsRefreshing(false);
-  }, [refreshBooks]);
 
   const handleBookPress = useCallback(
     (book: Book) => {
@@ -150,21 +148,18 @@ export function LibraryScreen(): React.JSX.Element {
     [updateBook, refreshBooks]
   );
 
-  const handleBookAbout = useCallback(
-    (book: Book) => {
-      const info = [
-        `Title: ${book.title}`,
-        `Author: ${book.author || 'Unknown'}`,
-        `Format: ${book.format.toUpperCase()}`,
-        `Progress: ${Math.round(book.progress)}%`,
-        `Language Pair: ${book.languagePair.sourceLanguage} → ${book.languagePair.targetLanguage}`,
-        `Proficiency: ${book.proficiencyLevel}`,
-        `Added: ${new Date(book.addedAt).toLocaleDateString()}`,
-      ].join('\n');
-      alert(info);
-    },
-    []
-  );
+  const handleBookAbout = useCallback((book: Book) => {
+    const info = [
+      `Title: ${book.title}`,
+      `Author: ${book.author || 'Unknown'}`,
+      `Format: ${book.format.toUpperCase()}`,
+      `Progress: ${Math.round(book.progress)}%`,
+      `Language Pair: ${book.languagePair.sourceLanguage} → ${book.languagePair.targetLanguage}`,
+      `Proficiency: ${book.proficiencyLevel}`,
+      `Added: ${new Date(book.addedAt).toLocaleDateString()}`,
+    ].join('\n');
+    alert(info);
+  }, []);
 
   if (isLoading && books.length === 0) {
     return (
@@ -201,7 +196,10 @@ export function LibraryScreen(): React.JSX.Element {
           <div className="empty-state">
             <div className="empty-icon">📚</div>
             <h2>Your Library is Empty</h2>
-            <p>Import a book from your device or browse free ebooks online to start your language learning journey.</p>
+            <p>
+              Import a book from your device or browse free ebooks online to start your language
+              learning journey.
+            </p>
             <div className="empty-actions">
               <Button variant="primary" size="lg" onClick={handleImportBook} disabled={isImporting}>
                 {isImporting ? importProgress || 'Importing...' : 'Import Book'}
@@ -227,6 +225,13 @@ export function LibraryScreen(): React.JSX.Element {
           <button className="icon-button" onClick={handleBrowseBooks} title="Discover Books">
             🔍
           </button>
+          <button
+            className="icon-button"
+            onClick={() => navigate('/favourites')}
+            title="Favourite Words"
+          >
+            ⭐
+          </button>
           <Button onClick={handleImportBook}>Import Book</Button>
         </div>
       </div>
@@ -234,18 +239,18 @@ export function LibraryScreen(): React.JSX.Element {
       <div className="library-search">
         <SearchInput
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           placeholder="Search your library..."
         />
       </div>
 
       {filteredBooks.length === 0 ? (
         <div className="library-empty-results">
-          <p>No books found matching "{searchQuery}"</p>
+          <p>No books found matching &quot;{searchQuery}&quot;</p>
         </div>
       ) : (
         <div className="library-grid">
-          {filteredBooks.map((book) => (
+          {filteredBooks.map(book => (
             <BookCard
               key={book.id}
               book={book}
@@ -263,7 +268,9 @@ export function LibraryScreen(): React.JSX.Element {
         <ChangeLanguageModal
           book={changeLanguageBook}
           onClose={() => setChangeLanguageBook(null)}
-          onSelect={(targetLanguageCode) => handleConfirmChangeLanguage(changeLanguageBook, targetLanguageCode)}
+          onSelect={targetLanguageCode =>
+            handleConfirmChangeLanguage(changeLanguageBook, targetLanguageCode)
+          }
         />
       )}
 
@@ -370,7 +377,14 @@ interface BookCardProps {
   onAbout: (book: Book) => void;
 }
 
-function BookCard({book, onPress, onDelete, onChangeLanguage, onForgetProgress, onAbout}: BookCardProps): React.JSX.Element {
+function BookCard({
+  book,
+  onPress,
+  onDelete,
+  onChangeLanguage,
+  onForgetProgress,
+  onAbout,
+}: BookCardProps): React.JSX.Element {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({x: 0, y: 0});
   const languageFlag = getLanguageFlag(book.languagePair.targetLanguage);
@@ -396,12 +410,13 @@ function BookCard({book, onPress, onDelete, onChangeLanguage, onForgetProgress, 
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
     }
+    return undefined;
   }, [showContextMenu]);
 
   const handleMenuAction = (action: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
     setShowContextMenu(false);
-    
+
     switch (action) {
       case 'delete':
         if (window.confirm(`Delete "${book.title}"? This cannot be undone.`)) {
@@ -412,7 +427,11 @@ function BookCard({book, onPress, onDelete, onChangeLanguage, onForgetProgress, 
         onChangeLanguage(book);
         break;
       case 'forget-progress':
-        if (window.confirm(`Reset progress for "${book.title}"? This will set progress to 0% and reset your reading position.`)) {
+        if (
+          window.confirm(
+            `Reset progress for "${book.title}"? This will set progress to 0% and reset your reading position.`
+          )
+        ) {
           onForgetProgress(book);
         }
         break;
@@ -443,18 +462,13 @@ function BookCard({book, onPress, onDelete, onChangeLanguage, onForgetProgress, 
 
           {hasProgress && (
             <div className="book-progress-bar">
-              <div
-                className="book-progress-fill"
-                style={{width: `${book.progress}%`}}
-              />
+              <div className="book-progress-fill" style={{width: `${book.progress}%`}} />
             </div>
           )}
 
           <div className="book-language-badge">{languageFlag}</div>
 
-          {hasProgress && (
-            <div className="book-progress-badge">{Math.round(book.progress)}%</div>
-          )}
+          {hasProgress && <div className="book-progress-badge">{Math.round(book.progress)}%</div>}
         </div>
 
         <div className="book-card-info">
@@ -488,13 +502,11 @@ function ChangeLanguageModal({
 }: ChangeLanguageModalProps): React.JSX.Element {
   const currentTarget = getLanguageInfo(book.languagePair.targetLanguage);
   const sourceLang = getLanguageInfo(book.languagePair.sourceLanguage);
-  const options = SUPPORTED_LANGUAGES.filter(
-    (l) => l.code !== book.languagePair.sourceLanguage
-  );
+  const options = SUPPORTED_LANGUAGES.filter(l => l.code !== book.languagePair.sourceLanguage);
 
   return (
     <div className="book-detail-overlay" onClick={onClose}>
-      <div className="book-detail-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="book-detail-modal" onClick={e => e.stopPropagation()}>
         <div className="book-detail-header">
           <h2>Change target language</h2>
           <button type="button" className="book-detail-close" onClick={onClose}>
@@ -502,14 +514,14 @@ function ChangeLanguageModal({
           </button>
         </div>
         <div className="book-detail-body">
-          <p className="change-language-book-title">"{book.title}"</p>
+          <p className="change-language-book-title">&quot;{book.title}&quot;</p>
           <p className="change-language-current">
             Current: {sourceLang?.flag} {sourceLang?.name} → {currentTarget?.flag}{' '}
             {currentTarget?.name}
           </p>
           <p className="change-language-prompt">Choose a target language:</p>
           <div className="change-language-list" role="listbox">
-            {options.map((lang) => (
+            {options.map(lang => (
               <button
                 key={lang.code}
                 type="button"
@@ -544,7 +556,12 @@ interface BookContextMenuProps {
   onClose: () => void;
 }
 
-function BookContextMenu({x, y, onAction, onClose}: BookContextMenuProps): React.JSX.Element {
+function BookContextMenu({
+  x,
+  y,
+  onAction,
+  onClose: _onClose,
+}: BookContextMenuProps): React.JSX.Element {
   // Use onMouseDown so the action runs before document click-outside closes the menu
   const fire = (action: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -555,12 +572,12 @@ function BookContextMenu({x, y, onAction, onClose}: BookContextMenuProps): React
     <div
       className="book-context-menu"
       style={{left: `${x}px`, top: `${y}px`}}
-      onClick={(e) => e.stopPropagation()}
+      onClick={e => e.stopPropagation()}
     >
       <button
         type="button"
         className="context-menu-item"
-        onMouseDown={(e) => fire('change-language', e)}
+        onMouseDown={e => fire('change-language', e)}
       >
         <span className="context-menu-icon">🌍</span>
         <span>Change Target Language</span>
@@ -568,17 +585,13 @@ function BookContextMenu({x, y, onAction, onClose}: BookContextMenuProps): React
       <button
         type="button"
         className="context-menu-item"
-        onMouseDown={(e) => fire('forget-progress', e)}
+        onMouseDown={e => fire('forget-progress', e)}
       >
         <span className="context-menu-icon">🔄</span>
         <span>Forget Progress</span>
       </button>
       <div className="context-menu-divider" />
-      <button
-        type="button"
-        className="context-menu-item"
-        onMouseDown={(e) => fire('about', e)}
-      >
+      <button type="button" className="context-menu-item" onMouseDown={e => fire('about', e)}>
         <span className="context-menu-icon">ℹ️</span>
         <span>About</span>
       </button>
@@ -586,7 +599,7 @@ function BookContextMenu({x, y, onAction, onClose}: BookContextMenuProps): React
       <button
         type="button"
         className="context-menu-item context-menu-item-danger"
-        onMouseDown={(e) => fire('delete', e)}
+        onMouseDown={e => fire('delete', e)}
       >
         <span className="context-menu-icon">🗑️</span>
         <span>Delete Book</span>
@@ -597,9 +610,18 @@ function BookContextMenu({x, y, onAction, onClose}: BookContextMenuProps): React
 
 function getLanguageFlag(lang: string): string {
   const flags: Record<string, string> = {
-    el: '🇬🇷', es: '🇪🇸', fr: '🇫🇷', de: '🇩🇪', it: '🇮🇹',
-    pt: '🇵🇹', ru: '🇷🇺', ja: '🇯🇵', zh: '🇨🇳', ko: '🇰🇵',
-    ar: '🇵🇸', en: '🇬🇧',
+    el: '🇬🇷',
+    es: '🇪🇸',
+    fr: '🇫🇷',
+    de: '🇩🇪',
+    it: '🇮🇹',
+    pt: '🇵🇹',
+    ru: '🇷🇺',
+    ja: '🇯🇵',
+    zh: '🇨🇳',
+    ko: '🇰🇵',
+    ar: '🇵🇸',
+    en: '🇬🇧',
   };
   return flags[lang] || '🌐';
 }

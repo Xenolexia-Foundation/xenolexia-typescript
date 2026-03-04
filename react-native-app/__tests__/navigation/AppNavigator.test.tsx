@@ -9,9 +9,12 @@
  */
 
 import React from 'react';
-import {render, screen} from '../test-utils';
-import {AppNavigator} from '@navigation/AppNavigator';
+
 import {useUserStore} from '@stores/userStore';
+
+import {AppNavigator} from '@navigation/AppNavigator';
+
+import {render, screen} from '../test-utils';
 
 // Mock the screens to avoid rendering full component trees
 jest.mock('@screens/Library/LibraryScreen', () => ({

@@ -8,21 +8,27 @@
  */
 
 import React, {useCallback, useState} from 'react';
+
 import {StyleSheet, TouchableOpacity, Alert, Platform} from 'react-native';
+
 import {useNavigation} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {useColors} from '@/theme';
 import {borderRadius} from '@/theme/tokens';
-import {Button} from '@components/ui';
+
 import {PlusIcon} from '@components/common/TabBarIcon';
-import {ImportService} from '@services/ImportService';
-import type {ImportProgress, SelectedFile} from '@services/ImportService';
+import {Button} from '@components/ui';
+
 import {useLibraryStore} from '@stores/libraryStore';
 import {useUserStore} from '@stores/userStore';
-import type {RootStackParamList} from '@/types';
+
+import {ImportService} from '@services/ImportService';
 
 import {ImportProgressModal} from './ImportProgressModal';
+
+import type {RootStackParamList} from '@/types';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import type {ImportProgress, SelectedFile} from '@services/ImportService';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -68,9 +74,10 @@ export function ImportBookButton({
         const hasAccess = await ImportService.hasFileSystemAccess();
         if (!hasAccess) {
           // Prompt user to select a directory for storing books
-          const message = 'Xenolexia needs access to a folder to store your books.\n\n' +
+          const message =
+            'Xenolexia needs access to a folder to store your books.\n\n' +
             'Please select or create a folder (e.g., "Xenolexia Books" in your Documents).';
-          
+
           if (Platform.OS === 'web') {
             const proceed = window.confirm(message + '\n\nClick OK to choose a folder.');
             if (!proceed) return;
@@ -78,7 +85,10 @@ export function ImportBookButton({
 
           const granted = await ImportService.requestFileSystemAccess();
           if (!granted) {
-            showAlert('Access Required', 'A folder is required to store your books. Please try again and select a folder.');
+            showAlert(
+              'Access Required',
+              'A folder is required to store your books. Please try again and select a folder.'
+            );
             return;
           }
         }
@@ -174,8 +184,7 @@ export function ImportBookButton({
         throw new Error(result.error || 'Import failed');
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Import failed';
+      const errorMessage = error instanceof Error ? error.message : 'Import failed';
 
       console.error('[ImportBookButton] Import error:', error);
 
@@ -228,7 +237,8 @@ export function ImportBookButton({
       <TouchableOpacity
         style={[styles.smallButton, {backgroundColor: colors.primary}]}
         onPress={handleImport}
-        activeOpacity={0.8}>
+        activeOpacity={0.8}
+      >
         <PlusIcon color={colors.onPrimary} size={20} />
       </TouchableOpacity>
 

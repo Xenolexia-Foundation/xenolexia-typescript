@@ -9,6 +9,7 @@
  */
 
 import {getAppDataPath} from '../../utils/FileSystem.electron';
+
 import type {
   IDataStore,
   BookRow,
@@ -21,8 +22,8 @@ import type {
   VocabularyFilter,
   QueryResult,
   MigrationDefinition,
+  ReadingStats,
 } from 'xenolexia-typescript';
-import type {ReadingStats} from 'xenolexia-typescript';
 export type {QueryResult, MigrationDefinition};
 
 // ============================================================================
@@ -126,7 +127,7 @@ export class DatabaseService implements IDataStore {
 
   async getSchemaVersion(): Promise<number> {
     try {
-      const versions = this.getDb().data._migrations.map((m) => m.version);
+      const versions = this.getDb().data._migrations.map(m => m.version);
       return versions.length ? Math.max(...versions) : 0;
     } catch {
       return 0;
@@ -138,7 +139,7 @@ export class DatabaseService implements IDataStore {
   // ============================================================================
 
   async getBookById(id: string): Promise<BookRow | null> {
-    const book = this.getDb().data.books.find((b) => b.id === id);
+    const book = this.getDb().data.books.find(b => b.id === id);
     return book ?? null;
   }
 
@@ -150,26 +151,34 @@ export class DatabaseService implements IDataStore {
     let list = [...this.getDb().data.books];
     if (options?.filter) {
       const f = options.filter;
-      if (f.format != null) list = list.filter((b) => b.format === f.format);
-      if (f.target_lang != null) list = list.filter((b) => b.target_lang === f.target_lang);
-      if (f.proficiency != null) list = list.filter((b) => b.proficiency === f.proficiency);
-      if (f.hasProgress === true) list = list.filter((b) => Number(b.progress) > 0 && Number(b.progress) < 100);
-      if (f.hasProgress === false) list = list.filter((b) => Number(b.progress) === 0);
-      if (f.is_downloaded != null) list = list.filter((b) => (b.is_downloaded ?? 0) === f.is_downloaded);
-      if (f.recentlyRead === true) list = list.filter((b) => b.last_read_at != null);
-      if (f.inProgress === true) list = list.filter((b) => Number(b.progress) > 0 && Number(b.progress) < 100);
+      if (f.format != null) list = list.filter(b => b.format === f.format);
+      if (f.target_lang != null) list = list.filter(b => b.target_lang === f.target_lang);
+      if (f.proficiency != null) list = list.filter(b => b.proficiency === f.proficiency);
+      if (f.hasProgress === true)
+        list = list.filter(b => Number(b.progress) > 0 && Number(b.progress) < 100);
+      if (f.hasProgress === false) list = list.filter(b => Number(b.progress) === 0);
+      if (f.is_downloaded != null)
+        list = list.filter(b => (b.is_downloaded ?? 0) === f.is_downloaded);
+      if (f.recentlyRead === true) list = list.filter(b => b.last_read_at != null);
+      if (f.inProgress === true)
+        list = list.filter(b => Number(b.progress) > 0 && Number(b.progress) < 100);
       if (f.searchQuery != null && f.searchQuery !== '') {
         const q = String(f.searchQuery).toLowerCase();
         list = list.filter(
-          (b) =>
-            String(b.title || '').toLowerCase().includes(q) ||
-            String(b.author || '').toLowerCase().includes(q)
+          b =>
+            String(b.title || '')
+              .toLowerCase()
+              .includes(q) ||
+            String(b.author || '')
+              .toLowerCase()
+              .includes(q)
         );
       }
     }
     const sort = options?.sort;
     if (sort) {
-      const col = sort.by === 'addedAt' ? 'added_at' : sort.by === 'lastReadAt' ? 'last_read_at' : sort.by;
+      const col =
+        sort.by === 'addedAt' ? 'added_at' : sort.by === 'lastReadAt' ? 'last_read_at' : sort.by;
       const desc = sort.order === 'desc';
       list.sort((a, b) => {
         const av = a[col as keyof BookRow] ?? 0;
@@ -191,13 +200,13 @@ export class DatabaseService implements IDataStore {
   }
 
   async updateBook(id: string, updates: Partial<BookRow>): Promise<void> {
-    const book = this.getDb().data.books.find((b) => b.id === id);
+    const book = this.getDb().data.books.find(b => b.id === id);
     if (book) Object.assign(book, updates);
     await this.persist();
   }
 
   async deleteBook(id: string): Promise<void> {
-    const i = this.getDb().data.books.findIndex((b) => b.id === id);
+    const i = this.getDb().data.books.findIndex(b => b.id === id);
     if (i >= 0) this.getDb().data.books.splice(i, 1);
     await this.persist();
   }
@@ -219,8 +228,10 @@ export class DatabaseService implements IDataStore {
   }> {
     const books = this.getDb().data.books;
     const total = books.length;
-    const in_progress = books.filter((b) => Number(b.progress) > 0 && Number(b.progress) < 100).length;
-    const completed = books.filter((b) => Number(b.progress) >= 100).length;
+    const in_progress = books.filter(
+      b => Number(b.progress) > 0 && Number(b.progress) < 100
+    ).length;
+    const completed = books.filter(b => Number(b.progress) >= 100).length;
     const total_time = books.reduce((s, b) => s + (Number(b.reading_time_minutes) || 0), 0);
     return {total, in_progress, completed, total_time};
   }
@@ -230,7 +241,7 @@ export class DatabaseService implements IDataStore {
   // ============================================================================
 
   async getVocabularyById(id: string): Promise<VocabularyRow | null> {
-    const v = this.getDb().data.vocabulary.find((x) => x.id === id);
+    const v = this.getDb().data.vocabulary.find(x => x.id === id);
     return v ?? null;
   }
 
@@ -244,17 +255,17 @@ export class DatabaseService implements IDataStore {
     let list = [...this.getDb().data.vocabulary];
     if (options?.filter) {
       const f = options.filter;
-      if (f.status != null) list = list.filter((r) => r.status === f.status);
-      if (f.book_id != null) list = list.filter((r) => r.book_id === f.book_id);
-      if (f.source_lang != null) list = list.filter((r) => r.source_lang === f.source_lang);
-      if (f.target_lang != null) list = list.filter((r) => r.target_lang === f.target_lang);
+      if (f.status != null) list = list.filter(r => r.status === f.status);
+      if (f.book_id != null) list = list.filter(r => r.book_id === f.book_id);
+      if (f.source_lang != null) list = list.filter(r => r.source_lang === f.source_lang);
+      if (f.target_lang != null) list = list.filter(r => r.target_lang === f.target_lang);
     }
     if (options?.addedAtGte != null) {
-      list = list.filter((r) => Number(r.added_at) >= options!.addedAtGte!);
+      list = list.filter(r => Number(r.added_at) >= options!.addedAtGte!);
     }
     if (options?.dueForReview) {
       const {now, limit: lim} = options.dueForReview;
-      list = list.filter((r) => {
+      list = list.filter(r => {
         if (r.status === 'learned') return false;
         const last = Number(r.last_reviewed_at) || 0;
         const interval = Number(r.interval) || 0;
@@ -286,7 +297,7 @@ export class DatabaseService implements IDataStore {
         return (av < bv ? -1 : 1) * (desc ? -1 : 1);
       });
     }
-    if (!options?.dueForReview && (options?.limit != null)) {
+    if (!options?.dueForReview && options?.limit != null) {
       list = list.slice(0, options.limit);
     }
     if (!options?.dueForReview && options?.limit == null) {
@@ -301,13 +312,13 @@ export class DatabaseService implements IDataStore {
   }
 
   async updateVocabulary(id: string, updates: Partial<VocabularyRow>): Promise<void> {
-    const v = this.getDb().data.vocabulary.find((x) => x.id === id);
+    const v = this.getDb().data.vocabulary.find(x => x.id === id);
     if (v) Object.assign(v, updates);
     await this.persist();
   }
 
   async deleteVocabulary(id: string): Promise<void> {
-    const i = this.getDb().data.vocabulary.findIndex((x) => x.id === id);
+    const i = this.getDb().data.vocabulary.findIndex(x => x.id === id);
     if (i >= 0) this.getDb().data.vocabulary.splice(i, 1);
     await this.persist();
   }
@@ -318,7 +329,7 @@ export class DatabaseService implements IDataStore {
   }
 
   async getVocabularyDueCount(now: number): Promise<number> {
-    return this.getDb().data.vocabulary.filter((r) => {
+    return this.getDb().data.vocabulary.filter(r => {
       if (r.status === 'learned') return false;
       const last = Number(r.last_reviewed_at) || 0;
       const interval = Number(r.interval) || 0;
@@ -336,7 +347,7 @@ export class DatabaseService implements IDataStore {
   }> {
     const list = this.getDb().data.vocabulary;
     const now = Date.now();
-    const due = list.filter((r) => {
+    const due = list.filter(r => {
       if (r.status === 'learned') return false;
       const last = Number(r.last_reviewed_at) || 0;
       const interval = Number(r.interval) || 0;
@@ -344,16 +355,16 @@ export class DatabaseService implements IDataStore {
     }).length;
     return {
       total: list.length,
-      new_count: list.filter((r) => r.status === 'new').length,
-      learning_count: list.filter((r) => r.status === 'learning').length,
-      review_count: list.filter((r) => r.status === 'review').length,
-      learned_count: list.filter((r) => r.status === 'learned').length,
+      new_count: list.filter(r => r.status === 'new').length,
+      learning_count: list.filter(r => r.status === 'learning').length,
+      review_count: list.filter(r => r.status === 'review').length,
+      learned_count: list.filter(r => r.status === 'learned').length,
       due,
     };
   }
 
   async getVocabularyCountByStatus(status: string): Promise<number> {
-    return this.getDb().data.vocabulary.filter((r) => r.status === status).length;
+    return this.getDb().data.vocabulary.filter(r => r.status === status).length;
   }
 
   // ============================================================================
@@ -361,19 +372,19 @@ export class DatabaseService implements IDataStore {
   // ============================================================================
 
   async getSessionById(id: string): Promise<SessionRow | null> {
-    const s = this.getDb().data.reading_sessions.find((x) => x.id === id);
+    const s = this.getDb().data.reading_sessions.find(x => x.id === id);
     return s ?? null;
   }
 
   async getSessionsByBookId(bookId: string): Promise<SessionRow[]> {
-    return this.getDb().data.reading_sessions
-      .filter((x) => x.book_id === bookId)
+    return this.getDb()
+      .data.reading_sessions.filter(x => x.book_id === bookId)
       .sort((a, b) => Number(b.started_at) - Number(a.started_at));
   }
 
   async getRecentSessions(limit: number): Promise<SessionRow[]> {
-    return this.getDb().data.reading_sessions
-      .filter((x) => x.ended_at != null)
+    return this.getDb()
+      .data.reading_sessions.filter(x => x.ended_at != null)
       .sort((a, b) => Number(b.started_at) - Number(a.started_at))
       .slice(0, limit);
   }
@@ -382,8 +393,8 @@ export class DatabaseService implements IDataStore {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
     const t = startOfDay.getTime();
-    return this.getDb().data.reading_sessions
-      .filter((x) => Number(x.started_at) >= t)
+    return this.getDb()
+      .data.reading_sessions.filter(x => Number(x.started_at) >= t)
       .sort((a, b) => Number(b.started_at) - Number(a.started_at));
   }
 
@@ -393,19 +404,21 @@ export class DatabaseService implements IDataStore {
   }
 
   async updateSession(id: string, updates: Partial<SessionRow>): Promise<void> {
-    const s = this.getDb().data.reading_sessions.find((x) => x.id === id);
+    const s = this.getDb().data.reading_sessions.find(x => x.id === id);
     if (s) Object.assign(s, updates);
     await this.persist();
   }
 
   async deleteSession(id: string): Promise<void> {
-    const i = this.getDb().data.reading_sessions.findIndex((x) => x.id === id);
+    const i = this.getDb().data.reading_sessions.findIndex(x => x.id === id);
     if (i >= 0) this.getDb().data.reading_sessions.splice(i, 1);
     await this.persist();
   }
 
   async deleteSessionsByBookId(bookId: string): Promise<void> {
-    this.getDb().data.reading_sessions = this.getDb().data.reading_sessions.filter((x) => x.book_id !== bookId);
+    this.getDb().data.reading_sessions = this.getDb().data.reading_sessions.filter(
+      x => x.book_id !== bookId
+    );
     await this.persist();
   }
 
@@ -415,27 +428,40 @@ export class DatabaseService implements IDataStore {
   }
 
   async getDistinctSessionDays(): Promise<string[]> {
-    const ended = this.getDb().data.reading_sessions.filter((x) => x.ended_at != null);
-    const days = [...new Set(ended.map((x) => new Date(Number(x.started_at)).toISOString().slice(0, 10)))].sort().reverse();
+    const ended = this.getDb().data.reading_sessions.filter(x => x.ended_at != null);
+    const days = [
+      ...new Set(ended.map(x => new Date(Number(x.started_at)).toISOString().slice(0, 10))),
+    ]
+      .sort()
+      .reverse();
     return days;
   }
 
   async getSessionStatistics(): Promise<ReadingStats> {
-    const ended = this.getDb().data.reading_sessions.filter((x) => x.ended_at != null);
+    const ended = this.getDb().data.reading_sessions.filter(x => x.ended_at != null);
     const overall = {
-      books_read: new Set(ended.map((x) => x.book_id)).size,
+      books_read: new Set(ended.map(x => x.book_id)).size,
       total_time: ended.reduce((s, x) => s + (Number(x.duration) ?? 0), 0),
-      avg_session: ended.length ? ended.reduce((s, x) => s + (Number(x.duration) ?? 0), 0) / ended.length : 0,
+      avg_session: ended.length
+        ? ended.reduce((s, x) => s + (Number(x.duration) ?? 0), 0) / ended.length
+        : 0,
     };
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
-    const todayRows = this.getDb().data.reading_sessions.filter((x) => Number(x.started_at) >= startOfToday.getTime());
+    const todayRows = this.getDb().data.reading_sessions.filter(
+      x => Number(x.started_at) >= startOfToday.getTime()
+    );
     const today = {
       words_revealed: todayRows.reduce((s, x) => s + (Number(x.words_revealed) || 0), 0),
       words_saved: todayRows.reduce((s, x) => s + (Number(x.words_saved) || 0), 0),
     };
     const streakData = await this.calculateStreak();
-    const wordsLearned = this.getDb().data.vocabulary.filter((r) => r.status === 'learned').length;
+    const wordsLearned = this.getDb().data.vocabulary.filter(r => r.status === 'learned').length;
+    const totalWordsInVocabulary = this.getDb().data.vocabulary.length;
+    const XP_PER_MINUTE = 2;
+    const XP_PER_WORD = 5;
+    const totalXp =
+      Math.floor((overall.total_time / 60) * XP_PER_MINUTE) + totalWordsInVocabulary * XP_PER_WORD;
     return {
       totalBooksRead: overall.books_read,
       totalReadingTime: overall.total_time,
@@ -445,6 +471,7 @@ export class DatabaseService implements IDataStore {
       averageSessionDuration: overall.avg_session,
       wordsRevealedToday: today.words_revealed,
       wordsSavedToday: today.words_saved,
+      totalXp,
     };
   }
 
@@ -488,7 +515,7 @@ export class DatabaseService implements IDataStore {
 
   async getReadingTimeForPeriod(startMs: number, endMs: number): Promise<number> {
     const list = this.getDb().data.reading_sessions.filter(
-      (x) => Number(x.started_at) >= startMs && Number(x.started_at) < endMs && x.ended_at != null
+      x => Number(x.started_at) >= startMs && Number(x.started_at) < endMs && x.ended_at != null
     );
     return list.reduce((s, x) => s + (Number(x.duration) || 0), 0);
   }
@@ -499,9 +526,9 @@ export class DatabaseService implements IDataStore {
     startDate.setHours(0, 0, 0, 0);
     const t0 = startDate.getTime();
     const byDay: Record<string, number> = {};
-    this.getDb().data.reading_sessions
-      .filter((x) => Number(x.started_at) >= t0 && x.ended_at != null)
-      .forEach((x) => {
+    this.getDb()
+      .data.reading_sessions.filter(x => Number(x.started_at) >= t0 && x.ended_at != null)
+      .forEach(x => {
         const d = new Date(Number(x.started_at)).toISOString().slice(0, 10);
         byDay[d] = (byDay[d] || 0) + (Number(x.duration) || 0);
       });
@@ -533,19 +560,27 @@ export class DatabaseService implements IDataStore {
   // Word list
   // ============================================================================
 
-  async getWordListEntry(word: string, sourceLang: string, targetLang: string): Promise<WordListRow | null> {
+  async getWordListEntry(
+    word: string,
+    sourceLang: string,
+    targetLang: string
+  ): Promise<WordListRow | null> {
     const row = this.getDb().data.word_list.find(
-      (w) => w.source_word === word && w.source_lang === sourceLang && w.target_lang === targetLang
+      w => w.source_word === word && w.source_lang === sourceLang && w.target_lang === targetLang
     );
     return row ?? null;
   }
 
-  async getWordListEntryByVariant(word: string, sourceLang: string, targetLang: string): Promise<WordListRow | null> {
-    const row = this.getDb().data.word_list.find((w) => {
+  async getWordListEntryByVariant(
+    word: string,
+    sourceLang: string,
+    targetLang: string
+  ): Promise<WordListRow | null> {
+    const row = this.getDb().data.word_list.find(w => {
       if (w.source_lang !== sourceLang || w.target_lang !== targetLang || !w.variants) return false;
       try {
         const arr: string[] = JSON.parse(w.variants);
-        return arr.some((v) => v.toLowerCase() === word.toLowerCase());
+        return arr.some(v => v.toLowerCase() === word.toLowerCase());
       } catch {
         return false;
       }
@@ -560,9 +595,14 @@ export class DatabaseService implements IDataStore {
     options?: {limit?: number; random?: boolean}
   ): Promise<WordListRow[]> {
     let list = this.getDb().data.word_list.filter(
-      (w) => w.source_lang === sourceLang && w.target_lang === targetLang && w.proficiency === proficiency
+      w =>
+        w.source_lang === sourceLang &&
+        w.target_lang === targetLang &&
+        w.proficiency === proficiency
     );
-    list = list.sort((a, b) => (Number(a.frequency_rank) ?? 9999) - (Number(b.frequency_rank) ?? 9999));
+    list = list.sort(
+      (a, b) => (Number(a.frequency_rank) ?? 9999) - (Number(b.frequency_rank) ?? 9999)
+    );
     if (options?.random) {
       for (let i = list.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -574,14 +614,14 @@ export class DatabaseService implements IDataStore {
   }
 
   async getWordListByLangs(sourceLang: string, targetLang: string): Promise<WordListRow[]> {
-    return this.getDb().data.word_list
-      .filter((w) => w.source_lang === sourceLang && w.target_lang === targetLang)
+    return this.getDb()
+      .data.word_list.filter(w => w.source_lang === sourceLang && w.target_lang === targetLang)
       .sort((a, b) => (Number(a.frequency_rank) ?? 9999) - (Number(b.frequency_rank) ?? 9999));
   }
 
   async getWordListCount(sourceLang: string, targetLang: string): Promise<number> {
     return this.getDb().data.word_list.filter(
-      (w) => w.source_lang === sourceLang && w.target_lang === targetLang
+      w => w.source_lang === sourceLang && w.target_lang === targetLang
     ).length;
   }
 
@@ -593,7 +633,7 @@ export class DatabaseService implements IDataStore {
   async deleteWordListByPair(sourceLang?: string, targetLang?: string): Promise<void> {
     if (sourceLang != null && targetLang != null) {
       this.getDb().data.word_list = this.getDb().data.word_list.filter(
-        (w) => !(w.source_lang === sourceLang && w.target_lang === targetLang)
+        w => !(w.source_lang === sourceLang && w.target_lang === targetLang)
       );
     } else {
       this.getDb().data.word_list = [];
@@ -601,9 +641,12 @@ export class DatabaseService implements IDataStore {
     await this.persist();
   }
 
-  async getWordListProficiencyCounts(sourceLang: string, targetLang: string): Promise<Record<string, number>> {
+  async getWordListProficiencyCounts(
+    sourceLang: string,
+    targetLang: string
+  ): Promise<Record<string, number>> {
     const list = this.getDb().data.word_list.filter(
-      (w) => w.source_lang === sourceLang && w.target_lang === targetLang
+      w => w.source_lang === sourceLang && w.target_lang === targetLang
     );
     const out: Record<string, number> = {};
     for (const w of list) {
@@ -613,9 +656,12 @@ export class DatabaseService implements IDataStore {
     return out;
   }
 
-  async getWordListPosCounts(sourceLang: string, targetLang: string): Promise<Record<string, number>> {
+  async getWordListPosCounts(
+    sourceLang: string,
+    targetLang: string
+  ): Promise<Record<string, number>> {
     const list = this.getDb().data.word_list.filter(
-      (w) => w.source_lang === sourceLang && w.target_lang === targetLang && w.part_of_speech != null
+      w => w.source_lang === sourceLang && w.target_lang === targetLang && w.part_of_speech != null
     );
     const out: Record<string, number> = {};
     for (const w of list) {
@@ -649,12 +695,13 @@ export class DatabaseService implements IDataStore {
     limit: number
   ): Promise<WordListRow[]> {
     const q = (query || '').toLowerCase();
-    return this.getDb().data.word_list
-      .filter(
-        (w) =>
+    return this.getDb()
+      .data.word_list.filter(
+        w =>
           w.source_lang === sourceLang &&
           w.target_lang === targetLang &&
-          (String(w.source_word).toLowerCase().startsWith(q) || String(w.target_word).toLowerCase().startsWith(q))
+          (String(w.source_word).toLowerCase().startsWith(q) ||
+            String(w.target_word).toLowerCase().startsWith(q))
       )
       .sort((a, b) => (Number(a.frequency_rank) ?? 9999) - (Number(b.frequency_rank) ?? 9999))
       .slice(0, limit);
@@ -683,4 +730,5 @@ export class DatabaseService implements IDataStore {
 }
 
 export const databaseService = new DatabaseService();
-(DatabaseService as unknown as {getInstance: () => DatabaseService}).getInstance = () => databaseService;
+(DatabaseService as unknown as {getInstance: () => DatabaseService}).getInstance = () =>
+  databaseService;

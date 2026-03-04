@@ -18,7 +18,8 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { Language, ProficiencyLevel } from '@/types';
+
+import type {Language, ProficiencyLevel} from '@/types';
 
 // ============================================================================
 // Types
@@ -79,9 +80,9 @@ const STORAGE_PREFIX = '@xenolexia/frequency_';
 const MAX_WORDS_TO_STORE = 5000;
 
 export const PROFICIENCY_THRESHOLDS = {
-  beginner: { min: 1, max: 500 },
-  intermediate: { min: 501, max: 2000 },
-  advanced: { min: 2001, max: 5000 },
+  beginner: {min: 1, max: 500},
+  intermediate: {min: 501, max: 2000},
+  advanced: {min: 2001, max: 5000},
 } as const;
 
 // ============================================================================
@@ -128,8 +129,8 @@ export class FrequencyListService {
     const list = await this.getFrequencyList(language);
     if (!list) return [];
 
-    const { min, max } = PROFICIENCY_THRESHOLDS[level];
-    return list.words.filter((w) => w.rank >= min && w.rank <= max);
+    const {min, max} = PROFICIENCY_THRESHOLDS[level];
+    return list.words.filter(w => w.rank >= min && w.rank <= max);
   }
 
   /**
@@ -149,7 +150,7 @@ export class FrequencyListService {
     if (!list) return null;
 
     const normalizedWord = word.toLowerCase();
-    const found = list.words.find((w) => w.word.toLowerCase() === normalizedWord);
+    const found = list.words.find(w => w.word.toLowerCase() === normalizedWord);
     return found?.rank || null;
   }
 
@@ -235,7 +236,7 @@ export class FrequencyListService {
     } else {
       this.cache.clear();
       const keys = await AsyncStorage.getAllKeys();
-      const frequencyKeys = keys.filter((k) => k.startsWith(STORAGE_PREFIX));
+      const frequencyKeys = keys.filter(k => k.startsWith(STORAGE_PREFIX));
       await AsyncStorage.multiRemove(frequencyKeys);
     }
   }
@@ -296,7 +297,11 @@ export class FrequencyListService {
         const frequency = parts.length > 1 ? parseInt(parts[1], 10) : undefined;
 
         // Skip very short words, numbers, and special characters
-        if (word.length < 2 || /^\d+$/.test(word) || /[^a-zA-Z\u0370-\u03FF\u0400-\u04FF]/.test(word)) {
+        if (
+          word.length < 2 ||
+          /^\d+$/.test(word) ||
+          /[^a-zA-Z\u0370-\u03FF\u0400-\u04FF]/.test(word)
+        ) {
           continue;
         }
 

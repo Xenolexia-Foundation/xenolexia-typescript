@@ -7,22 +7,21 @@
  * Language Settings Screen - Configure source/target languages and proficiency
  */
 
-import React, { useState, useCallback } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  FlatList,
-  TextInput,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState, useCallback} from 'react';
 
-import { useTheme } from '@theme/index';
-import { useUserStore } from '@stores/userStore';
-import { SUPPORTED_LANGUAGES, getLanguageInfo } from '@types/index';
-import type { Language, ProficiencyLevel } from '@types/index';
+import {View, StyleSheet, ScrollView, TouchableOpacity, FlatList, TextInput} from 'react-native';
+
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+import {useNavigation} from '@react-navigation/native';
+
+import {useUserStore} from '@stores/userStore';
+
+import {SUPPORTED_LANGUAGES, getLanguageInfo} from '@types/index';
+
+import {useTheme} from '@theme/index';
+
+import type {Language, ProficiencyLevel} from '@types/index';
 
 // ============================================================================
 // Component
@@ -30,8 +29,8 @@ import type { Language, ProficiencyLevel } from '@types/index';
 
 export function LanguageSettingsScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const { colors } = useTheme();
-  const { preferences, updatePreferences } = useUserStore();
+  const {colors} = useTheme();
+  const {preferences, updatePreferences} = useUserStore();
 
   const [showSourcePicker, setShowSourcePicker] = useState(false);
   const [showTargetPicker, setShowTargetPicker] = useState(false);
@@ -41,32 +40,41 @@ export function LanguageSettingsScreen(): React.JSX.Element {
   const targetLang = getLanguageInfo(preferences.defaultTargetLanguage);
 
   const filteredLanguages = SUPPORTED_LANGUAGES.filter(
-    (lang) =>
+    lang =>
       lang.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lang.nativeName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSelectSource = useCallback((code: Language) => {
-    updatePreferences({ defaultSourceLanguage: code });
-    setShowSourcePicker(false);
-    setSearchQuery('');
-  }, [updatePreferences]);
+  const handleSelectSource = useCallback(
+    (code: Language) => {
+      updatePreferences({defaultSourceLanguage: code});
+      setShowSourcePicker(false);
+      setSearchQuery('');
+    },
+    [updatePreferences]
+  );
 
-  const handleSelectTarget = useCallback((code: Language) => {
-    updatePreferences({ defaultTargetLanguage: code });
-    setShowTargetPicker(false);
-    setSearchQuery('');
-  }, [updatePreferences]);
+  const handleSelectTarget = useCallback(
+    (code: Language) => {
+      updatePreferences({defaultTargetLanguage: code});
+      setShowTargetPicker(false);
+      setSearchQuery('');
+    },
+    [updatePreferences]
+  );
 
-  const handleSelectProficiency = useCallback((level: ProficiencyLevel) => {
-    updatePreferences({ defaultProficiencyLevel: level });
-  }, [updatePreferences]);
+  const handleSelectProficiency = useCallback(
+    (level: ProficiencyLevel) => {
+      updatePreferences({defaultProficiencyLevel: level});
+    },
+    [updatePreferences]
+  );
 
   const dynamicStyles = {
-    container: { backgroundColor: colors.background.primary },
-    section: { backgroundColor: colors.background.secondary },
-    label: { color: colors.text.primary },
-    value: { color: colors.text.secondary },
+    container: {backgroundColor: colors.background.primary},
+    section: {backgroundColor: colors.background.secondary},
+    label: {color: colors.text.primary},
+    value: {color: colors.text.secondary},
   };
 
   // Language picker modal
@@ -76,8 +84,8 @@ export function LanguageSettingsScreen(): React.JSX.Element {
     onSelect: (code: Language) => void,
     excludeCode?: Language
   ) => (
-    <View style={[styles.pickerModal, { backgroundColor: colors.background.primary }]}>
-      <View style={[styles.pickerHeader, { borderBottomColor: colors.border.secondary }]}>
+    <View style={[styles.pickerModal, {backgroundColor: colors.background.primary}]}>
+      <View style={[styles.pickerHeader, {borderBottomColor: colors.border.secondary}]}>
         <TouchableOpacity
           onPress={() => {
             setShowSourcePicker(false);
@@ -85,16 +93,19 @@ export function LanguageSettingsScreen(): React.JSX.Element {
             setSearchQuery('');
           }}
         >
-          <TextDisplay text="Cancel" style={[styles.pickerCancel, { color: colors.text.secondary }]} />
+          <TextDisplay
+            text="Cancel"
+            style={[styles.pickerCancel, {color: colors.text.secondary}]}
+          />
         </TouchableOpacity>
-        <TextDisplay text={title} style={[styles.pickerTitle, { color: colors.text.primary }]} />
-        <View style={{ width: 60 }} />
+        <TextDisplay text={title} style={[styles.pickerTitle, {color: colors.text.primary}]} />
+        <View style={{width: 60}} />
       </View>
 
-      <View style={[styles.searchContainer, { backgroundColor: colors.background.secondary }]}>
+      <View style={[styles.searchContainer, {backgroundColor: colors.background.secondary}]}>
         <TextDisplay text="🔍" style={styles.searchIcon} />
         <TextInput
-          style={[styles.searchInput, { color: colors.text.primary }]}
+          style={[styles.searchInput, {color: colors.text.primary}]}
           placeholder="Search languages..."
           placeholderTextColor={colors.text.tertiary}
           value={searchQuery}
@@ -104,13 +115,13 @@ export function LanguageSettingsScreen(): React.JSX.Element {
       </View>
 
       <FlatList
-        data={filteredLanguages.filter((l) => l.code !== excludeCode)}
-        keyExtractor={(item) => item.code}
-        renderItem={({ item }) => (
+        data={filteredLanguages.filter(l => l.code !== excludeCode)}
+        keyExtractor={item => item.code}
+        renderItem={({item}) => (
           <TouchableOpacity
             style={[
               styles.languageRow,
-              selected === item.code && { backgroundColor: colors.primary[500] + '15' },
+              selected === item.code && {backgroundColor: colors.primary[500] + '15'},
             ]}
             onPress={() => onSelect(item.code)}
           >
@@ -120,13 +131,16 @@ export function LanguageSettingsScreen(): React.JSX.Element {
                 text={item.name}
                 style={[
                   styles.languageName,
-                  { color: selected === item.code ? colors.primary[500] : colors.text.primary },
+                  {color: selected === item.code ? colors.primary[500] : colors.text.primary},
                 ]}
               />
-              <TextDisplay text={item.nativeName} style={[styles.languageNative, { color: colors.text.tertiary }]} />
+              <TextDisplay
+                text={item.nativeName}
+                style={[styles.languageNative, {color: colors.text.tertiary}]}
+              />
             </View>
             {selected === item.code && (
-              <TextDisplay text="✓" style={[styles.checkmark, { color: colors.primary[500] }]} />
+              <TextDisplay text="✓" style={[styles.checkmark, {color: colors.primary[500]}]} />
             )}
           </TouchableOpacity>
         )}
@@ -162,44 +176,65 @@ export function LanguageSettingsScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={[styles.container, dynamicStyles.container]} edges={['top']}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border.secondary }]}>
+      <View style={[styles.header, {borderBottomColor: colors.border.secondary}]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <TextDisplay text="←" style={[styles.backText, { color: colors.primary[500] }]} />
+          <TextDisplay text="←" style={[styles.backText, {color: colors.primary[500]}]} />
         </TouchableOpacity>
-        <TextDisplay text="Languages" style={[styles.title, { color: colors.text.primary }]} />
+        <TextDisplay text="Languages" style={[styles.title, {color: colors.text.primary}]} />
         <View style={styles.backButton} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Language Pair */}
         <View style={styles.sectionContainer}>
-          <TextDisplay text="LANGUAGE PAIR" style={[styles.sectionTitle, { color: colors.text.tertiary }]} />
+          <TextDisplay
+            text="LANGUAGE PAIR"
+            style={[styles.sectionTitle, {color: colors.text.tertiary}]}
+          />
           <View style={[styles.section, dynamicStyles.section]}>
             {/* Source Language */}
             <TouchableOpacity style={styles.row} onPress={() => setShowSourcePicker(true)}>
               <View style={styles.rowContent}>
-                <TextDisplay text="Native Language" style={[styles.rowLabel, dynamicStyles.label]} />
-                <TextDisplay text="The language you read in" style={[styles.rowHint, { color: colors.text.tertiary }]} />
+                <TextDisplay
+                  text="Native Language"
+                  style={[styles.rowLabel, dynamicStyles.label]}
+                />
+                <TextDisplay
+                  text="The language you read in"
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
+                />
               </View>
               <View style={styles.rowValue}>
                 <TextDisplay text={sourceLang?.flag || ''} style={styles.langFlag} />
-                <TextDisplay text={sourceLang?.name || ''} style={[styles.langName, { color: colors.text.primary }]} />
-                <TextDisplay text="›" style={[styles.chevron, { color: colors.text.tertiary }]} />
+                <TextDisplay
+                  text={sourceLang?.name || ''}
+                  style={[styles.langName, {color: colors.text.primary}]}
+                />
+                <TextDisplay text="›" style={[styles.chevron, {color: colors.text.tertiary}]} />
               </View>
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+            <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
             {/* Target Language */}
             <TouchableOpacity style={styles.row} onPress={() => setShowTargetPicker(true)}>
               <View style={styles.rowContent}>
-                <TextDisplay text="Learning Language" style={[styles.rowLabel, dynamicStyles.label]} />
-                <TextDisplay text="Words will be shown in this language" style={[styles.rowHint, { color: colors.text.tertiary }]} />
+                <TextDisplay
+                  text="Learning Language"
+                  style={[styles.rowLabel, dynamicStyles.label]}
+                />
+                <TextDisplay
+                  text="Words will be shown in this language"
+                  style={[styles.rowHint, {color: colors.text.tertiary}]}
+                />
               </View>
               <View style={styles.rowValue}>
                 <TextDisplay text={targetLang?.flag || ''} style={styles.langFlag} />
-                <TextDisplay text={targetLang?.name || ''} style={[styles.langName, { color: colors.text.primary }]} />
-                <TextDisplay text="›" style={[styles.chevron, { color: colors.text.tertiary }]} />
+                <TextDisplay
+                  text={targetLang?.name || ''}
+                  style={[styles.langName, {color: colors.text.primary}]}
+                />
+                <TextDisplay text="›" style={[styles.chevron, {color: colors.text.tertiary}]} />
               </View>
             </TouchableOpacity>
           </View>
@@ -207,37 +242,47 @@ export function LanguageSettingsScreen(): React.JSX.Element {
 
         {/* Proficiency Level */}
         <View style={styles.sectionContainer}>
-          <TextDisplay text="PROFICIENCY LEVEL" style={[styles.sectionTitle, { color: colors.text.tertiary }]} />
+          <TextDisplay
+            text="PROFICIENCY LEVEL"
+            style={[styles.sectionTitle, {color: colors.text.tertiary}]}
+          />
           <View style={[styles.section, dynamicStyles.section]}>
-            {(['beginner', 'intermediate', 'advanced'] as ProficiencyLevel[]).map((level, index) => (
-              <React.Fragment key={level}>
-                {index > 0 && <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />}
-                <TouchableOpacity
-                  style={styles.row}
-                  onPress={() => handleSelectProficiency(level)}
-                >
-                  <View style={styles.rowContent}>
-                    <TextDisplay
-                      text={level.charAt(0).toUpperCase() + level.slice(1)}
-                      style={[styles.rowLabel, dynamicStyles.label]}
-                    />
-                    <TextDisplay
-                      text={
-                        level === 'beginner'
-                          ? 'A1-A2 • Basic vocabulary'
-                          : level === 'intermediate'
-                          ? 'B1-B2 • Everyday vocabulary'
-                          : 'C1-C2 • Complex vocabulary'
-                      }
-                      style={[styles.rowHint, { color: colors.text.tertiary }]}
-                    />
-                  </View>
-                  {preferences.defaultProficiencyLevel === level && (
-                    <TextDisplay text="✓" style={[styles.checkmark, { color: colors.primary[500] }]} />
+            {(['beginner', 'intermediate', 'advanced'] as ProficiencyLevel[]).map(
+              (level, index) => (
+                <React.Fragment key={level}>
+                  {index > 0 && (
+                    <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
                   )}
-                </TouchableOpacity>
-              </React.Fragment>
-            ))}
+                  <TouchableOpacity
+                    style={styles.row}
+                    onPress={() => handleSelectProficiency(level)}
+                  >
+                    <View style={styles.rowContent}>
+                      <TextDisplay
+                        text={level.charAt(0).toUpperCase() + level.slice(1)}
+                        style={[styles.rowLabel, dynamicStyles.label]}
+                      />
+                      <TextDisplay
+                        text={
+                          level === 'beginner'
+                            ? 'A1-A2 • Basic vocabulary'
+                            : level === 'intermediate'
+                              ? 'B1-B2 • Everyday vocabulary'
+                              : 'C1-C2 • Complex vocabulary'
+                        }
+                        style={[styles.rowHint, {color: colors.text.tertiary}]}
+                      />
+                    </View>
+                    {preferences.defaultProficiencyLevel === level && (
+                      <TextDisplay
+                        text="✓"
+                        style={[styles.checkmark, {color: colors.primary[500]}]}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </React.Fragment>
+              )
+            )}
           </View>
         </View>
 
@@ -245,7 +290,7 @@ export function LanguageSettingsScreen(): React.JSX.Element {
         <View style={styles.infoContainer}>
           <TextDisplay
             text="💡 You can change these settings at any time. Different books can have different language settings."
-            style={[styles.infoText, { color: colors.text.tertiary }]}
+            style={[styles.infoText, {color: colors.text.tertiary}]}
           />
         </View>
       </ScrollView>
@@ -254,8 +299,8 @@ export function LanguageSettingsScreen(): React.JSX.Element {
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 

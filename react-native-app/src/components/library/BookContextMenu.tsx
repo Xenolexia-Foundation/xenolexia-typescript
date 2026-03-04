@@ -8,19 +8,16 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Modal,
-  TouchableOpacity,
-  StyleSheet,
-  Pressable,
-  Alert,
-} from 'react-native';
+
+import {View, Modal, TouchableOpacity, StyleSheet, Pressable, Alert} from 'react-native';
+
 import Svg, {Path} from 'react-native-svg';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
+
 import {Text} from '@components/ui';
+
 import type {Book} from '@/types';
 
 // ============================================================================
@@ -56,12 +53,7 @@ function InfoIcon({color, size = 22}: {color: string; size?: number}) {
         stroke={color}
         strokeWidth={2}
       />
-      <Path
-        d="M12 16v-4m0-4h.01"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
+      <Path d="M12 16v-4m0-4h.01" stroke={color} strokeWidth={2} strokeLinecap="round" />
     </Svg>
   );
 }
@@ -119,20 +111,11 @@ function TrashIcon({color, size = 22}: {color: string; size?: number}) {
 // Menu Item Component
 // ============================================================================
 
-function MenuItem({
-  icon,
-  label,
-  onPress,
-  destructive = false,
-}: MenuItemProps): React.JSX.Element {
+function MenuItem({icon, label, onPress, destructive = false}: MenuItemProps): React.JSX.Element {
   const colors = useColors();
 
   return (
-    <TouchableOpacity
-      style={styles.menuItem}
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
+    <TouchableOpacity style={styles.menuItem} onPress={onPress} activeOpacity={0.7}>
       {icon}
       <Text
         variant="bodyMedium"
@@ -176,7 +159,7 @@ export function BookContextMenu({
             onClose();
           },
         },
-      ],
+      ]
     );
   };
 
@@ -196,12 +179,7 @@ export function BookContextMenu({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
         <View style={[styles.menuContainer, {backgroundColor: colors.surface}]}>
           {/* Book Info Header */}

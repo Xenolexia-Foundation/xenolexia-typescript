@@ -8,11 +8,21 @@
  */
 
 import React, {useState, useCallback} from 'react';
-import {View, StyleSheet, TouchableOpacity, LayoutAnimation, Platform, UIManager} from 'react-native';
+
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
+
 import {Text, Card} from '@components/ui';
+
 import type {VocabularyItem} from '@/types';
 
 // Enable LayoutAnimation on Android
@@ -83,7 +93,13 @@ export function VocabularyCard({item, onPress}: VocabularyCardProps): React.JSX.
             </Text>
 
             {item.contextSentence && (
-              <Text variant="bodySmall" color="secondary" serif style={styles.context} numberOfLines={2}>
+              <Text
+                variant="bodySmall"
+                color="secondary"
+                serif
+                style={styles.context}
+                numberOfLines={2}
+              >
                 "{item.contextSentence}"
               </Text>
             )}

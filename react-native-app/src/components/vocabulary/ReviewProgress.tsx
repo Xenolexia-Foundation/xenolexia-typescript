@@ -8,13 +8,10 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  Animated,
-} from 'react-native';
 
-import { useTheme } from '@theme/index';
+import {View, StyleSheet, Animated} from 'react-native';
+
+import {useTheme} from '@theme/index';
 
 // ============================================================================
 // Types
@@ -35,7 +32,7 @@ export function ReviewProgress({
   total,
   correctCount = 0,
 }: ReviewProgressProps): React.JSX.Element {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
 
   const progress = total > 0 ? (current / total) * 100 : 0;
   const accuracy = current > 0 ? (correctCount / current) * 100 : 0;
@@ -43,7 +40,7 @@ export function ReviewProgress({
   return (
     <View style={styles.container}>
       {/* Progress bar */}
-      <View style={[styles.progressBar, { backgroundColor: colors.background.secondary }]}>
+      <View style={[styles.progressBar, {backgroundColor: colors.background.secondary}]}>
         <View
           style={[
             styles.progressFill,
@@ -60,11 +57,11 @@ export function ReviewProgress({
         <View style={styles.stat}>
           <TextDisplay
             text={`${current}`}
-            style={[styles.statValue, { color: colors.text.primary }]}
+            style={[styles.statValue, {color: colors.text.primary}]}
           />
           <TextDisplay
             text={`of ${total}`}
-            style={[styles.statLabel, { color: colors.text.tertiary }]}
+            style={[styles.statLabel, {color: colors.text.tertiary}]}
           />
         </View>
 
@@ -81,7 +78,7 @@ export function ReviewProgress({
             />
             <TextDisplay
               text="accuracy"
-              style={[styles.statLabel, { color: colors.text.tertiary }]}
+              style={[styles.statLabel, {color: colors.text.tertiary}]}
             />
           </View>
         )}
@@ -91,8 +88,8 @@ export function ReviewProgress({
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 

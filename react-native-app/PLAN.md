@@ -9,9 +9,11 @@ This document outlines the complete development roadmap for Xenolexia, from init
 ## 📅 Development Phases
 
 ### Phase 0: Project Setup (Week 1)
+
 **Status: ✅ COMPLETED**
 
 #### 0.1 Environment Configuration
+
 - [x] Create project structure
 - [x] Initialize React Native with TypeScript
 - [x] Set up Git repository
@@ -20,6 +22,7 @@ This document outlines the complete development roadmap for Xenolexia, from init
 - [x] Configure path aliases (@components, @services, etc.)
 
 #### 0.2 Core Dependencies Installation
+
 - [x] All core dependencies installed (see package.json)
 - [x] Navigation: @react-navigation/native, bottom-tabs, native-stack
 - [x] State Management: zustand, @tanstack/react-query
@@ -30,6 +33,7 @@ This document outlines the complete development roadmap for Xenolexia, from init
 - [x] Utils: lodash, date-fns, uuid, react-native-svg
 
 #### 0.3 Initial App Structure
+
 - [x] Create navigation skeleton with Stack + Bottom Tabs
 - [x] Implement basic screens (Library, Reader, Vocabulary, Statistics, Settings, Profile)
 - [x] Set up theme provider with Light/Dark/Sepia modes
@@ -39,6 +43,7 @@ This document outlines the complete development roadmap for Xenolexia, from init
 - [x] Implement SVG-based tab bar icons
 
 #### 0.4 Quality & Testing (Completed)
+
 - [x] Jest test configuration with path aliases
 - [x] Test utilities for rendering with providers
 - [x] Navigation smoke tests
@@ -49,9 +54,11 @@ This document outlines the complete development roadmap for Xenolexia, from init
 ---
 
 ### Phase 1: Library Screen (Weeks 2-3)
+
 **Status: ✅ COMPLETED**
 
 #### 1.1 Book Import
+
 - [x] Implement document picker for file selection
 - [x] Support multiple file formats (EPUB, TXT, MOBI, FB2)
 - [x] Parse EPUB metadata (title, author, cover, TOC)
@@ -60,6 +67,7 @@ This document outlines the complete development roadmap for Xenolexia, from init
 - [x] Import progress modal with status indicator
 
 **Technical Details:**
+
 ```typescript
 // Book entity structure (Implemented)
 interface Book {
@@ -79,6 +87,7 @@ interface Book {
 ```
 
 #### 1.2 Library UI
+
 - [x] Grid/List view toggle (ViewToggle component)
 - [x] Book cards with cover, title, progress (BookCard, BookCover)
 - [x] Search and filter functionality (SortFilterBar)
@@ -88,6 +97,7 @@ interface Book {
 - [x] List view item (BookListItem)
 
 #### 1.3 Collections (Stretch)
+
 - [ ] Create custom collections
 - [ ] Drag books into collections
 - [x] Smart collections (currently reading, completed) - via store selectors
@@ -95,9 +105,11 @@ interface Book {
 ---
 
 ### Phase 2: EPUB Parser Service (Weeks 3-4)
+
 **Status: ✅ COMPLETED**
 
 #### 2.1 Core Parsing
+
 - [x] Extract EPUB structure (spine, manifest, toc) - EPUBExtractor
 - [x] Parse table of contents (NCX for EPUB 2, NAV for EPUB 3) - TOCParser
 - [x] Extract metadata (title, author, description, cover) - MetadataExtractor
@@ -106,6 +118,7 @@ interface Book {
 - [x] Extract all text nodes for word replacement - TextProcessingService.extractContent()
 
 **Architecture:**
+
 ```typescript
 // BookParser interface (Implemented)
 interface IBookParser {
@@ -133,6 +146,7 @@ class TextProcessingService {
 ```
 
 #### 2.2 Text Processing Pipeline
+
 - [x] Tokenize text into words - Tokenizer.tokenize()
 - [x] Preserve HTML structure around words - Tokenizer.extractTextSegments()
 - [x] Handle punctuation correctly - Token.prefix/suffix
@@ -140,6 +154,7 @@ class TextProcessingService {
 - [x] Maintain word positions for tap detection - Token.startIndex/endIndex
 
 **Implemented Files:**
+
 - `TextProcessingService.ts` - Main integration service
 - `Tokenizer.ts` - HTML-aware tokenization
 - `WordReplacer.ts` - Position-based word replacement
@@ -149,9 +164,11 @@ class TextProcessingService {
 ---
 
 ### Phase 3: Translation Engine (Weeks 4-6) ⭐ CORE FEATURE
+
 **Status: ✅ COMPLETED**
 
 #### 3.1 Word Database Setup
+
 - [x] Import frequency-ranked word lists per language (FrequencyListService)
 - [x] Map words to proficiency levels:
   - **Beginner (A1-A2)**: Top 500 most common words
@@ -162,6 +179,7 @@ class TextProcessingService {
 - [x] Support 28+ languages with metadata
 
 **Implementation:**
+
 ```typescript
 // TranslationAPIService - Multiple free translation providers
 const result = await translationAPI.translate('house', 'en', 'es');
@@ -177,6 +195,7 @@ const entry = await dynamicWordDatabase.lookupWord('hello', 'en', 'fr');
 ```
 
 #### 3.2 Word Replacement Algorithm
+
 - [x] Identify replaceable words in text (Tokenizer class)
 - [x] Match words accounting for:
   - Case sensitivity
@@ -187,6 +206,7 @@ const entry = await dynamicWordDatabase.lookupWord('hello', 'en', 'fr');
 - [x] Preserve case in replacements (WordReplacer)
 
 **Algorithm (Implemented in TranslationEngine.ts):**
+
 ```typescript
 // Process content and replace words based on settings
 const processed = await translationEngine.processContent(chapterHtml);
@@ -194,6 +214,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 ```
 
 #### 3.3 Context-Aware Selection
+
 - [x] Random selection based on density setting
 - [x] Distributed selection strategy (evenly spread words)
 - [x] Frequency-based selection (prefer common words)
@@ -204,9 +225,11 @@ const processed = await translationEngine.processContent(chapterHtml);
 ---
 
 ### Phase 4: Reader Screen (Weeks 6-8)
+
 **Status: ✅ COMPLETED**
 
 #### 4.1 Basic Reader
+
 - [x] Render processed book content (WebView-based EPUBRenderer)
 - [x] Implement continuous scroll with progress tracking
 - [x] Chapter navigation (prev/next + chapter list)
@@ -214,6 +237,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [x] Save reading position automatically
 
 #### 4.2 Reader Customization
+
 - [x] Font selection (Serif, Sans-serif, Dyslexic-friendly - 5 options)
 - [x] Font size adjustment (12-32pt slider)
 - [x] Line spacing control (1.0-2.5x slider)
@@ -222,6 +246,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [ ] Brightness control
 
 #### 4.3 Foreign Word Interaction ⭐
+
 - [x] Style foreign words distinctly (underline, color via CSS)
 - [x] Tap detection on foreign words (InjectedScript + WebView postMessage)
 - [x] Translation popup component:
@@ -235,6 +260,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [x] Visual feedback on tap (CSS animations)
 
 **Implemented Components:**
+
 - `EPUBRenderer.tsx` - WebView-based content renderer
 - `ChapterContentService.ts` - CSS injection and JS for tap handling
 - `InjectedScript.ts` - Comprehensive WebView JS for interactions
@@ -243,6 +269,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - `TranslationPopup.tsx` - Themed word reveal modal with animations
 
 #### 4.4 Reading Statistics
+
 - [x] Track time spent reading (via ReadingSession)
 - [x] Count chapters read
 - [x] Track words revealed vs. saved (statisticsStore)
@@ -251,9 +278,11 @@ const processed = await translationEngine.processContent(chapterHtml);
 ---
 
 ### Phase 5: Vocabulary Manager (Weeks 8-10)
+
 **Status: ✅ COMPLETED**
 
 #### 5.1 Word Storage
+
 - [x] Save words from reader to vocabulary (vocabularyStore + VocabularyRepository)
 - [x] Store context sentence with each word
 - [x] Track when word was first seen (addedAt)
@@ -261,6 +290,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [x] Mark words as "learned" (status field)
 
 #### 5.2 Vocabulary Screen
+
 - [x] List all saved words (VocabularyScreen with VocabularyCard)
 - [x] Filter by book, date, status (VocabularyRepository + UI filters)
 - [x] Search vocabulary (VocabularyRepository.search + SearchInput)
@@ -269,6 +299,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [x] Stats header with due count (VocabularyStatsHeader)
 
 #### 5.3 Spaced Repetition System (SRS)
+
 - [x] Implement SM-2 algorithm (VocabularyRepository.recordReview)
 - [x] Schedule word reviews (getDueForReview)
 - [x] Review mode UI (ReviewScreen):
@@ -278,6 +309,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [x] Track review statistics (ReviewSessionSummary + statisticsStore)
 
 **Implemented Components:**
+
 - `VocabularyScreen.tsx` - Main vocabulary list with search, filters, stats
 - `VocabularyCard.tsx` - Animated reveal card for saved words
 - `WordDetailModal.tsx` - Full word info with edit/delete
@@ -293,9 +325,11 @@ const processed = await translationEngine.processContent(chapterHtml);
 ---
 
 ### Phase 6: Settings & Onboarding (Weeks 10-11)
+
 **Status: ✅ COMPLETED**
 
 #### 6.1 Onboarding Flow
+
 - [x] Welcome screen with app explanation
 - [x] Select source language (28 languages supported)
 - [x] Select target language (with search)
@@ -306,6 +340,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [x] Animated step transitions
 
 #### 6.2 Settings Screen
+
 - [x] Language pair configuration (LanguageSettingsScreen)
 - [x] Proficiency level adjustment
 - [x] Word density slider
@@ -316,6 +351,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [x] Rate & Share app options
 
 **Implemented Screens:**
+
 - `OnboardingScreen.tsx` - 6-step onboarding with animations
 - `SettingsScreen.tsx` - Main settings hub
 - `LanguageSettingsScreen.tsx` - Language pair + proficiency
@@ -326,9 +362,11 @@ const processed = await translationEngine.processContent(chapterHtml);
 ---
 
 ### Phase 7: Polish & Testing (Weeks 11-13)
+
 **Status: ✅ COMPLETED**
 
 #### 7.1 Testing
+
 - [x] Unit tests for services (ExportService, SM-2 Algorithm)
 - [x] Component tests (VocabularyCard, FlashCard, GradingButtons)
 - [x] Store tests (vocabularyStore)
@@ -337,6 +375,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [ ] Performance testing with large books (future)
 
 #### 7.2 Optimization
+
 - [x] Performance monitoring utilities
 - [x] Debounce/throttle helpers
 - [x] List optimization helpers
@@ -344,17 +383,20 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [ ] Additional lazy loading (future)
 
 #### 7.3 Error Handling
+
 - [x] ErrorBoundary component
 - [x] ScreenErrorBoundary wrapper
 - [x] Error fallback UI
 - [x] Dev mode error details
 
 #### 7.4 Accessibility
+
 - [ ] Screen reader support (future)
 - [ ] Dynamic text sizing (future)
 - [ ] High contrast mode (future)
 
 **Implemented:**
+
 - `src/__tests__/utils/testUtils.tsx` - Test utilities and mocks
 - `src/__tests__/services/ExportService.test.ts` - Export service tests
 - `src/__tests__/services/SM2Algorithm.test.ts` - Spaced repetition tests
@@ -366,9 +408,11 @@ const processed = await translationEngine.processContent(chapterHtml);
 ---
 
 ### Phase 8: Release Preparation (Weeks 13-14)
+
 **Status: 🔶 IN PROGRESS**
 
 #### 8.1 App Store Assets
+
 - [x] App metadata configuration (app.json)
 - [x] App Store description and keywords
 - [x] Play Store description and keywords
@@ -379,6 +423,7 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [ ] App preview video
 
 #### 8.2 CI/CD Pipeline
+
 - [x] GitHub Actions for testing
 - [x] GitHub Actions for iOS builds
 - [x] GitHub Actions for Android builds
@@ -388,12 +433,14 @@ const processed = await translationEngine.processContent(chapterHtml);
 - [ ] Production deployment workflow
 
 #### 8.3 Documentation
+
 - [x] Launch checklist
 - [x] Troubleshooting guide
 - [x] Changelog
 - [x] Updated README
 
 #### 8.4 Launch
+
 - [ ] Beta testing: TestFlight (iOS) and Play Internal Testing (Android) — see **docs/BETA_TESTING.md**
 - [ ] App icons and screenshots — see repo root **REQUIRES_MANUAL_INPUT.md**
 - [ ] App Store submission
@@ -405,24 +452,28 @@ const processed = await translationEngine.processContent(chapterHtml);
 ## 🔧 Technical Decisions
 
 ### Why React Native?
+
 - Cross-platform (iOS + Android) from single codebase
 - Large ecosystem and community
 - Excellent performance with New Architecture
 - Familiar to web developers
 
 ### Why Zustand over Redux?
+
 - Simpler API, less boilerplate
 - Better TypeScript support
 - Smaller bundle size
 - Sufficient for app's state needs
 
 ### Why SQLite over Realm?
+
 - Standard SQL queries
 - Better tooling and debugging
 - Familiar to most developers
 - Excellent performance for our use case
 
 ### EPUB Rendering Strategy
+
 - Use WebView with epub.js for complex EPUB rendering
 - Inject custom CSS for foreign word styling
 - Use postMessage bridge for tap detection
@@ -502,22 +553,27 @@ CREATE TABLE word_list (
 ## 🚧 Known Challenges & Solutions
 
 ### Challenge 1: EPUB Complexity
+
 **Problem:** EPUBs vary wildly in structure and formatting.
 **Solution:** Use battle-tested epub.js, implement fallbacks, test with diverse EPUBs.
 
 ### Challenge 2: Word Boundary Detection
+
 **Problem:** Different languages have different tokenization rules.
 **Solution:** Start with English source only, use language-specific tokenizers.
 
 ### Challenge 3: Grammatical Correctness
+
 **Problem:** Direct word replacement can create awkward grammar.
 **Solution:** Start with nouns (least grammar-dependent), expand carefully.
 
 ### Challenge 4: Performance with Large Books
+
 **Problem:** Processing entire books at once is slow.
 **Solution:** Process chapters on-demand, cache processed content.
 
 ### Challenge 5: Offline Functionality
+
 **Problem:** Users expect to read without internet.
 **Solution:** All core features work offline, sync when available.
 
@@ -526,6 +582,7 @@ CREATE TABLE word_list (
 ## 📈 Success Metrics
 
 ### MVP Success (Phase 1 Release)
+
 - [ ] Can import and read an EPUB
 - [ ] Foreign words appear at correct proficiency level
 - [ ] Tap-to-reveal works smoothly
@@ -533,6 +590,7 @@ CREATE TABLE word_list (
 - [ ] App doesn't crash on common operations
 
 ### Growth Metrics (Post-Launch)
+
 - Daily Active Users (DAU)
 - Average reading time per session
 - Words revealed / Words saved ratio
@@ -544,15 +602,18 @@ CREATE TABLE word_list (
 ## 🔗 Resources
 
 ### Documentation
+
 - [React Native Docs](https://reactnative.dev/docs/getting-started)
 - [epub.js Documentation](http://epubjs.org/documentation/)
 - [Zustand Guide](https://docs.pmnd.rs/zustand/getting-started/introduction)
 
 ### Word Lists
+
 - [SUBTLEX frequency lists](https://www.ugent.be/pp/experimentele-psychologie/en/research/documents/subtlexus)
 - [OpenSubtitles frequency lists](https://github.com/hermitdave/FrequencyWords)
 
 ### Design Inspiration
+
 - Apple Books
 - Kindle
 - Moon+ Reader
@@ -573,25 +634,25 @@ CREATE TABLE word_list (
 
 ## 🌍 Supported Languages (28+)
 
-| Language | Code | Flag | RTL |
-|----------|------|------|-----|
-| English | en | 🇬🇧 | - |
-| Spanish | es | 🇪🇸 | - |
-| French | fr | 🇫🇷 | - |
-| German | de | 🇩🇪 | - |
-| Italian | it | 🇮🇹 | - |
-| Portuguese | pt | 🇵🇹 | - |
-| Russian | ru | 🇷🇺 | - |
-| Greek | el | 🇬🇷 | - |
-| Dutch | nl | 🇳🇱 | - |
-| Polish | pl | 🇵🇱 | - |
-| Turkish | tr | 🇹🇷 | - |
-| Japanese | ja | 🇯🇵 | - |
-| Chinese | zh | 🇨🇳 | - |
-| Korean | ko | 🇰🇷 | - |
-| Arabic | ar | 🇵🇸 | ✅ |
-| + 11 more... | | | |
+| Language     | Code | Flag | RTL |
+| ------------ | ---- | ---- | --- |
+| English      | en   | 🇬🇧   | -   |
+| Spanish      | es   | 🇪🇸   | -   |
+| French       | fr   | 🇫🇷   | -   |
+| German       | de   | 🇩🇪   | -   |
+| Italian      | it   | 🇮🇹   | -   |
+| Portuguese   | pt   | 🇵🇹   | -   |
+| Russian      | ru   | 🇷🇺   | -   |
+| Greek        | el   | 🇬🇷   | -   |
+| Dutch        | nl   | 🇳🇱   | -   |
+| Polish       | pl   | 🇵🇱   | -   |
+| Turkish      | tr   | 🇹🇷   | -   |
+| Japanese     | ja   | 🇯🇵   | -   |
+| Chinese      | zh   | 🇨🇳   | -   |
+| Korean       | ko   | 🇰🇷   | -   |
+| Arabic       | ar   | 🇵🇸   | ✅  |
+| + 11 more... |      |      |     |
 
 ---
 
-*Last Updated: January 2026*
+_Last Updated: January 2026_

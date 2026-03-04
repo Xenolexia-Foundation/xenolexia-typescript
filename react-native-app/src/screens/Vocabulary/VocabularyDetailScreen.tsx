@@ -8,17 +8,23 @@
  */
 
 import React, {useCallback} from 'react';
+
 import {View, StyleSheet} from 'react-native';
+
 import {SafeAreaView} from 'react-native-safe-area-context';
+
 import {useNavigation, useRoute} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import type {RouteProp} from '@react-navigation/native';
 
 import {useColors} from '@/theme';
+
 import {Text, Button} from '@components/ui';
 import {WordDetailModal} from '@components/vocabulary/WordDetailModal';
+
 import {useVocabularyStore} from '@stores/vocabularyStore';
+
 import type {RootStackParamList} from '@/types';
+import type {RouteProp} from '@react-navigation/native';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type VocabularyDetailRouteProp = RouteProp<RootStackParamList, 'VocabularyDetail'>;
 type VocabularyDetailNavigationProp = NativeStackNavigationProp<RootStackParamList>;

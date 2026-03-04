@@ -9,9 +9,12 @@
  */
 
 import React, {ReactElement} from 'react';
+
 import {render, RenderOptions} from '@testing-library/react-native';
-import {NavigationContainer} from '@react-navigation/native';
+
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+
+import {NavigationContainer} from '@react-navigation/native';
 
 import {ThemeProvider} from '@/theme';
 
@@ -32,7 +35,8 @@ function AllTheProviders({children}: WrapperProps) {
       initialMetrics={{
         frame: {x: 0, y: 0, width: 375, height: 812},
         insets: {top: 47, left: 0, right: 0, bottom: 34},
-      }}>
+      }}
+    >
       <ThemeProvider>
         <NavigationContainer>{children}</NavigationContainer>
       </ThemeProvider>
@@ -49,7 +53,8 @@ function ProvidersWithoutNavigation({children}: WrapperProps) {
       initialMetrics={{
         frame: {x: 0, y: 0, width: 375, height: 812},
         insets: {top: 47, left: 0, right: 0, bottom: 34},
-      }}>
+      }}
+    >
       <ThemeProvider>{children}</ThemeProvider>
     </SafeAreaProvider>
   );
@@ -62,18 +67,14 @@ function ProvidersWithoutNavigation({children}: WrapperProps) {
 /**
  * Custom render with all providers
  */
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>,
-) => render(ui, {wrapper: AllTheProviders, ...options});
+const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
+  render(ui, {wrapper: AllTheProviders, ...options});
 
 /**
  * Custom render without navigation
  */
-const renderWithTheme = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>,
-) => render(ui, {wrapper: ProvidersWithoutNavigation, ...options});
+const renderWithTheme = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
+  render(ui, {wrapper: ProvidersWithoutNavigation, ...options});
 
 // ============================================================================
 // Mock Navigation
@@ -203,8 +204,7 @@ export const resetAllStores = () => {
 /**
  * Wait for a specific amount of time
  */
-export const wait = (ms: number) =>
-  new Promise(resolve => setTimeout(resolve, ms));
+export const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Wait for the next tick of the event loop

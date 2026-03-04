@@ -11,11 +11,11 @@
  * On native (iOS/Android), uses react-native-fs (RNFS).
  */
 
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 const FileSystemService =
   Platform.OS === 'web'
     ? require('./FileSystemService.web').FileSystemService
     : require('./FileSystemService.native').FileSystemService;
 
-export { FileSystemService };
+export {FileSystemService};

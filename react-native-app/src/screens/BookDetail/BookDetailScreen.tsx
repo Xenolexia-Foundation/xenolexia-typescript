@@ -8,25 +8,25 @@
  */
 
 import React, {useCallback, useState} from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+
+import {View, ScrollView, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import type {RouteProp} from '@react-navigation/native';
 import Svg, {Path} from 'react-native-svg';
+
+import {useNavigation, useRoute} from '@react-navigation/native';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
-import {Text, Button, Card} from '@components/ui';
+
 import {BookCover} from '@components/library';
+import {Text, Button, Card} from '@components/ui';
+
 import {useLibraryStore} from '@stores/libraryStore';
+
 import type {RootStackParamList} from '@/types';
+import type {RouteProp} from '@react-navigation/native';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 // ============================================================================
 // Types
@@ -61,12 +61,7 @@ function ClockIcon({color, size = 18}: {color: string; size?: number}) {
         stroke={color}
         strokeWidth={2}
       />
-      <Path
-        d="M12 6v6l4 2"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinecap="round"
-      />
+      <Path d="M12 6v6l4 2" stroke={color} strokeWidth={2} strokeLinecap="round" />
     </Svg>
   );
 }
@@ -169,21 +164,17 @@ export function BookDetailScreen(): React.JSX.Element {
   }, [navigation, book.id]);
 
   const handleDelete = useCallback(() => {
-    Alert.alert(
-      'Delete Book',
-      `Are you sure you want to delete "${book.title}"?`,
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            await removeBook(book.id);
-            navigation.goBack();
-          },
+    Alert.alert('Delete Book', `Are you sure you want to delete "${book.title}"?`, [
+      {text: 'Cancel', style: 'cancel'},
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          await removeBook(book.id);
+          navigation.goBack();
         },
-      ],
-    );
+      },
+    ]);
   }, [book, removeBook, navigation]);
 
   // Format helpers
@@ -326,28 +317,11 @@ export function BookDetailScreen(): React.JSX.Element {
             Book Details
           </Text>
 
-          <DetailRow
-            label="Proficiency Level"
-            value={PROFICIENCY_LABELS[book.proficiencyLevel]}
-          />
-          <DetailRow
-            label="Word Density"
-            value={`${Math.round(book.wordDensity * 100)}%`}
-          />
-          <DetailRow
-            label="File Size"
-            value={formatFileSize(book.fileSize)}
-          />
-          <DetailRow
-            label="Added"
-            value={formatDate(book.addedAt)}
-          />
-          {book.sourceUrl && (
-            <DetailRow
-              label="Source"
-              value="Downloaded"
-            />
-          )}
+          <DetailRow label="Proficiency Level" value={PROFICIENCY_LABELS[book.proficiencyLevel]} />
+          <DetailRow label="Word Density" value={`${Math.round(book.wordDensity * 100)}%`} />
+          <DetailRow label="File Size" value={formatFileSize(book.fileSize)} />
+          <DetailRow label="Added" value={formatDate(book.addedAt)} />
+          {book.sourceUrl && <DetailRow label="Source" value="Downloaded" />}
         </Card>
 
         {/* Actions */}

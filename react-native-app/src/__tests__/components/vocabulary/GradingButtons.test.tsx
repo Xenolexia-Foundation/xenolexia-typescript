@@ -8,16 +8,18 @@
  */
 
 import React from 'react';
-import { fireEvent } from '@testing-library/react-native';
-import { render } from '../../utils/testUtils';
+
+import {fireEvent} from '@testing-library/react-native';
+
+import {render} from '../../utils/testUtils';
 
 // Mock theme
 jest.mock('@/theme', () => ({
   useTheme: () => ({
     colors: {
-      primary: { 500: '#0ea5e9' },
-      background: { primary: '#ffffff', secondary: '#f3f4f6' },
-      text: { primary: '#1f2937' },
+      primary: {500: '#0ea5e9'},
+      background: {primary: '#ffffff', secondary: '#f3f4f6'},
+      text: {primary: '#1f2937'},
     },
   }),
 }));
@@ -31,36 +33,36 @@ const GRADE_VALUES = {
 };
 
 // Mock GradingButtons component
-const MockGradingButtons = ({ onGrade }: { onGrade: (grade: number) => void }) => {
-  const { View, TouchableOpacity, Text } = require('react-native');
-  
+const MockGradingButtons = ({onGrade}: {onGrade: (grade: number) => void}) => {
+  const {View, TouchableOpacity, Text} = require('react-native');
+
   return (
     <View testID="grading-buttons">
       <TouchableOpacity
         testID="grade-again"
         onPress={() => onGrade(GRADE_VALUES.Again)}
-        style={{ backgroundColor: '#ef4444' }}
+        style={{backgroundColor: '#ef4444'}}
       >
         <Text>Again</Text>
       </TouchableOpacity>
       <TouchableOpacity
         testID="grade-hard"
         onPress={() => onGrade(GRADE_VALUES.Hard)}
-        style={{ backgroundColor: '#f59e0b' }}
+        style={{backgroundColor: '#f59e0b'}}
       >
         <Text>Hard</Text>
       </TouchableOpacity>
       <TouchableOpacity
         testID="grade-good"
         onPress={() => onGrade(GRADE_VALUES.Good)}
-        style={{ backgroundColor: '#10b981' }}
+        style={{backgroundColor: '#10b981'}}
       >
         <Text>Good</Text>
       </TouchableOpacity>
       <TouchableOpacity
         testID="grade-easy"
         onPress={() => onGrade(GRADE_VALUES.Easy)}
-        style={{ backgroundColor: '#0ea5e9' }}
+        style={{backgroundColor: '#0ea5e9'}}
       >
         <Text>Easy</Text>
       </TouchableOpacity>
@@ -76,9 +78,7 @@ describe('GradingButtons', () => {
   });
 
   it('should render all four grading buttons', () => {
-    const { getByTestId } = render(
-      <MockGradingButtons onGrade={mockOnGrade} />
-    );
+    const {getByTestId} = render(<MockGradingButtons onGrade={mockOnGrade} />);
 
     expect(getByTestId('grade-again')).toBeTruthy();
     expect(getByTestId('grade-hard')).toBeTruthy();
@@ -88,9 +88,7 @@ describe('GradingButtons', () => {
 
   describe('Button interactions', () => {
     it('should call onGrade with 1 for "Again"', () => {
-      const { getByTestId } = render(
-        <MockGradingButtons onGrade={mockOnGrade} />
-      );
+      const {getByTestId} = render(<MockGradingButtons onGrade={mockOnGrade} />);
 
       fireEvent.press(getByTestId('grade-again'));
 
@@ -98,9 +96,7 @@ describe('GradingButtons', () => {
     });
 
     it('should call onGrade with 2 for "Hard"', () => {
-      const { getByTestId } = render(
-        <MockGradingButtons onGrade={mockOnGrade} />
-      );
+      const {getByTestId} = render(<MockGradingButtons onGrade={mockOnGrade} />);
 
       fireEvent.press(getByTestId('grade-hard'));
 
@@ -108,9 +104,7 @@ describe('GradingButtons', () => {
     });
 
     it('should call onGrade with 3 for "Good"', () => {
-      const { getByTestId } = render(
-        <MockGradingButtons onGrade={mockOnGrade} />
-      );
+      const {getByTestId} = render(<MockGradingButtons onGrade={mockOnGrade} />);
 
       fireEvent.press(getByTestId('grade-good'));
 
@@ -118,9 +112,7 @@ describe('GradingButtons', () => {
     });
 
     it('should call onGrade with 5 for "Easy"', () => {
-      const { getByTestId } = render(
-        <MockGradingButtons onGrade={mockOnGrade} />
-      );
+      const {getByTestId} = render(<MockGradingButtons onGrade={mockOnGrade} />);
 
       fireEvent.press(getByTestId('grade-easy'));
 
@@ -142,9 +134,7 @@ describe('GradingButtons', () => {
 
   describe('Only one grade per review', () => {
     it('should only call onGrade once when multiple buttons pressed quickly', () => {
-      const { getByTestId } = render(
-        <MockGradingButtons onGrade={mockOnGrade} />
-      );
+      const {getByTestId} = render(<MockGradingButtons onGrade={mockOnGrade} />);
 
       fireEvent.press(getByTestId('grade-good'));
 

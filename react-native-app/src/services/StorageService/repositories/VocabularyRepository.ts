@@ -7,8 +7,9 @@
  * Vocabulary Repository - Database operations for vocabulary items
  */
 
-import type {VocabularyItem, VocabularyStatus, Language} from '@/types';
 import {databaseService} from '../DatabaseService';
+
+import type {VocabularyItem, VocabularyStatus, Language} from '@/types';
 
 // ============================================================================
 // Types
@@ -78,7 +79,7 @@ class VocabularyRepository {
         item.easeFactor,
         item.interval,
         item.status,
-      ],
+      ]
     );
   }
 
@@ -130,7 +131,7 @@ class VocabularyRepository {
 
     await databaseService.execute(
       `UPDATE vocabulary SET ${setClauses.join(', ')} WHERE id = ?`,
-      params,
+      params
     );
   }
 
@@ -154,7 +155,7 @@ class VocabularyRepository {
   async getById(itemId: string): Promise<VocabularyItem | null> {
     const row = await databaseService.getOne<VocabularyRow>(
       'SELECT * FROM vocabulary WHERE id = ?',
-      [itemId],
+      [itemId]
     );
 
     return row ? this.rowToVocabulary(row) : null;
@@ -165,20 +166,15 @@ class VocabularyRepository {
    */
   async getAll(sort?: VocabularySort): Promise<VocabularyItem[]> {
     const orderBy = this.buildOrderBy(sort);
-    const rows = await databaseService.getAll<VocabularyRow>(
-      `SELECT * FROM vocabulary ${orderBy}`,
-    );
+    const rows = await databaseService.getAll<VocabularyRow>(`SELECT * FROM vocabulary ${orderBy}`);
 
-    return rows.map((row) => this.rowToVocabulary(row));
+    return rows.map(row => this.rowToVocabulary(row));
   }
 
   /**
    * Get filtered vocabulary items
    */
-  async getFiltered(
-    filter: VocabularyFilter,
-    sort?: VocabularySort,
-  ): Promise<VocabularyItem[]> {
+  async getFiltered(filter: VocabularyFilter, sort?: VocabularySort): Promise<VocabularyItem[]> {
     const conditions: string[] = [];
     const params: (string | number)[] = [];
 
@@ -199,16 +195,15 @@ class VocabularyRepository {
       params.push(filter.targetLanguage);
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
     const orderBy = this.buildOrderBy(sort);
 
     const rows = await databaseService.getAll<VocabularyRow>(
       `SELECT * FROM vocabulary ${whereClause} ${orderBy}`,
-      params,
+      params
     );
 
-    return rows.map((row) => this.rowToVocabulary(row));
+    return rows.map(row => this.rowToVocabulary(row));
   }
 
   /**
@@ -220,10 +215,10 @@ class VocabularyRepository {
       `SELECT * FROM vocabulary 
        WHERE source_word LIKE ? OR target_word LIKE ?
        ORDER BY added_at DESC`,
-      [searchTerm, searchTerm],
+      [searchTerm, searchTerm]
     );
 
-    return rows.map((row) => this.rowToVocabulary(row));
+    return rows.map(row => this.rowToVocabulary(row));
   }
 
   // ============================================================================
@@ -250,10 +245,10 @@ class VocabularyRepository {
          END,
          last_reviewed_at ASC NULLS FIRST
        LIMIT ?`,
-      [now, limit],
+      [now, limit]
     );
 
-    return rows.map((row) => this.rowToVocabulary(row));
+    return rows.map(row => this.rowToVocabulary(row));
   }
 
   /**
@@ -261,7 +256,7 @@ class VocabularyRepository {
    */
   async recordReview(
     itemId: string,
-    quality: number, // 0-5, where 0-2 = fail, 3-5 = pass
+    quality: number // 0-5, where 0-2 = fail, 3-5 = pass
   ): Promise<void> {
     const item = await this.getById(itemId);
     if (!item) return;
@@ -285,7 +280,7 @@ class VocabularyRepository {
       // Update ease factor
       easeFactor = Math.max(
         1.3,
-        easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)),
+        easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
       );
 
       // Update status
@@ -344,14 +339,17 @@ class VocabularyRepository {
       FROM vocabulary
     `);
 
-    const dueResult = await databaseService.getOne<{due: number}>(`
+    const dueResult = await databaseService.getOne<{due: number}>(
+      `
       SELECT COUNT(*) as due FROM vocabulary
       WHERE status != 'learned'
       AND (
         last_reviewed_at IS NULL 
         OR (last_reviewed_at + (interval * 86400000)) <= ?
       )
-    `, [now]);
+    `,
+      [now]
+    );
 
     return {
       total: result?.total ?? 0,
@@ -369,7 +367,7 @@ class VocabularyRepository {
   async countByStatus(status: VocabularyStatus): Promise<number> {
     const result = await databaseService.getOne<{count: number}>(
       'SELECT COUNT(*) as count FROM vocabulary WHERE status = ?',
-      [status],
+      [status]
     );
     return result?.count ?? 0;
   }
@@ -383,10 +381,10 @@ class VocabularyRepository {
 
     const rows = await databaseService.getAll<VocabularyRow>(
       `SELECT * FROM vocabulary WHERE added_at >= ? ORDER BY added_at DESC`,
-      [startOfDay.getTime()],
+      [startOfDay.getTime()]
     );
 
-    return rows.map((row) => this.rowToVocabulary(row));
+    return rows.map(row => this.rowToVocabulary(row));
   }
 
   // ============================================================================
@@ -407,9 +405,7 @@ class VocabularyRepository {
       bookId: row.book_id,
       bookTitle: row.book_title,
       addedAt: new Date(row.added_at),
-      lastReviewedAt: row.last_reviewed_at
-        ? new Date(row.last_reviewed_at)
-        : null,
+      lastReviewedAt: row.last_reviewed_at ? new Date(row.last_reviewed_at) : null,
       reviewCount: row.review_count,
       easeFactor: row.ease_factor,
       interval: row.interval,

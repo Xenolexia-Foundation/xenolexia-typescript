@@ -55,7 +55,9 @@ const openDatabase = (): Promise<IDBDatabase> => {
   return dbPromise;
 };
 
-const getFromDB = async (path: string): Promise<{path: string; data: ArrayBuffer | string; size: number; mtime: number} | null> => {
+const getFromDB = async (
+  path: string
+): Promise<{path: string; data: ArrayBuffer | string; size: number; mtime: number} | null> => {
   try {
     const db = await openDatabase();
     return new Promise((resolve, reject) => {
@@ -119,7 +121,9 @@ const deleteFromDB = async (path: string): Promise<void> => {
   }
 };
 
-const getAllFromDB = async (): Promise<Array<{path: string; data: ArrayBuffer | string; size: number; mtime: number}>> => {
+const getAllFromDB = async (): Promise<
+  Array<{path: string; data: ArrayBuffer | string; size: number; mtime: number}>
+> => {
   try {
     const db = await openDatabase();
     return new Promise((resolve, reject) => {
@@ -144,10 +148,7 @@ const getAllFromDB = async (): Promise<Array<{path: string; data: ArrayBuffer | 
 // File System API
 // ============================================================================
 
-export const readFile = async (
-  filepath: string,
-  encoding?: string,
-): Promise<string> => {
+export const readFile = async (filepath: string, encoding?: string): Promise<string> => {
   const file = await getFromDB(filepath);
   if (!file) {
     throw new Error(`File not found: ${filepath}`);
@@ -199,7 +200,7 @@ export const read = async (
   filepath: string,
   length: number = 0,
   position: number = 0,
-  encoding: string = 'utf8',
+  encoding: string = 'utf8'
 ): Promise<string> => {
   const file = await getFromDB(filepath);
   if (!file) {
@@ -226,7 +227,7 @@ export const read = async (
 export const writeFile = async (
   filepath: string,
   contents: string | ArrayBuffer,
-  _encoding?: string,
+  _encoding?: string
 ): Promise<void> => {
   await saveToDB(filepath, contents);
 };
@@ -245,8 +246,17 @@ export const mkdir = async (_filepath: string): Promise<void> => {
 };
 
 export const readDir = async (
-  dirpath: string,
-): Promise<Array<{name: string; path: string; size: number; mtime: Date; isFile: () => boolean; isDirectory: () => boolean}>> => {
+  dirpath: string
+): Promise<
+  Array<{
+    name: string;
+    path: string;
+    size: number;
+    mtime: Date;
+    isFile: () => boolean;
+    isDirectory: () => boolean;
+  }>
+> => {
   const allFiles = await getAllFromDB();
   const normalizedDir = dirpath.endsWith('/') ? dirpath : `${dirpath}/`;
 
@@ -262,10 +272,7 @@ export const readDir = async (
     }));
 };
 
-export const copyFile = async (
-  filepath: string,
-  destPath: string,
-): Promise<void> => {
+export const copyFile = async (filepath: string, destPath: string): Promise<void> => {
   // Handle blob URLs (from document picker)
   if (filepath.startsWith('blob:')) {
     try {
@@ -309,10 +316,7 @@ export const copyFile = async (
   }
 };
 
-export const moveFile = async (
-  filepath: string,
-  destPath: string,
-): Promise<void> => {
+export const moveFile = async (filepath: string, destPath: string): Promise<void> => {
   const file = await getFromDB(filepath);
   if (file) {
     await saveToDB(destPath, file.data);
@@ -321,7 +325,7 @@ export const moveFile = async (
 };
 
 export const stat = async (
-  filepath: string,
+  filepath: string
 ): Promise<{size: number; mtime: Date; isFile: () => boolean; isDirectory: () => boolean}> => {
   const file = await getFromDB(filepath);
   if (!file) {
@@ -354,7 +358,9 @@ export interface DownloadResult {
 
 let downloadJobId = 0;
 
-export const downloadFile = (options: DownloadFileOptions): {
+export const downloadFile = (
+  options: DownloadFileOptions
+): {
   jobId: number;
   promise: Promise<DownloadResult>;
 } => {
@@ -425,7 +431,7 @@ export const downloadFile = (options: DownloadFileOptions): {
 export const saveFileWithPicker = async (
   data: ArrayBuffer | string,
   suggestedName: string,
-  types?: Array<{description: string; accept: Record<string, string[]>}>,
+  types?: Array<{description: string; accept: Record<string, string[]>}>
 ): Promise<string | null> => {
   // Check if File System Access API is available
   if ('showSaveFilePicker' in window) {
@@ -456,9 +462,7 @@ export const saveFileWithPicker = async (
 
   // Fallback: trigger browser download
   const blob =
-    data instanceof ArrayBuffer
-      ? new Blob([data])
-      : new Blob([data], {type: 'text/plain'});
+    data instanceof ArrayBuffer ? new Blob([data]) : new Blob([data], {type: 'text/plain'});
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

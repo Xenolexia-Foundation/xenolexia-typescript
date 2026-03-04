@@ -94,6 +94,7 @@ type(scope): description
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 Examples:
+
 - `feat(reader): add word density slider`
 - `fix(vocabulary): correct SRS interval calculation`
 - `docs(readme): update installation instructions`
@@ -130,6 +131,7 @@ We welcome contributions of word lists for new language pairs!
 ## Questions?
 
 Feel free to:
+
 - Open a discussion on GitHub
 - Ask in PR comments
 - Reach out to maintainers

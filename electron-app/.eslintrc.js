@@ -132,6 +132,16 @@ module.exports = {
     ],
   },
   overrides: [
+    // Electron main process & preload (Node/CommonJS, use require)
+    {
+      files: ['app/electron/**/*.js'],
+      env: {node: true},
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+        'no-console': 'off',
+        'import/order': 'off',
+      },
+    },
     // Test files
     {
       files: [
@@ -161,13 +171,13 @@ module.exports = {
         '@typescript-eslint/no-unused-vars': 'off',
       },
     },
+    // Lib Electron-specific modules (use require('electron') or dynamic require)
+    {
+      files: ['lib/**/*.electron.ts'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+      },
+    },
   ],
-  ignorePatterns: [
-    'node_modules/',
-    'coverage/',
-    '*.lock',
-    'electron/**/*.js',
-    'dist/',
-    'release/',
-  ],
+  ignorePatterns: ['node_modules/', 'coverage/', '*.lock', 'dist/', 'release/'],
 };

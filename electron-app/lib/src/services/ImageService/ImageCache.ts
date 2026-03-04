@@ -11,8 +11,17 @@
  * 2. Disk cache for persistence
  */
 
+import {
+  getAppDataPath,
+  mkdir,
+  fileExists,
+  writeFile,
+  readFileAsText,
+  unlink,
+  readFileAsBase64,
+} from '../../utils/FileSystem.electron';
+
 import type {CacheEntry, CacheOptions, CacheStats} from './types';
-import { getAppDataPath, mkdir, fileExists, writeFile, readFileAsText, unlink, readFileAsBase64 } from '../../utils/FileSystem.electron';
 
 // ============================================================================
 // Constants
@@ -130,11 +139,11 @@ export class ImageCache {
       // Set cache directory path
       const appDataPath = await getAppDataPath();
       this.cacheDir = `${appDataPath}/${this.options.directory}`;
-      
+
       // Create cache directory if it doesn't exist
       const exists = await fileExists(this.cacheDir);
       if (!exists) {
-        await mkdir(this.cacheDir, { recursive: true });
+        await mkdir(this.cacheDir, {recursive: true});
       }
 
       // Load manifest
@@ -206,7 +215,7 @@ export class ImageCache {
   async set(
     key: string,
     sourcePath: string,
-    options: {ttl?: number; move?: boolean} = {},
+    options: {ttl?: number; move?: boolean} = {}
   ): Promise<string> {
     await this.ensureInitialized();
 
@@ -224,7 +233,7 @@ export class ImageCache {
       bytes[i] = binaryString.charCodeAt(i);
     }
     await writeFile(cachePath, bytes.buffer);
-    
+
     // If move was requested, delete source
     if (move) {
       try {
@@ -272,7 +281,7 @@ export class ImageCache {
     key: string,
     base64Data: string,
     mimeType: string = 'image/jpeg',
-    options: {ttl?: number} = {},
+    options: {ttl?: number} = {}
   ): Promise<string> {
     await this.ensureInitialized();
 
@@ -429,7 +438,7 @@ export class ImageCache {
 
     // Sort by last access time (oldest first)
     const entries = Array.from(this.manifest.entries()).sort(
-      ([, a], [, b]) => a.lastAccessedAt - b.lastAccessedAt,
+      ([, a], [, b]) => a.lastAccessedAt - b.lastAccessedAt
     );
 
     // Delete oldest until under target

@@ -8,23 +8,27 @@
  */
 
 import React, {useState, useCallback, useMemo} from 'react';
+
 import {View, StyleSheet, FlatList, TouchableOpacity, RefreshControl} from 'react-native';
 
 import {SafeAreaView} from 'react-native-safe-area-context';
+
 import {useNavigation} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
-import type {VocabularyItem, RootStackParamList} from '@/types';
 
-import {useVocabularyStore} from '@stores/vocabularyStore';
-import {VocabularyCard} from '@components/vocabulary/VocabularyCard';
-import {EmptyVocabulary} from '@components/vocabulary/EmptyVocabulary';
-import {VocabularyStatsHeader} from '@components/vocabulary/VocabularyStats';
-import {ExportModal} from '@components/vocabulary/ExportModal';
 import {ScreenHeader, LoadingList, EmptySearchResults} from '@components/common';
 import {Text, SearchInput, Button} from '@components/ui';
+import {EmptyVocabulary} from '@components/vocabulary/EmptyVocabulary';
+import {ExportModal} from '@components/vocabulary/ExportModal';
+import {VocabularyCard} from '@components/vocabulary/VocabularyCard';
+import {VocabularyStatsHeader} from '@components/vocabulary/VocabularyStats';
+
+import {useVocabularyStore} from '@stores/vocabularyStore';
+
+import type {VocabularyItem, RootStackParamList} from '@/types';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type VocabularyNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type FilterType = 'all' | 'new' | 'learning' | 'learned';
@@ -143,11 +147,13 @@ export function VocabularyScreen(): React.JSX.Element {
         >
           {label}
         </Text>
-        <View style={[styles.filterBadge, {backgroundColor: isActive ? colors.onPrimary : colors.border}]}>
-          <Text
-            variant="labelSmall"
-            customColor={isActive ? colors.primary : colors.textSecondary}
-          >
+        <View
+          style={[
+            styles.filterBadge,
+            {backgroundColor: isActive ? colors.onPrimary : colors.border},
+          ]}
+        >
+          <Text variant="labelSmall" customColor={isActive ? colors.primary : colors.textSecondary}>
             {count}
           </Text>
         </View>
@@ -181,9 +187,7 @@ export function VocabularyScreen(): React.JSX.Element {
       />
 
       {/* Filters */}
-      <View style={styles.filterContainer}>
-        {FILTER_OPTIONS.map(renderFilterButton)}
-      </View>
+      <View style={styles.filterContainer}>{FILTER_OPTIONS.map(renderFilterButton)}</View>
     </View>
   );
 

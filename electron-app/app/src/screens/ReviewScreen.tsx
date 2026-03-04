@@ -13,6 +13,7 @@ import {useVocabularyStore} from '@xenolexia/shared/stores/vocabularyStore';
 import {useNavigate} from 'react-router-dom';
 
 import {Card, Button} from '../components/ui';
+import {useBack} from '../hooks/useBack';
 
 import type {VocabularyItem} from '@xenolexia/shared/types';
 
@@ -50,6 +51,7 @@ const GRADE_OPTIONS: GradeOption[] = [
 
 export function ReviewScreen(): React.JSX.Element {
   const navigate = useNavigate();
+  const goBack = useBack('/vocabulary');
   const {getDueForReview, recordReview, refreshStats, stats} = useVocabularyStore();
   const [currentWords, setCurrentWords] = useState<VocabularyItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -172,7 +174,7 @@ export function ReviewScreen(): React.JSX.Element {
   return (
     <div className="review-screen">
       <div className="review-header">
-        <Button onClick={() => navigate('/vocabulary')} variant="ghost" size="sm">
+        <Button onClick={goBack} variant="ghost" size="sm">
           ← Back
         </Button>
         <div className="review-progress">

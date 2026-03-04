@@ -11,9 +11,9 @@
  */
 
 import {Platform} from 'react-native';
+
 import RNFS from 'react-native-fs';
 
-import type {Book, BookFormat} from '@types/index';
 import {FileSystemService} from '@services/FileSystemService';
 
 import type {
@@ -23,6 +23,7 @@ import type {
   EbookSearchResult,
   LocalEbookFile,
 } from './types';
+import type {Book, BookFormat} from '@types/index';
 
 // Directory for storing downloaded books (native platforms)
 const BOOKS_DIRECTORY = `${RNFS.DocumentDirectoryPath}/.xenolexia/books`;
@@ -31,10 +32,7 @@ const BOOKS_DIRECTORY = `${RNFS.DocumentDirectoryPath}/.xenolexia/books`;
 const USE_FILE_SYSTEM_API = Platform.OS === 'web' && FileSystemService.isSupported();
 
 // CORS proxy for web (helps with cross-origin requests)
-const CORS_PROXIES = [
-  'https://corsproxy.io/?',
-  'https://api.allorigins.win/raw?url=',
-];
+const CORS_PROXIES = ['https://corsproxy.io/?', 'https://api.allorigins.win/raw?url='];
 
 /**
  * Fetch with CORS proxy fallback for web
@@ -73,7 +71,9 @@ async function fetchWithCorsProxy(url: string, options?: RequestInit): Promise<R
   }
 
   // If all proxies fail, throw error
-  throw new Error('Failed to download: CORS blocked and all proxies failed. Try a different source.');
+  throw new Error(
+    'Failed to download: CORS blocked and all proxies failed. Try a different source.'
+  );
 }
 
 // ============================================================================
@@ -250,7 +250,14 @@ export class BookDownloadService {
 
       // Use FileSystemService on web, RNFS otherwise
       if (USE_FILE_SYSTEM_API) {
-        return await this.downloadWithFileSystemAPI(url, safeId, filename, format, progress, onProgress);
+        return await this.downloadWithFileSystemAPI(
+          url,
+          safeId,
+          filename,
+          format,
+          progress,
+          onProgress
+        );
       } else {
         return await this.downloadWithRNFS(url, safeId, filename, format, progress, onProgress);
       }
@@ -309,9 +316,8 @@ export class BookDownloadService {
 
       progress.bytesDownloaded = bytesReceived;
       progress.totalBytes = contentLength;
-      progress.percentage = contentLength > 0
-        ? Math.round((bytesReceived / contentLength) * 100)
-        : 0;
+      progress.percentage =
+        contentLength > 0 ? Math.round((bytesReceived / contentLength) * 100) : 0;
       onProgress?.(progress);
     }
 
@@ -332,7 +338,10 @@ export class BookDownloadService {
     const destPath = `${bookDir}/${filename}`;
     await RNFS.mkdir(bookDir);
     // Convert Uint8Array to ArrayBuffer properly (slice to avoid shared buffer issues)
-    const arrayBuffer = combined.buffer.slice(combined.byteOffset, combined.byteOffset + combined.byteLength);
+    const arrayBuffer = combined.buffer.slice(
+      combined.byteOffset,
+      combined.byteOffset + combined.byteLength
+    );
     await RNFS.writeFile(destPath, arrayBuffer);
 
     progress.status = 'completed';
@@ -376,9 +385,7 @@ export class BookDownloadService {
         progress.bytesDownloaded = res.bytesWritten;
         progress.totalBytes = res.contentLength;
         progress.percentage =
-          res.contentLength > 0
-            ? Math.round((res.bytesWritten / res.contentLength) * 100)
-            : 0;
+          res.contentLength > 0 ? Math.round((res.bytesWritten / res.contentLength) * 100) : 0;
         onProgress?.(progress);
       },
     });
@@ -462,7 +469,11 @@ export class BookDownloadService {
       }
 
       // Create Book object
-      const book = this.createBookFromSearchResult(searchResult, result.filePath, result.metadata?.fileSize || 0);
+      const book = this.createBookFromSearchResult(
+        searchResult,
+        result.filePath,
+        result.metadata?.fileSize || 0
+      );
 
       return {
         success: true,
@@ -519,9 +530,8 @@ export class BookDownloadService {
 
         progress.bytesDownloaded = bytesReceived;
         progress.totalBytes = contentLength;
-        progress.percentage = contentLength > 0
-          ? Math.round((bytesReceived / contentLength) * 100)
-          : 0;
+        progress.percentage =
+          contentLength > 0 ? Math.round((bytesReceived / contentLength) * 100) : 0;
         onProgress?.(progress);
       }
 
@@ -623,7 +633,9 @@ export class BookDownloadService {
   /**
    * Get file type options for save picker
    */
-  private static getFileTypeOptions(format: BookFormat): Array<{description: string; accept: Record<string, string[]>}> {
+  private static getFileTypeOptions(
+    format: BookFormat
+  ): Array<{description: string; accept: Record<string, string[]>}> {
     switch (format) {
       case 'epub':
         return [{description: 'EPUB files', accept: {'application/epub+zip': ['.epub']}}];
@@ -687,8 +699,7 @@ export class BookDownloadService {
       return {results, source};
     } catch (error) {
       console.error(`Search failed for ${source}:`, error);
-      const errorMessage =
-        error instanceof Error ? error.message : 'An unexpected error occurred';
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
       return {
         results: [],
         error: errorMessage,
@@ -814,10 +825,7 @@ export class BookDownloadService {
       const author = authorMatch ? this.decodeXmlEntities(authorMatch[1]) : 'Unknown Author';
 
       // Check if query matches title or author
-      if (
-        !title.toLowerCase().includes(queryLower) &&
-        !author.toLowerCase().includes(queryLower)
-      ) {
+      if (!title.toLowerCase().includes(queryLower) && !author.toLowerCase().includes(queryLower)) {
         continue;
       }
 
@@ -826,9 +834,7 @@ export class BookDownloadService {
       const entryId = idMatch ? idMatch[1] : `se-${Date.now()}-${results.length}`;
 
       // Extract EPUB link
-      const epubMatch = entry.match(
-        /<link[^>]*type="application\/epub\+zip"[^>]*href="([^"]+)"/
-      );
+      const epubMatch = entry.match(/<link[^>]*type="application\/epub\+zip"[^>]*href="([^"]+)"/);
       if (!epubMatch) continue;
 
       const downloadUrl = epubMatch[1].startsWith('http')
@@ -836,7 +842,9 @@ export class BookDownloadService {
         : `https://standardebooks.org${epubMatch[1]}`;
 
       // Extract cover image
-      const coverMatch = entry.match(/<link[^>]*rel="http:\/\/opds-spec\.org\/image"[^>]*href="([^"]+)"/);
+      const coverMatch = entry.match(
+        /<link[^>]*rel="http:\/\/opds-spec\.org\/image"[^>]*href="([^"]+)"/
+      );
       const coverUrl = coverMatch
         ? coverMatch[1].startsWith('http')
           ? coverMatch[1]
@@ -904,9 +912,7 @@ export class BookDownloadService {
         const iaId = book.ia?.[0] || '';
 
         // Build download URL for EPUB from Internet Archive
-        const downloadUrl = iaId
-          ? `https://archive.org/download/${iaId}/${iaId}.epub`
-          : '';
+        const downloadUrl = iaId ? `https://archive.org/download/${iaId}/${iaId}.epub` : '';
 
         // Get author name
         const author =

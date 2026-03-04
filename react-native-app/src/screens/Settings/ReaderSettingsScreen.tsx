@@ -8,13 +8,17 @@
  */
 
 import React, {useCallback} from 'react';
+
 import {View, StyleSheet} from 'react-native';
+
 import {SafeAreaView} from 'react-native-safe-area-context';
+
 import {useNavigation} from '@react-navigation/native';
-import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {ReaderSettingsModal} from '@components/reader/ReaderSettingsModal';
+
 import type {RootStackParamList} from '@/types';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 type ReaderSettingsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 

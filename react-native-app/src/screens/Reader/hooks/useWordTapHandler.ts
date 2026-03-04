@@ -14,11 +14,14 @@
  * - Extracts context sentence
  */
 
-import { useState, useCallback, useRef } from 'react';
-import type { ForeignWordData, WordEntry, VocabularyItem, Language, ProficiencyLevel } from '@/types';
-import { useVocabularyStore } from '@stores/vocabularyStore';
-import { useStatisticsStore } from '@stores/statisticsStore';
-import { dynamicWordDatabase } from '@services/TranslationEngine/DynamicWordDatabase';
+import {useState, useCallback, useRef} from 'react';
+
+import {useStatisticsStore} from '@stores/statisticsStore';
+import {useVocabularyStore} from '@stores/vocabularyStore';
+
+import {dynamicWordDatabase} from '@services/TranslationEngine/DynamicWordDatabase';
+
+import type {ForeignWordData, WordEntry, VocabularyItem, Language, ProficiencyLevel} from '@/types';
 
 // ============================================================================
 // Types
@@ -56,7 +59,7 @@ export interface WordTapHandlerResult {
   /** Context sentence around the word */
   contextSentence: string | null;
   /** Position for popup placement */
-  popupPosition: { x: number; y: number } | null;
+  popupPosition: {x: number; y: number} | null;
   /** Whether word data is being fetched */
   isLoading: boolean;
   /** Error message if any */
@@ -80,19 +83,12 @@ export interface WordTapHandlerResult {
 // ============================================================================
 
 export function useWordTapHandler(options: WordTapHandlerOptions): WordTapHandlerResult {
-  const {
-    bookId,
-    bookTitle,
-    sourceLanguage,
-    targetLanguage,
-    onWordSaved,
-    onWordKnown,
-  } = options;
+  const {bookId, bookTitle, sourceLanguage, targetLanguage, onWordSaved, onWordKnown} = options;
 
   // State
   const [selectedWord, setSelectedWord] = useState<ForeignWordData | null>(null);
   const [contextSentence, setContextSentence] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{x: number; y: number} | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -100,83 +96,94 @@ export function useWordTapHandler(options: WordTapHandlerOptions): WordTapHandle
   const savedWordIds = useRef<Set<string>>(new Set());
 
   // Store hooks
-  const { addWord, vocabulary } = useVocabularyStore();
-  const { recordWordRevealed, recordWordSaved } = useStatisticsStore();
+  const {addWord, vocabulary} = useVocabularyStore();
+  const {recordWordRevealed, recordWordSaved} = useStatisticsStore();
 
   /**
    * Process word data from WebView and fetch full entry
    */
-  const processWordData = useCallback(async (data: WebViewWordData): Promise<ForeignWordData | null> => {
-    try {
-      // Try to get full word entry from database
-      let wordEntry: WordEntry | null = null;
+  const processWordData = useCallback(
+    async (data: WebViewWordData): Promise<ForeignWordData | null> => {
+      try {
+        // Try to get full word entry from database
+        let wordEntry: WordEntry | null = null;
 
-      if (data.wordId) {
-        const result = await dynamicWordDatabase.lookupWord(
-          data.originalWord,
-          sourceLanguage,
-          targetLanguage
-        );
-        wordEntry = result.entry;
-      }
+        if (data.wordId) {
+          const result = await dynamicWordDatabase.lookupWord(
+            data.originalWord,
+            sourceLanguage,
+            targetLanguage
+          );
+          wordEntry = result.entry;
+        }
 
-      // Create word entry from WebView data if not found in database
-      if (!wordEntry) {
-        wordEntry = {
-          id: data.wordId || `${sourceLanguage}_${targetLanguage}_${data.originalWord.toLowerCase()}`,
-          sourceWord: data.originalWord,
-          targetWord: data.foreignWord,
-          sourceLanguage,
-          targetLanguage,
-          proficiencyLevel: 'beginner' as ProficiencyLevel,
-          frequencyRank: 0,
-          partOfSpeech: (data.partOfSpeech as WordEntry['partOfSpeech']) || 'other',
-          variants: [],
-          pronunciation: data.pronunciation || undefined,
+        // Create word entry from WebView data if not found in database
+        if (!wordEntry) {
+          wordEntry = {
+            id:
+              data.wordId ||
+              `${sourceLanguage}_${targetLanguage}_${data.originalWord.toLowerCase()}`,
+            sourceWord: data.originalWord,
+            targetWord: data.foreignWord,
+            sourceLanguage,
+            targetLanguage,
+            proficiencyLevel: 'beginner' as ProficiencyLevel,
+            frequencyRank: 0,
+            partOfSpeech: (data.partOfSpeech as WordEntry['partOfSpeech']) || 'other',
+            variants: [],
+            pronunciation: data.pronunciation || undefined,
+          };
+        }
+
+        return {
+          originalWord: data.originalWord,
+          foreignWord: data.foreignWord,
+          startIndex: 0,
+          endIndex: 0,
+          wordEntry,
         };
+      } catch (err) {
+        console.error('Error processing word data:', err);
+        return null;
       }
-
-      return {
-        originalWord: data.originalWord,
-        foreignWord: data.foreignWord,
-        startIndex: 0,
-        endIndex: 0,
-        wordEntry,
-      };
-    } catch (err) {
-      console.error('Error processing word data:', err);
-      return null;
-    }
-  }, [sourceLanguage, targetLanguage]);
+    },
+    [sourceLanguage, targetLanguage]
+  );
 
   /**
    * Handle word tap from WebView
    */
-  const handleWordTap = useCallback(async (data: WebViewWordData) => {
-    setIsLoading(true);
-    setError(null);
+  const handleWordTap = useCallback(
+    async (data: WebViewWordData) => {
+      setIsLoading(true);
+      setError(null);
 
-    const wordData = await processWordData(data);
+      const wordData = await processWordData(data);
 
-    if (wordData) {
-      setSelectedWord(wordData);
-      setContextSentence(data.context || null);
-      setPopupPosition(data.position ? { x: data.position.x, y: data.position.y } : null);
-      recordWordRevealed();
-    } else {
-      setError('Failed to load word data');
-    }
+      if (wordData) {
+        setSelectedWord(wordData);
+        setContextSentence(data.context || null);
+        setPopupPosition(data.position ? {x: data.position.x, y: data.position.y} : null);
+        recordWordRevealed();
+      } else {
+        setError('Failed to load word data');
+      }
 
-    setIsLoading(false);
-  }, [processWordData, recordWordRevealed]);
+      setIsLoading(false);
+    },
+    [processWordData, recordWordRevealed]
+  );
 
   /**
    * Handle word long press from WebView
    */
-  const handleWordLongPress = useCallback(async (data: WebViewWordData) => {
-    // Same as tap for now, but could show extended options
-    await handleWordTap(data);
-  }, [handleWordTap]);
+  const handleWordLongPress = useCallback(
+    async (data: WebViewWordData) => {
+      // Same as tap for now, but could show extended options
+      await handleWordTap(data);
+    },
+    [handleWordTap]
+  );
 
   /**
    * Save current word to vocabulary
@@ -245,13 +252,17 @@ export function useWordTapHandler(options: WordTapHandlerOptions): WordTapHandle
   /**
    * Check if a word is already saved
    */
-  const isWordSaved = useCallback((wordId: string) => {
-    if (savedWordIds.current.has(wordId)) return true;
-    return vocabulary.some(v => 
-      v.sourceWord.toLowerCase() === wordId.toLowerCase() ||
-      v.targetWord.toLowerCase() === wordId.toLowerCase()
-    );
-  }, [vocabulary]);
+  const isWordSaved = useCallback(
+    (wordId: string) => {
+      if (savedWordIds.current.has(wordId)) return true;
+      return vocabulary.some(
+        v =>
+          v.sourceWord.toLowerCase() === wordId.toLowerCase() ||
+          v.targetWord.toLowerCase() === wordId.toLowerCase()
+      );
+    },
+    [vocabulary]
+  );
 
   return {
     selectedWord,

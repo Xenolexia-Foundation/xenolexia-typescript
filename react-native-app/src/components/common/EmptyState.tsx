@@ -8,9 +8,11 @@
  */
 
 import React from 'react';
+
 import {View, StyleSheet} from 'react-native';
 
 import {spacing} from '@/theme/tokens';
+
 import {Text, Button} from '@components/ui';
 
 export interface EmptyStateProps {
@@ -126,11 +128,7 @@ export function ErrorState({
   );
 }
 
-export function NoConnectionState({
-  onRetry,
-}: {
-  onRetry?: () => void;
-}): React.JSX.Element {
+export function NoConnectionState({onRetry}: {onRetry?: () => void}): React.JSX.Element {
   return (
     <EmptyState
       icon="📡"

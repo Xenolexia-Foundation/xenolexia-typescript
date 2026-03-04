@@ -5,12 +5,12 @@
 
 import React, {useEffect, useState} from 'react';
 
-import {BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate} from 'react-router-dom';
-
 import {useUserStore} from '@xenolexia/shared/stores/userStore';
+import {BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate} from 'react-router-dom';
 
 import {AboutScreen} from './screens/AboutScreen';
 import {BookDiscoveryScreen} from './screens/BookDiscoveryScreen';
+import {FavouritesScreen} from './screens/FavouritesScreen';
 import {LibraryScreen} from './screens/LibraryScreen';
 import {OnboardingScreen} from './screens/OnboardingScreen';
 import {ReaderScreen} from './screens/ReaderScreen';
@@ -28,7 +28,7 @@ function OnboardingGuard({children}: {children: React.ReactNode}): React.JSX.Ele
   useEffect(() => {
     loadPreferences()
       .then(() => setLoaded(true))
-      .catch((err) => {
+      .catch(err => {
         console.error('Failed to load preferences:', err);
         setLoaded(true);
       });
@@ -63,6 +63,7 @@ function AppRoutes(): React.JSX.Element {
       <Route path="/discover" element={<BookDiscoveryScreen />} />
       <Route path="/about" element={<AboutScreen />} />
       <Route path="/statistics" element={<StatisticsScreen />} />
+      <Route path="/favourites" element={<FavouritesScreen />} />
       <Route path="/settings" element={<SettingsScreen />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
@@ -95,6 +96,9 @@ function MenuActionListener({children}: {children: React.ReactNode}): React.JSX.
           break;
         case 'menu-my-library':
           navigate('/');
+          break;
+        case 'menu-favourites':
+          navigate('/favourites');
           break;
         default:
           break;

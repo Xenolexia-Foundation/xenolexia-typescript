@@ -8,17 +8,14 @@
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Linking,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 
-import { useTheme } from '@theme/index';
+import {View, StyleSheet, ScrollView, TouchableOpacity, Linking} from 'react-native';
+
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+import {useNavigation} from '@react-navigation/native';
+
+import {useTheme} from '@theme/index';
 
 // ============================================================================
 // Constants
@@ -35,11 +32,11 @@ const LINKS = {
 };
 
 const ACKNOWLEDGMENTS = [
-  { name: 'React Native', url: 'https://reactnative.dev' },
-  { name: 'Zustand', url: 'https://zustand-demo.pmnd.rs' },
-  { name: 'React Navigation', url: 'https://reactnavigation.org' },
-  { name: 'LibreTranslate', url: 'https://libretranslate.com' },
-  { name: 'FrequencyWords', url: 'https://github.com/hermitdave/FrequencyWords' },
+  {name: 'React Native', url: 'https://reactnative.dev'},
+  {name: 'Zustand', url: 'https://zustand-demo.pmnd.rs'},
+  {name: 'React Navigation', url: 'https://reactnavigation.org'},
+  {name: 'LibreTranslate', url: 'https://libretranslate.com'},
+  {name: 'FrequencyWords', url: 'https://github.com/hermitdave/FrequencyWords'},
 ];
 
 // ============================================================================
@@ -48,44 +45,44 @@ const ACKNOWLEDGMENTS = [
 
 export function AboutScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const { colors } = useTheme();
+  const {colors} = useTheme();
 
   const handleOpenLink = (url: string) => {
     Linking.openURL(url).catch(() => {});
   };
 
   const dynamicStyles = {
-    container: { backgroundColor: colors.background.primary },
-    section: { backgroundColor: colors.background.secondary },
-    label: { color: colors.text.primary },
-    value: { color: colors.text.secondary },
+    container: {backgroundColor: colors.background.primary},
+    section: {backgroundColor: colors.background.secondary},
+    label: {color: colors.text.primary},
+    value: {color: colors.text.secondary},
   };
 
   return (
     <SafeAreaView style={[styles.container, dynamicStyles.container]} edges={['top']}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border.secondary }]}>
+      <View style={[styles.header, {borderBottomColor: colors.border.secondary}]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <TextDisplay text="←" style={[styles.backText, { color: colors.primary[500] }]} />
+          <TextDisplay text="←" style={[styles.backText, {color: colors.primary[500]}]} />
         </TouchableOpacity>
-        <TextDisplay text="About" style={[styles.title, { color: colors.text.primary }]} />
+        <TextDisplay text="About" style={[styles.title, {color: colors.text.primary}]} />
         <View style={styles.backButton} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* App Info */}
         <View style={styles.appInfo}>
-          <View style={[styles.appIcon, { backgroundColor: colors.primary[500] }]}>
+          <View style={[styles.appIcon, {backgroundColor: colors.primary[500]}]}>
             <TextDisplay text="📚" style={styles.appIconEmoji} />
           </View>
-          <TextDisplay text="Xenolexia" style={[styles.appName, { color: colors.text.primary }]} />
+          <TextDisplay text="Xenolexia" style={[styles.appName, {color: colors.text.primary}]} />
           <TextDisplay
             text={`Version ${APP_VERSION} (${BUILD_NUMBER})`}
-            style={[styles.appVersion, { color: colors.text.tertiary }]}
+            style={[styles.appVersion, {color: colors.text.tertiary}]}
           />
           <TextDisplay
             text="Learn languages through reading"
-            style={[styles.appTagline, { color: colors.text.secondary }]}
+            style={[styles.appTagline, {color: colors.text.secondary}]}
           />
         </View>
 
@@ -93,66 +90,57 @@ export function AboutScreen(): React.JSX.Element {
         <View style={[styles.descriptionCard, dynamicStyles.section]}>
           <TextDisplay
             text="Xenolexia helps you learn foreign languages naturally by replacing words in the books you read. As you encounter words in context, you build vocabulary without traditional flashcard memorization."
-            style={[styles.descriptionText, { color: colors.text.secondary }]}
+            style={[styles.descriptionText, {color: colors.text.secondary}]}
           />
         </View>
 
         {/* Links Section */}
         <View style={styles.sectionContainer}>
-          <TextDisplay text="LINKS" style={[styles.sectionTitle, { color: colors.text.tertiary }]} />
+          <TextDisplay text="LINKS" style={[styles.sectionTitle, {color: colors.text.tertiary}]} />
           <View style={[styles.section, dynamicStyles.section]}>
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleOpenLink(LINKS.privacy)}
-            >
+            <TouchableOpacity style={styles.row} onPress={() => handleOpenLink(LINKS.privacy)}>
               <TextDisplay text="🔒" style={styles.rowIcon} />
               <TextDisplay text="Privacy Policy" style={[styles.rowLabel, dynamicStyles.label]} />
-              <TextDisplay text="›" style={[styles.chevron, { color: colors.text.tertiary }]} />
+              <TextDisplay text="›" style={[styles.chevron, {color: colors.text.tertiary}]} />
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+            <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleOpenLink(LINKS.terms)}
-            >
+            <TouchableOpacity style={styles.row} onPress={() => handleOpenLink(LINKS.terms)}>
               <TextDisplay text="📜" style={styles.rowIcon} />
               <TextDisplay text="Terms of Service" style={[styles.rowLabel, dynamicStyles.label]} />
-              <TextDisplay text="›" style={[styles.chevron, { color: colors.text.tertiary }]} />
+              <TextDisplay text="›" style={[styles.chevron, {color: colors.text.tertiary}]} />
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+            <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleOpenLink(LINKS.support)}
-            >
+            <TouchableOpacity style={styles.row} onPress={() => handleOpenLink(LINKS.support)}>
               <TextDisplay text="💬" style={styles.rowIcon} />
               <TextDisplay text="Contact Support" style={[styles.rowLabel, dynamicStyles.label]} />
-              <TextDisplay text="›" style={[styles.chevron, { color: colors.text.tertiary }]} />
+              <TextDisplay text="›" style={[styles.chevron, {color: colors.text.tertiary}]} />
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: colors.border.secondary }]} />
+            <View style={[styles.divider, {backgroundColor: colors.border.secondary}]} />
 
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleOpenLink(LINKS.github)}
-            >
+            <TouchableOpacity style={styles.row} onPress={() => handleOpenLink(LINKS.github)}>
               <TextDisplay text="💻" style={styles.rowIcon} />
               <TextDisplay text="Source Code" style={[styles.rowLabel, dynamicStyles.label]} />
-              <TextDisplay text="›" style={[styles.chevron, { color: colors.text.tertiary }]} />
+              <TextDisplay text="›" style={[styles.chevron, {color: colors.text.tertiary}]} />
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Acknowledgments */}
         <View style={styles.sectionContainer}>
-          <TextDisplay text="ACKNOWLEDGMENTS" style={[styles.sectionTitle, { color: colors.text.tertiary }]} />
+          <TextDisplay
+            text="ACKNOWLEDGMENTS"
+            style={[styles.sectionTitle, {color: colors.text.tertiary}]}
+          />
           <View style={[styles.section, dynamicStyles.section]}>
             <View style={styles.acknowledgeContent}>
               <TextDisplay
                 text="Built with these amazing open source projects:"
-                style={[styles.acknowledgeIntro, { color: colors.text.secondary }]}
+                style={[styles.acknowledgeIntro, {color: colors.text.secondary}]}
               />
               {ACKNOWLEDGMENTS.map((item, index) => (
                 <TouchableOpacity
@@ -162,7 +150,7 @@ export function AboutScreen(): React.JSX.Element {
                 >
                   <TextDisplay
                     text={`• ${item.name}`}
-                    style={[styles.acknowledgeName, { color: colors.primary[500] }]}
+                    style={[styles.acknowledgeName, {color: colors.primary[500]}]}
                   />
                 </TouchableOpacity>
               ))}
@@ -172,16 +160,19 @@ export function AboutScreen(): React.JSX.Element {
 
         {/* Credits */}
         <View style={styles.sectionContainer}>
-          <TextDisplay text="CREDITS" style={[styles.sectionTitle, { color: colors.text.tertiary }]} />
+          <TextDisplay
+            text="CREDITS"
+            style={[styles.sectionTitle, {color: colors.text.tertiary}]}
+          />
           <View style={[styles.section, dynamicStyles.section]}>
             <View style={styles.creditsContent}>
               <TextDisplay
                 text="Designed and developed with 📚 for language learners everywhere."
-                style={[styles.creditsText, { color: colors.text.secondary }]}
+                style={[styles.creditsText, {color: colors.text.secondary}]}
               />
               <TextDisplay
                 text="Special thanks to the open source community and all our early testers."
-                style={[styles.creditsText, { color: colors.text.tertiary }]}
+                style={[styles.creditsText, {color: colors.text.tertiary}]}
               />
             </View>
           </View>
@@ -191,11 +182,11 @@ export function AboutScreen(): React.JSX.Element {
         <View style={styles.footer}>
           <TextDisplay
             text="© 2024 Xenolexia"
-            style={[styles.footerText, { color: colors.text.tertiary }]}
+            style={[styles.footerText, {color: colors.text.tertiary}]}
           />
           <TextDisplay
             text="Made with ❤️"
-            style={[styles.footerText, { color: colors.text.tertiary }]}
+            style={[styles.footerText, {color: colors.text.tertiary}]}
           />
         </View>
       </ScrollView>
@@ -204,8 +195,8 @@ export function AboutScreen(): React.JSX.Element {
 }
 
 // Simple text display component
-function TextDisplay({ text, style }: { text: string; style?: any }) {
-  const { Text } = require('react-native');
+function TextDisplay({text, style}: {text: string; style?: any}) {
+  const {Text} = require('react-native');
   return <Text style={style}>{text}</Text>;
 }
 
@@ -241,8 +232,8 @@ const styles = StyleSheet.create({
   },
   appInfo: {
     alignItems: 'center',
-    paddingTop: 32,
     paddingBottom: 24,
+    paddingTop: 32,
   },
   appName: {
     fontSize: 28,

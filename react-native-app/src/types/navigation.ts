@@ -7,11 +7,10 @@
  * Navigation type definitions
  */
 
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import type {RootStackParamList, MainTabsParamList} from './index';
 import type {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import type {CompositeScreenProps, NavigatorScreenParams} from '@react-navigation/native';
-
-import type {RootStackParamList, MainTabsParamList} from './index';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 // Root Stack navigation props
 export type RootStackScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<

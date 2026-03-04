@@ -8,18 +8,16 @@
  */
 
 import React, {useState, useEffect, useCallback} from 'react';
-import {
-  View,
-  Image,
-  StyleSheet,
-  Animated,
-  ActivityIndicator,
-} from 'react-native';
+
+import {View, Image, StyleSheet, Animated, ActivityIndicator} from 'react-native';
 
 import {useColors} from '@/theme';
 import {borderRadius, spacing} from '@/theme/tokens';
+
 import {Text} from '@components/ui';
+
 import {ImageService} from '@services/ImageService';
+
 import type {ThumbnailSize} from '@services/ImageService';
 
 // ============================================================================
@@ -161,12 +159,7 @@ export function BookCover({
 
       {/* Placeholder / Error State */}
       {(loadState === 'error' || loadState === 'loading') && (
-        <View
-          style={[
-            styles.placeholder,
-            {backgroundColor: colors.primaryLight},
-          ]}
-        >
+        <View style={[styles.placeholder, {backgroundColor: colors.primaryLight}]}>
           <View style={[styles.initialsCircle, {backgroundColor: colors.primary}]}>
             <Text variant="headlineSmall" customColor={colors.onPrimary}>
               {getInitials(title)}
@@ -227,7 +220,7 @@ export function BookCoverSkeleton({
           duration: 800,
           useNativeDriver: true,
         }),
-      ]),
+      ])
     );
     animation.start();
 

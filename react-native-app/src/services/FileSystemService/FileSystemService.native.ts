@@ -22,9 +22,7 @@ const BOOKS_DIR = `${RNFS.DocumentDirectoryPath}/.xenolexia/books`;
 // Helpers
 // ============================================================================
 
-async function dataToBytes(
-  data: ArrayBuffer | Uint8Array | Blob,
-): Promise<Uint8Array> {
+async function dataToBytes(data: ArrayBuffer | Uint8Array | Blob): Promise<Uint8Array> {
   if (data instanceof Uint8Array) return data;
   if (data instanceof ArrayBuffer) return new Uint8Array(data);
   const ab = await data.arrayBuffer();
@@ -105,7 +103,7 @@ export class FileSystemService {
   static async saveBook(
     bookId: string,
     filename: string,
-    data: ArrayBuffer | Uint8Array | Blob,
+    data: ArrayBuffer | Uint8Array | Blob
   ): Promise<string> {
     await this.initialize();
 
@@ -164,7 +162,7 @@ export class FileSystemService {
     if (!exists) return [];
 
     const entries = await RNFS.readDir(BOOKS_DIR);
-    return entries.filter((e) => e.isDirectory()).map((e) => e.name);
+    return entries.filter(e => e.isDirectory()).map(e => e.name);
   }
 
   static getDirectoryName(): string | null {
@@ -174,7 +172,7 @@ export class FileSystemService {
   static async saveFileWithDialog(
     data: ArrayBuffer | Uint8Array | Blob,
     suggestedName: string,
-    _types?: Array<{ description: string; accept: Record<string, string[]> }>,
+    _types?: Array<{description: string; accept: Record<string, string[]>}>
   ): Promise<string | null> {
     await this.initialize();
 

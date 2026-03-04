@@ -28,7 +28,8 @@
       "@types/*": ["src/types/*"],
       "@constants/*": ["src/constants/*"],
       "@assets/*": ["src/assets/*"],
-      "@navigation/*": ["src/navigation/*"]
+      "@navigation/*": ["src/navigation/*"],
+      "@theme/*": ["src/theme/*"]
     },
 
     // Emit
@@ -57,19 +58,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*",
-    "App.tsx",
-    "index.js",
-    "__tests__/**/*",
-    "*.config.js",
-    "*.config.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "android",
-    "ios",
-    "coverage",
-    ".expo"
-  ]
+  "include": ["src/**/*", "App.tsx", "index.js", "__tests__/**/*", "*.config.js", "*.config.ts"],
+  "exclude": ["node_modules", "android", "ios", "coverage", ".expo"]
 }

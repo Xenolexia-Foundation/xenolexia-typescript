@@ -22,7 +22,7 @@ This document outlines remaining work for the Xenolexia Electron app (Windows, m
 - **Reader settings in UI**: Theme, font size, font family, line spacing panel in reader
 - **Book detail**: Modal from Library (metadata, progress, Read/Change language/Forget/Delete)
 - **Keyboard shortcuts**: Reader next/prev chapter (Arrow keys, Page Up/Down), toggle controls (c/Escape)
-- **Theme consistency**: CSS variables in App.css (--primary, --background, --text-*, --border, etc.)
+- **Theme consistency**: CSS variables in App.css (--primary, --background, --text-\*, --border, etc.)
 - **Window state persistence**: Save/restore size, position, maximized in Electron main
 - **Unit tests**: ReaderStore (DatabaseService/StorageService mocked), VocabularyStore getDueForReview
 

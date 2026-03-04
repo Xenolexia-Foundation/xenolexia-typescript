@@ -9,17 +9,24 @@
  */
 
 import React, {useState, useCallback, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {useLibraryStore} from '@xenolexia/shared/stores/libraryStore';
+
 import {EBOOK_SOURCES} from '@xenolexia/shared/services/BookDownloadService';
-import type {EbookSource, EbookSearchResult, SearchResponse} from '@xenolexia/shared/services/BookDownloadService';
+import {useLibraryStore} from '@xenolexia/shared/stores/libraryStore';
+
+import {Button, Card, SearchInput} from '../components/ui';
+import {useBack} from '../hooks/useBack';
 import {searchBooks, downloadBook} from '../services/ElectronBookDownloadService';
-import type {DownloadProgress} from '@xenolexia/shared/services/BookDownloadService';
-import {Button, Card, PressableCard, Input, SearchInput} from '../components/ui';
+
+import type {
+  EbookSource,
+  EbookSearchResult,
+  SearchResponse,
+  DownloadProgress,
+} from '@xenolexia/shared/services/BookDownloadService';
 import './BookDiscoveryScreen.css';
 
 export function BookDiscoveryScreen(): React.JSX.Element {
-  const navigate = useNavigate();
+  const goBack = useBack('/');
   const {addBook, refreshBooks, initialize} = useLibraryStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,7 +55,12 @@ export function BookDiscoveryScreen(): React.JSX.Element {
     setHasSearched(true);
 
     try {
-      const response: SearchResponse = await searchBooks(searchQuery, selectedSource);
+      const response: SearchResponse = await searchBooks(
+        searchQuery,
+        selectedSource === 'url'
+          ? undefined
+          : (selectedSource as 'gutenberg' | 'openlibrary' | 'standardebooks')
+      );
       setResults(response.results);
 
       if (response.error && response.results.length === 0) {
@@ -67,38 +79,41 @@ export function BookDiscoveryScreen(): React.JSX.Element {
     }
   }, [searchQuery, selectedSource]);
 
-  const handleDownload = useCallback(async (book: EbookSearchResult) => {
-    setDownloadingId(book.id);
-    setDownloadProgress(0);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-
-    const onProgress = (progress: DownloadProgress) => {
-      setDownloadProgress(progress.percentage);
-    };
-
-    try {
-      const result = await downloadBook(book, onProgress);
-
-      if (result.success && result.book) {
-        await addBook(result.book);
-        await refreshBooks();
-        setSuccessMessage(`"${result.book.title}" added to library!`);
-        setResults(prev => prev.filter(r => r.id !== book.id));
-        // Optionally navigate to the book
-        // navigate(`/reader/${result.book.id}`);
-      } else {
-        setErrorMessage(result.error || 'Download failed');
-      }
-    } catch (error) {
-      console.error('Download error:', error);
-      const errorMsg = error instanceof Error ? error.message : 'Download failed';
-      setErrorMessage(errorMsg);
-    } finally {
-      setDownloadingId(null);
+  const handleDownload = useCallback(
+    async (book: EbookSearchResult) => {
+      setDownloadingId(book.id);
       setDownloadProgress(0);
-    }
-  }, [addBook, refreshBooks, navigate]);
+      setErrorMessage(null);
+      setSuccessMessage(null);
+
+      const onProgress = (progress: DownloadProgress) => {
+        setDownloadProgress(progress.percentage);
+      };
+
+      try {
+        const result = await downloadBook(book, onProgress);
+
+        if (result.success && result.book) {
+          await addBook(result.book);
+          await refreshBooks();
+          setSuccessMessage(`"${result.book.title}" added to library!`);
+          setResults(prev => prev.filter(r => r.id !== book.id));
+          // Optionally navigate to the book
+          // navigate(`/reader/${result.book.id}`);
+        } else {
+          setErrorMessage(result.error || 'Download failed');
+        }
+      } catch (error) {
+        console.error('Download error:', error);
+        const errorMsg = error instanceof Error ? error.message : 'Download failed';
+        setErrorMessage(errorMsg);
+      } finally {
+        setDownloadingId(null);
+        setDownloadProgress(0);
+      }
+    },
+    [addBook, refreshBooks]
+  );
 
   const handleSourceChange = useCallback((source: EbookSource['type']) => {
     setSelectedSource(source);
@@ -108,8 +123,8 @@ export function BookDiscoveryScreen(): React.JSX.Element {
   }, []);
 
   const handleBack = useCallback(() => {
-    navigate('/');
-  }, [navigate]);
+    goBack();
+  }, [goBack]);
 
   const searchableSources = EBOOK_SOURCES.filter(s => s.searchEnabled);
 
@@ -126,9 +141,9 @@ export function BookDiscoveryScreen(): React.JSX.Element {
       <div className="discovery-search">
         <SearchInput
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           placeholder="Search for books..."
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             if (e.key === 'Enter' && !isSearching) {
               handleSearch();
             }
@@ -141,7 +156,7 @@ export function BookDiscoveryScreen(): React.JSX.Element {
 
       {/* Source Tabs */}
       <div className="discovery-sources">
-        {searchableSources.map((source) => (
+        {searchableSources.map(source => (
           <button
             key={source.type}
             className={`source-tab ${selectedSource === source.type ? 'active' : ''}`}
@@ -171,7 +186,7 @@ export function BookDiscoveryScreen(): React.JSX.Element {
       {/* Results */}
       {results.length > 0 ? (
         <div className="discovery-results">
-          {results.map((book) => (
+          {results.map(book => (
             <BookResultCard
               key={book.id}
               book={book}
@@ -189,7 +204,10 @@ export function BookDiscoveryScreen(): React.JSX.Element {
         <div className="discovery-empty">
           <div className="empty-icon">🔍</div>
           <h2>Search for Free Books</h2>
-          <p>Search Project Gutenberg, Standard Ebooks, or Open Library for free ebooks to add to your library.</p>
+          <p>
+            Search Project Gutenberg, Standard Ebooks, or Open Library for free ebooks to add to
+            your library.
+          </p>
         </div>
       )}
     </div>
@@ -203,7 +221,12 @@ interface BookResultCardProps {
   onDownload: () => void;
 }
 
-function BookResultCard({book, isDownloading, downloadProgress, onDownload}: BookResultCardProps): React.JSX.Element {
+function BookResultCard({
+  book,
+  isDownloading,
+  downloadProgress,
+  onDownload,
+}: BookResultCardProps): React.JSX.Element {
   return (
     <Card variant="elevated" padding="md" rounded="lg" className="book-result-card">
       <div className="book-result-content">
@@ -213,19 +236,11 @@ function BookResultCard({book, isDownloading, downloadProgress, onDownload}: Boo
         <div className="book-result-info">
           <h3 className="book-result-title">{book.title}</h3>
           <p className="book-result-author">by {book.author}</p>
-          {book.description && (
-            <p className="book-result-description">{book.description}</p>
-          )}
-          {book.language && (
-            <span className="book-result-language">Language: {book.language}</span>
-          )}
+          {book.description && <p className="book-result-description">{book.description}</p>}
+          {book.language && <span className="book-result-language">Language: {book.language}</span>}
         </div>
         <div className="book-result-actions">
-          <Button
-            onClick={onDownload}
-            disabled={isDownloading}
-            variant="primary"
-          >
+          <Button onClick={onDownload} disabled={isDownloading} variant="primary">
             {isDownloading ? (
               <>
                 <span>Downloading... {downloadProgress}%</span>

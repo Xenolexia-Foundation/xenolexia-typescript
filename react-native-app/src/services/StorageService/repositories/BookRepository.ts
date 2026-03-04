@@ -7,8 +7,9 @@
  * Book Repository - Database operations for books
  */
 
-import type {Book, BookFormat, ProficiencyLevel, Language} from '@/types';
 import {databaseService} from '../DatabaseService';
+
+import type {Book, BookFormat, ProficiencyLevel, Language} from '@/types';
 
 // ============================================================================
 // Types
@@ -98,7 +99,7 @@ class BookRepository {
         book.wordDensity,
         book.sourceUrl ?? null,
         book.isDownloaded ? 1 : 0,
-      ],
+      ]
     );
   }
 
@@ -167,10 +168,7 @@ class BookRepository {
     }
     if (updates.languagePair !== undefined) {
       setClauses.push('source_lang = ?', 'target_lang = ?');
-      params.push(
-        updates.languagePair.sourceLanguage,
-        updates.languagePair.targetLanguage,
-      );
+      params.push(updates.languagePair.sourceLanguage, updates.languagePair.targetLanguage);
     }
 
     if (setClauses.length === 0) {
@@ -179,10 +177,7 @@ class BookRepository {
 
     params.push(bookId);
 
-    await databaseService.execute(
-      `UPDATE books SET ${setClauses.join(', ')} WHERE id = ?`,
-      params,
-    );
+    await databaseService.execute(`UPDATE books SET ${setClauses.join(', ')} WHERE id = ?`, params);
   }
 
   /**
@@ -203,10 +198,7 @@ class BookRepository {
    * Get a book by ID
    */
   async getById(bookId: string): Promise<Book | null> {
-    const row = await databaseService.getOne<BookRow>(
-      'SELECT * FROM books WHERE id = ?',
-      [bookId],
-    );
+    const row = await databaseService.getOne<BookRow>('SELECT * FROM books WHERE id = ?', [bookId]);
 
     return row ? this.rowToBook(row) : null;
   }
@@ -216,11 +208,9 @@ class BookRepository {
    */
   async getAll(sort?: BookSort): Promise<Book[]> {
     const orderBy = this.buildOrderBy(sort);
-    const rows = await databaseService.getAll<BookRow>(
-      `SELECT * FROM books ${orderBy}`,
-    );
+    const rows = await databaseService.getAll<BookRow>(`SELECT * FROM books ${orderBy}`);
 
-    return rows.map((row) => this.rowToBook(row));
+    return rows.map(row => this.rowToBook(row));
   }
 
   /**
@@ -250,16 +240,15 @@ class BookRepository {
       params.push(filter.isDownloaded ? 1 : 0);
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
     const orderBy = this.buildOrderBy(sort);
 
     const rows = await databaseService.getAll<BookRow>(
       `SELECT * FROM books ${whereClause} ${orderBy}`,
-      params,
+      params
     );
 
-    return rows.map((row) => this.rowToBook(row));
+    return rows.map(row => this.rowToBook(row));
   }
 
   /**
@@ -271,10 +260,10 @@ class BookRepository {
       `SELECT * FROM books 
        WHERE title LIKE ? OR author LIKE ?
        ORDER BY last_read_at DESC NULLS LAST, added_at DESC`,
-      [searchTerm, searchTerm],
+      [searchTerm, searchTerm]
     );
 
-    return rows.map((row) => this.rowToBook(row));
+    return rows.map(row => this.rowToBook(row));
   }
 
   /**
@@ -286,10 +275,10 @@ class BookRepository {
        WHERE last_read_at IS NOT NULL 
        ORDER BY last_read_at DESC 
        LIMIT ?`,
-      [limit],
+      [limit]
     );
 
-    return rows.map((row) => this.rowToBook(row));
+    return rows.map(row => this.rowToBook(row));
   }
 
   /**
@@ -299,10 +288,10 @@ class BookRepository {
     const rows = await databaseService.getAll<BookRow>(
       `SELECT * FROM books 
        WHERE progress > 0 AND progress < 100 
-       ORDER BY last_read_at DESC`,
+       ORDER BY last_read_at DESC`
     );
 
-    return rows.map((row) => this.rowToBook(row));
+    return rows.map(row => this.rowToBook(row));
   }
 
   /**
@@ -310,7 +299,7 @@ class BookRepository {
    */
   async count(): Promise<number> {
     const result = await databaseService.getOne<{count: number}>(
-      'SELECT COUNT(*) as count FROM books',
+      'SELECT COUNT(*) as count FROM books'
     );
     return result?.count ?? 0;
   }
@@ -327,13 +316,10 @@ class BookRepository {
     progress: number,
     location: string | null,
     chapter?: number,
-    page?: number,
+    page?: number
   ): Promise<void> {
     const setClauses = ['progress = ?', 'last_read_at = ?'];
-    const params: (string | number | null)[] = [
-      Math.min(100, Math.max(0, progress)),
-      Date.now(),
-    ];
+    const params: (string | number | null)[] = [Math.min(100, Math.max(0, progress)), Date.now()];
 
     if (location !== undefined) {
       setClauses.push('current_location = ?');
@@ -350,10 +336,7 @@ class BookRepository {
 
     params.push(bookId);
 
-    await databaseService.execute(
-      `UPDATE books SET ${setClauses.join(', ')} WHERE id = ?`,
-      params,
-    );
+    await databaseService.execute(`UPDATE books SET ${setClauses.join(', ')} WHERE id = ?`, params);
   }
 
   /**
@@ -365,7 +348,7 @@ class BookRepository {
        SET reading_time_minutes = reading_time_minutes + ?, 
            last_read_at = ? 
        WHERE id = ?`,
-      [minutes, Date.now(), bookId],
+      [minutes, Date.now(), bookId]
     );
   }
 

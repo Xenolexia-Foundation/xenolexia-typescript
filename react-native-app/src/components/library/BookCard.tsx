@@ -8,14 +8,17 @@
  */
 
 import React, {useState, useCallback} from 'react';
+
 import {View, StyleSheet, TouchableOpacity, Dimensions, Alert, Platform} from 'react-native';
 
 import {useColors} from '@/theme';
 import {spacing, borderRadius} from '@/theme/tokens';
+
 import {Text} from '@components/ui';
-import type {Book} from '@/types';
 
 import {BookCover} from './BookCover';
+
+import type {Book} from '@/types';
 
 interface BookCardProps {
   book: Book;
@@ -66,21 +69,19 @@ export function BookCard({book, onPress, onLongPress, onDelete}: BookCardProps):
     };
 
     if (Platform.OS === 'web') {
-      const confirmed = window.confirm(`Delete "${book.title}"?\n\nThis will remove the book from your library.`);
+      const confirmed = window.confirm(
+        `Delete "${book.title}"?\n\nThis will remove the book from your library.`
+      );
       if (confirmed) {
         confirmDelete();
       } else {
         setShowDeleteButton(false);
       }
     } else {
-      Alert.alert(
-        'Delete Book',
-        `Are you sure you want to delete "${book.title}"?`,
-        [
-          {text: 'Cancel', style: 'cancel', onPress: () => setShowDeleteButton(false)},
-          {text: 'Delete', style: 'destructive', onPress: confirmDelete},
-        ]
-      );
+      Alert.alert('Delete Book', `Are you sure you want to delete "${book.title}"?`, [
+        {text: 'Cancel', style: 'cancel', onPress: () => setShowDeleteButton(false)},
+        {text: 'Delete', style: 'destructive', onPress: confirmDelete},
+      ]);
     }
   }, [book.id, book.title, onDelete]);
 
@@ -146,7 +147,9 @@ export function BookCard({book, onPress, onLongPress, onDelete}: BookCardProps):
             onPress={handleDelete}
             activeOpacity={0.9}
           >
-            <Text variant="labelMedium" customColor="#ffffff">🗑️ Delete</Text>
+            <Text variant="labelMedium" customColor="#ffffff">
+              🗑️ Delete
+            </Text>
           </TouchableOpacity>
         )}
       </View>

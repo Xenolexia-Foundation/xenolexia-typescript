@@ -8,12 +8,15 @@
  * Store uses getCore().bookParserService.getParser(); we mock getCore() here.
  */
 
-import { useReaderStore } from '../stores/readerStore';
+import {useReaderStore} from '../stores/readerStore';
 
-import type { Book } from '../types';
+import type {Book} from '../types';
 
 // Injected into getCore() mock (set per test)
-let mockParserResult: { chapters: Array<{ index: number; title: string; content: string }>; tableOfContents: unknown[] } = {
+let mockParserResult: {
+  chapters: Array<{index: number; title: string; content: string}>;
+  tableOfContents: unknown[];
+} = {
   chapters: [],
   tableOfContents: [],
 };
@@ -49,7 +52,9 @@ jest.mock('../electronCore', () => {
       },
       createChapterContentService: () => ({
         loadEpub: jest.fn().mockResolvedValue(undefined),
-        getChapterHtml: jest.fn().mockResolvedValue({ html: '<p>Mock chapter</p>', foreignWords: [] }),
+        getChapterHtml: jest
+          .fn()
+          .mockResolvedValue({html: '<p>Mock chapter</p>', foreignWords: []}),
       }),
       createTranslationEngine: jest.fn(),
       storageService: {
@@ -110,11 +115,11 @@ describe('ReaderStore', () => {
       };
 
       const mockChapters = [
-        { index: 0, title: 'Chapter 1', content: '<p>Content 1</p>' },
-        { index: 1, title: 'Chapter 2', content: '<p>Content 2</p>' },
-        { index: 2, title: 'Chapter 3', content: '<p>Content 3</p>' },
+        {index: 0, title: 'Chapter 1', content: '<p>Content 1</p>'},
+        {index: 1, title: 'Chapter 2', content: '<p>Content 2</p>'},
+        {index: 2, title: 'Chapter 3', content: '<p>Content 3</p>'},
       ];
-      mockParserResult = { chapters: mockChapters, tableOfContents: [] };
+      mockParserResult = {chapters: mockChapters, tableOfContents: []};
 
       await useReaderStore.getState().loadBook(mockBook);
 
@@ -146,11 +151,11 @@ describe('ReaderStore', () => {
       };
 
       const mockChapters = [
-        { index: 0, title: 'Chapter 1', content: '<p>Content 1</p>' },
-        { index: 1, title: 'Chapter 2', content: '<p>Content 2</p>' },
-        { index: 2, title: 'Chapter 3', content: '<p>Content 3</p>' },
+        {index: 0, title: 'Chapter 1', content: '<p>Content 1</p>'},
+        {index: 1, title: 'Chapter 2', content: '<p>Content 2</p>'},
+        {index: 2, title: 'Chapter 3', content: '<p>Content 3</p>'},
       ];
-      mockParserResult = { chapters: mockChapters, tableOfContents: [] };
+      mockParserResult = {chapters: mockChapters, tableOfContents: []};
 
       await useReaderStore.getState().loadBook(mockBook);
 
@@ -244,9 +249,9 @@ describe('ReaderStore', () => {
   describe('goToNextChapter / goToPreviousChapter', () => {
     beforeEach(() => {
       const mockChapters = [
-        { index: 0, title: 'Chapter 1', content: '<p>Content 1</p>' },
-        { index: 1, title: 'Chapter 2', content: '<p>Content 2</p>' },
-        { index: 2, title: 'Chapter 3', content: '<p>Content 3</p>' },
+        {index: 0, title: 'Chapter 1', content: '<p>Content 1</p>'},
+        {index: 1, title: 'Chapter 2', content: '<p>Content 2</p>'},
+        {index: 2, title: 'Chapter 3', content: '<p>Content 3</p>'},
       ];
       useReaderStore.setState({
         currentBook: {
@@ -255,7 +260,7 @@ describe('ReaderStore', () => {
           author: '',
           filePath: '/path.epub',
           format: 'epub',
-          languagePair: { sourceLanguage: 'en', targetLanguage: 'el' },
+          languagePair: {sourceLanguage: 'en', targetLanguage: 'el'},
           addedAt: new Date(),
           lastReadAt: null,
           progress: 0,

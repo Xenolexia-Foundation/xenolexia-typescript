@@ -8,13 +8,22 @@
  */
 
 import React, {useState, useCallback, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
-import {useUserStore} from '@xenolexia/shared/stores/userStore';
-import {useLibraryStore} from '@xenolexia/shared/stores/libraryStore';
-import {useVocabularyStore} from '@xenolexia/shared/stores/vocabularyStore';
-import {SUPPORTED_LANGUAGES, getLanguageInfo, type Language, type ProficiencyLevel} from '@xenolexia/shared/types';
+
 import {wordDatabase} from '@xenolexia/shared';
+import {useExcludeReplacementStore} from '@xenolexia/shared/stores/excludeReplacementStore';
+import {useLibraryStore} from '@xenolexia/shared/stores/libraryStore';
+import {useUserStore} from '@xenolexia/shared/stores/userStore';
+import {useVocabularyStore} from '@xenolexia/shared/stores/vocabularyStore';
+import {
+  SUPPORTED_LANGUAGES,
+  getLanguageInfo,
+  type Language,
+  type ProficiencyLevel,
+} from '@xenolexia/shared/types';
+import {useNavigate} from 'react-router-dom';
+
 import {Button, Card} from '../components/ui';
+import {useBack} from '../hooks/useBack';
 import {
   generateExportContent,
   getSuggestedFilename,
@@ -31,9 +40,16 @@ interface DictionaryPair {
 
 export function SettingsScreen(): React.JSX.Element {
   const navigate = useNavigate();
+  const goBack = useBack();
   const {preferences, updatePreferences, resetPreferences, loadPreferences} = useUserStore();
   const {books, removeBook} = useLibraryStore();
   const {vocabulary, initialize: initVocabulary} = useVocabularyStore();
+  const {
+    getExcludedWords,
+    removeExcludedWord,
+    initialize: initExcludeReplacement,
+  } = useExcludeReplacementStore();
+  const excludedWordsList = getExcludedWords();
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [showDictionaryManager, setShowDictionaryManager] = useState(false);
   const [showBookManager, setShowBookManager] = useState(false);
@@ -41,11 +57,13 @@ export function SettingsScreen(): React.JSX.Element {
   const [isExporting, setIsExporting] = useState(false);
   const [dictionaries, setDictionaries] = useState<DictionaryPair[]>(() => {
     // Initialize with default dictionary
-    return [{
-      sourceLanguage: preferences.defaultSourceLanguage,
-      targetLanguage: preferences.defaultTargetLanguage,
-      installed: true,
-    }];
+    return [
+      {
+        sourceLanguage: preferences.defaultSourceLanguage,
+        targetLanguage: preferences.defaultTargetLanguage,
+        installed: true,
+      },
+    ];
   });
 
   useEffect(() => {
@@ -54,49 +72,72 @@ export function SettingsScreen(): React.JSX.Element {
   useEffect(() => {
     initVocabulary();
   }, [initVocabulary]);
+  useEffect(() => {
+    initExcludeReplacement();
+  }, [initExcludeReplacement]);
 
   const sourceLang = getLanguageInfo(preferences.defaultSourceLanguage);
   const targetLang = getLanguageInfo(preferences.defaultTargetLanguage);
 
   const handleResetSettings = useCallback(() => {
-    if (window.confirm('This will reset all settings to their defaults. Your books and vocabulary will not be affected.')) {
+    if (
+      window.confirm(
+        'This will reset all settings to their defaults. Your books and vocabulary will not be affected.'
+      )
+    ) {
       resetPreferences();
       alert('Settings have been reset to defaults.');
     }
   }, [resetPreferences]);
 
-  const handleAddDictionary = useCallback((source: Language, target: Language) => {
-    const exists = dictionaries.some(
-      d => d.sourceLanguage === source && d.targetLanguage === target
-    );
-    if (!exists) {
-      setDictionaries([...dictionaries, {sourceLanguage: source, targetLanguage: target, installed: true}]);
-    }
-  }, [dictionaries]);
-
-  const handleRemoveDictionary = useCallback((source: Language, target: Language) => {
-    if (dictionaries.length === 1) {
-      alert('You must have at least one dictionary installed.');
-      return;
-    }
-    if (window.confirm(`Remove dictionary ${getLanguageInfo(source)?.name} → ${getLanguageInfo(target)?.name}?`)) {
-      setDictionaries(dictionaries.filter(
-        d => !(d.sourceLanguage === source && d.targetLanguage === target)
-      ));
-    }
-  }, [dictionaries]);
-
-  const handleDeleteBook = useCallback(async (bookId: string) => {
-    const book = books.find(b => b.id === bookId);
-    if (book && window.confirm(`Delete "${book.title}"? This cannot be undone.`)) {
-      try {
-        await removeBook(bookId);
-      } catch (error) {
-        console.error('Failed to delete book:', error);
-        alert('Failed to delete book');
+  const handleAddDictionary = useCallback(
+    (source: Language, target: Language) => {
+      const exists = dictionaries.some(
+        d => d.sourceLanguage === source && d.targetLanguage === target
+      );
+      if (!exists) {
+        setDictionaries([
+          ...dictionaries,
+          {sourceLanguage: source, targetLanguage: target, installed: true},
+        ]);
       }
-    }
-  }, [books, removeBook]);
+    },
+    [dictionaries]
+  );
+
+  const handleRemoveDictionary = useCallback(
+    (source: Language, target: Language) => {
+      if (dictionaries.length === 1) {
+        alert('You must have at least one dictionary installed.');
+        return;
+      }
+      if (
+        window.confirm(
+          `Remove dictionary ${getLanguageInfo(source)?.name} → ${getLanguageInfo(target)?.name}?`
+        )
+      ) {
+        setDictionaries(
+          dictionaries.filter(d => !(d.sourceLanguage === source && d.targetLanguage === target))
+        );
+      }
+    },
+    [dictionaries]
+  );
+
+  const handleDeleteBook = useCallback(
+    async (bookId: string) => {
+      const book = books.find(b => b.id === bookId);
+      if (book && window.confirm(`Delete "${book.title}"? This cannot be undone.`)) {
+        try {
+          await removeBook(bookId);
+        } catch (error) {
+          console.error('Failed to delete book:', error);
+          alert('Failed to delete book');
+        }
+      }
+    },
+    [books, removeBook]
+  );
 
   const handleExport = useCallback(async () => {
     if (!window.electronAPI?.showSaveDialog || !window.electronAPI?.writeFile) {
@@ -133,7 +174,7 @@ export function SettingsScreen(): React.JSX.Element {
   return (
     <div className="settings-screen">
       <div className="settings-header">
-        <button onClick={() => navigate(-1)} className="settings-back-button">
+        <button onClick={goBack} className="settings-back-button">
           ← Back
         </button>
         <h1>Settings</h1>
@@ -146,10 +187,7 @@ export function SettingsScreen(): React.JSX.Element {
           <h2 className="settings-section-title">LEARNING</h2>
           <Card variant="outlined" padding="md" className="settings-section-card">
             {/* Languages */}
-            <button
-              className="settings-row"
-              onClick={() => setShowLanguagePicker(true)}
-            >
+            <button className="settings-row" onClick={() => setShowLanguagePicker(true)}>
               <span className="settings-row-icon">🌍</span>
               <div className="settings-row-content">
                 <span className="settings-row-label">Languages</span>
@@ -168,14 +206,17 @@ export function SettingsScreen(): React.JSX.Element {
               <div className="settings-row-content">
                 <span className="settings-row-label">Proficiency Level</span>
                 <span className="settings-row-value">
-                  {preferences.defaultProficiencyLevel.charAt(0).toUpperCase() + preferences.defaultProficiencyLevel.slice(1)}
+                  {preferences.defaultProficiencyLevel.charAt(0).toUpperCase() +
+                    preferences.defaultProficiencyLevel.slice(1)}
                 </span>
               </div>
               <select
                 className="settings-select"
                 value={preferences.defaultProficiencyLevel}
-                onChange={(e) => updatePreferences({defaultProficiencyLevel: e.target.value as ProficiencyLevel})}
-                onClick={(e) => e.stopPropagation()}
+                onChange={e =>
+                  updatePreferences({defaultProficiencyLevel: e.target.value as ProficiencyLevel})
+                }
+                onClick={e => e.stopPropagation()}
               >
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
@@ -200,7 +241,7 @@ export function SettingsScreen(): React.JSX.Element {
                 max="0.9"
                 step="0.1"
                 value={preferences.defaultWordDensity}
-                onChange={(e) => updatePreferences({defaultWordDensity: parseFloat(e.target.value)})}
+                onChange={e => updatePreferences({defaultWordDensity: parseFloat(e.target.value)})}
                 className="settings-slider"
               />
               <span className="settings-value-badge">
@@ -223,11 +264,41 @@ export function SettingsScreen(): React.JSX.Element {
                 max="120"
                 step="5"
                 value={preferences.dailyGoal}
-                onChange={(e) => updatePreferences({dailyGoal: parseInt(e.target.value) || 15})}
+                onChange={e => updatePreferences({dailyGoal: parseInt(e.target.value) || 15})}
                 className="settings-number-input"
               />
               <span className="settings-value-badge">min</span>
             </div>
+          </Card>
+        </div>
+
+        {/* Words not replaced */}
+        <div className="settings-section">
+          <h2 className="settings-section-title">WORDS NOT REPLACED</h2>
+          <Card variant="outlined" padding="md" className="settings-section-card">
+            <p className="settings-section-description">
+              Words you chose to stop replacing. Remove a word to have it replaced again when
+              reading.
+            </p>
+            {excludedWordsList.length === 0 ? (
+              <p className="settings-empty-list">No words in the list.</p>
+            ) : (
+              <ul className="settings-excluded-words-list">
+                {excludedWordsList.map(word => (
+                  <li key={word} className="settings-excluded-word-item">
+                    <span className="settings-excluded-word">{word}</span>
+                    <button
+                      type="button"
+                      className="settings-excluded-word-remove"
+                      onClick={() => removeExcludedWord(word)}
+                      aria-label={`Allow replacing "${word}" again`}
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </Card>
         </div>
 
@@ -240,7 +311,8 @@ export function SettingsScreen(): React.JSX.Element {
               <div className="settings-row-content">
                 <span className="settings-row-label">Export vocabulary</span>
                 <span className="settings-row-value">
-                  {vocabulary.length} word{vocabulary.length !== 1 ? 's' : ''} • Choose format and save to file
+                  {vocabulary.length} word{vocabulary.length !== 1 ? 's' : ''} • Choose format and
+                  save to file
                 </span>
               </div>
             </div>
@@ -248,7 +320,7 @@ export function SettingsScreen(): React.JSX.Element {
               <select
                 className="settings-select"
                 value={exportFormat}
-                onChange={(e) => setExportFormat(e.target.value as ExportFormat)}
+                onChange={e => setExportFormat(e.target.value as ExportFormat)}
               >
                 <option value="json">JSON (full backup)</option>
                 <option value="csv">CSV (spreadsheet)</option>
@@ -269,15 +341,13 @@ export function SettingsScreen(): React.JSX.Element {
         <div className="settings-section">
           <h2 className="settings-section-title">DICTIONARIES</h2>
           <Card variant="outlined" padding="md" className="settings-section-card">
-            <button
-              className="settings-row"
-              onClick={() => setShowDictionaryManager(true)}
-            >
+            <button className="settings-row" onClick={() => setShowDictionaryManager(true)}>
               <span className="settings-row-icon">📚</span>
               <div className="settings-row-content">
                 <span className="settings-row-label">Manage Dictionaries</span>
                 <span className="settings-row-value">
-                  {dictionaries.length} dictionary pair{dictionaries.length !== 1 ? 's' : ''} installed
+                  {dictionaries.length} dictionary pair{dictionaries.length !== 1 ? 's' : ''}{' '}
+                  installed
                 </span>
               </div>
               <span className="settings-row-chevron">›</span>
@@ -289,10 +359,7 @@ export function SettingsScreen(): React.JSX.Element {
         <div className="settings-section">
           <h2 className="settings-section-title">BOOKS</h2>
           <Card variant="outlined" padding="md" className="settings-section-card">
-            <button
-              className="settings-row"
-              onClick={() => setShowBookManager(true)}
-            >
+            <button className="settings-row" onClick={() => setShowBookManager(true)}>
               <span className="settings-row-icon">📖</span>
               <div className="settings-row-content">
                 <span className="settings-row-label">Manage Books</span>
@@ -309,10 +376,7 @@ export function SettingsScreen(): React.JSX.Element {
         <div className="settings-section">
           <h2 className="settings-section-title">ABOUT</h2>
           <Card variant="outlined" padding="md" className="settings-section-card">
-            <button
-              className="settings-row"
-              onClick={() => navigate('/about')}
-            >
+            <button className="settings-row" onClick={() => navigate('/about')}>
               <span className="settings-row-icon">ℹ️</span>
               <div className="settings-row-content">
                 <span className="settings-row-label">About Xenolexia</span>
@@ -389,16 +453,23 @@ interface LanguagePickerModalProps {
   onClose: () => void;
 }
 
-function LanguagePickerModal({currentSource, currentTarget, onSelect, onClose}: LanguagePickerModalProps): React.JSX.Element {
+function LanguagePickerModal({
+  currentSource,
+  currentTarget,
+  onSelect,
+  onClose,
+}: LanguagePickerModalProps): React.JSX.Element {
   const [source, setSource] = useState<Language>(currentSource);
   const [target, setTarget] = useState<Language>(currentTarget);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Select Languages</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <div className="modal-body">
           <div className="language-picker-row">
@@ -406,7 +477,7 @@ function LanguagePickerModal({currentSource, currentTarget, onSelect, onClose}: 
             <select
               className="language-select"
               value={source}
-              onChange={(e) => setSource(e.target.value as Language)}
+              onChange={e => setSource(e.target.value as Language)}
             >
               {SUPPORTED_LANGUAGES.map(lang => (
                 <option key={lang.code} value={lang.code}>
@@ -420,7 +491,7 @@ function LanguagePickerModal({currentSource, currentTarget, onSelect, onClose}: 
             <select
               className="language-select"
               value={target}
-              onChange={(e) => setTarget(e.target.value as Language)}
+              onChange={e => setTarget(e.target.value as Language)}
             >
               {SUPPORTED_LANGUAGES.filter(lang => lang.code !== source).map(lang => (
                 <option key={lang.code} value={lang.code}>
@@ -431,8 +502,12 @@ function LanguagePickerModal({currentSource, currentTarget, onSelect, onClose}: 
           </div>
         </div>
         <div className="modal-footer">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" onClick={() => onSelect(source, target)}>Save</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={() => onSelect(source, target)}>
+            Save
+          </Button>
         </div>
       </div>
     </div>
@@ -447,25 +522,33 @@ interface DictionaryManagerModalProps {
   onClose: () => void;
 }
 
-function DictionaryManagerModal({dictionaries, onAdd, onRemove, onClose}: DictionaryManagerModalProps): React.JSX.Element {
+function DictionaryManagerModal({
+  dictionaries,
+  onAdd,
+  onRemove,
+  onClose,
+}: DictionaryManagerModalProps): React.JSX.Element {
   const [newSource, setNewSource] = useState<Language>('en');
   const [newTarget, setNewTarget] = useState<Language>('el');
   const [downloadSource, setDownloadSource] = useState<Language>('en');
   const [downloadTarget, setDownloadTarget] = useState<Language>('el');
   const [downloadUrl, setDownloadUrl] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
-  const [downloadMessage, setDownloadMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [downloadMessage, setDownloadMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const canDownload = Boolean(window.electronAPI?.downloadDictionary);
 
   const handleDownloadDictionary = useCallback(async () => {
     const url = downloadUrl.trim();
     if (!url) {
-      setDownloadMessage({ type: 'error', text: 'Enter a dictionary URL' });
+      setDownloadMessage({type: 'error', text: 'Enter a dictionary URL'});
       return;
     }
     if (!window.electronAPI?.downloadDictionary) {
-      setDownloadMessage({ type: 'error', text: 'Download not available' });
+      setDownloadMessage({type: 'error', text: 'Download not available'});
       return;
     }
     setIsDownloading(true);
@@ -473,20 +556,20 @@ function DictionaryManagerModal({dictionaries, onAdd, onRemove, onClose}: Dictio
     try {
       const result = await window.electronAPI.downloadDictionary(url);
       if (result.error) {
-        setDownloadMessage({ type: 'error', text: result.error });
+        setDownloadMessage({type: 'error', text: result.error});
         return;
       }
       if (!result.words || result.words.length === 0) {
-        setDownloadMessage({ type: 'error', text: 'No valid entries in dictionary' });
+        setDownloadMessage({type: 'error', text: 'No valid entries in dictionary'});
         return;
       }
       await wordDatabase.initialize();
       const bulk = await wordDatabase.bulkImport(result.words, downloadSource, downloadTarget);
       const errMsg = bulk.errors.length ? ` (${bulk.errors.length} errors)` : '';
-      setDownloadMessage({ type: 'success', text: `Imported ${bulk.imported} words${errMsg}` });
+      setDownloadMessage({type: 'success', text: `Imported ${bulk.imported} words${errMsg}`});
       onAdd(downloadSource, downloadTarget);
     } catch (err) {
-      setDownloadMessage({ type: 'error', text: err instanceof Error ? err.message : String(err) });
+      setDownloadMessage({type: 'error', text: err instanceof Error ? err.message : String(err)});
     } finally {
       setIsDownloading(false);
     }
@@ -494,10 +577,12 @@ function DictionaryManagerModal({dictionaries, onAdd, onRemove, onClose}: Dictio
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content modal-content-large" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content modal-content-large" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Manage Dictionaries</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <div className="modal-body">
           <div className="dictionary-list">
@@ -528,7 +613,7 @@ function DictionaryManagerModal({dictionaries, onAdd, onRemove, onClose}: Dictio
               <select
                 className="language-select"
                 value={newSource}
-                onChange={(e) => setNewSource(e.target.value as Language)}
+                onChange={e => setNewSource(e.target.value as Language)}
               >
                 {SUPPORTED_LANGUAGES.map(lang => (
                   <option key={lang.code} value={lang.code}>
@@ -542,7 +627,7 @@ function DictionaryManagerModal({dictionaries, onAdd, onRemove, onClose}: Dictio
               <select
                 className="language-select"
                 value={newTarget}
-                onChange={(e) => setNewTarget(e.target.value as Language)}
+                onChange={e => setNewTarget(e.target.value as Language)}
               >
                 {SUPPORTED_LANGUAGES.filter(lang => lang.code !== newSource).map(lang => (
                   <option key={lang.code} value={lang.code}>
@@ -565,13 +650,16 @@ function DictionaryManagerModal({dictionaries, onAdd, onRemove, onClose}: Dictio
           {canDownload && (
             <div className="dictionary-download">
               <h3>Download Dictionary</h3>
-              <p className="dictionary-download-hint">JSON URL: array of &#123; &quot;source&quot;, &quot;target&quot; &#125; (optional: rank, pos, variants, pronunciation). Max 5MB.</p>
+              <p className="dictionary-download-hint">
+                JSON URL: array of &#123; &quot;source&quot;, &quot;target&quot; &#125; (optional:
+                rank, pos, variants, pronunciation). Max 5MB.
+              </p>
               <div className="language-picker-row">
                 <label>Source:</label>
                 <select
                   className="language-select"
                   value={downloadSource}
-                  onChange={(e) => setDownloadSource(e.target.value as Language)}
+                  onChange={e => setDownloadSource(e.target.value as Language)}
                 >
                   {SUPPORTED_LANGUAGES.map(lang => (
                     <option key={lang.code} value={lang.code}>
@@ -585,7 +673,7 @@ function DictionaryManagerModal({dictionaries, onAdd, onRemove, onClose}: Dictio
                 <select
                   className="language-select"
                   value={downloadTarget}
-                  onChange={(e) => setDownloadTarget(e.target.value as Language)}
+                  onChange={e => setDownloadTarget(e.target.value as Language)}
                 >
                   {SUPPORTED_LANGUAGES.filter(lang => lang.code !== downloadSource).map(lang => (
                     <option key={lang.code} value={lang.code}>
@@ -601,19 +689,21 @@ function DictionaryManagerModal({dictionaries, onAdd, onRemove, onClose}: Dictio
                   className="dictionary-url-input"
                   placeholder="https://example.com/dict-en-es.json"
                   value={downloadUrl}
-                  onChange={(e) => setDownloadUrl(e.target.value)}
+                  onChange={e => setDownloadUrl(e.target.value)}
                   disabled={isDownloading}
                 />
               </div>
-              <Button
-                variant="primary"
-                onClick={handleDownloadDictionary}
-                disabled={isDownloading}
-              >
+              <Button variant="primary" onClick={handleDownloadDictionary} disabled={isDownloading}>
                 {isDownloading ? 'Downloading…' : 'Download and install'}
               </Button>
               {downloadMessage && (
-                <p className={downloadMessage.type === 'error' ? 'dictionary-download-error' : 'dictionary-download-success'}>
+                <p
+                  className={
+                    downloadMessage.type === 'error'
+                      ? 'dictionary-download-error'
+                      : 'dictionary-download-success'
+                  }
+                >
                   {downloadMessage.text}
                 </p>
               )}
@@ -621,7 +711,9 @@ function DictionaryManagerModal({dictionaries, onAdd, onRemove, onClose}: Dictio
           )}
         </div>
         <div className="modal-footer">
-          <Button variant="primary" onClick={onClose}>Done</Button>
+          <Button variant="primary" onClick={onClose}>
+            Done
+          </Button>
         </div>
       </div>
     </div>
@@ -638,10 +730,12 @@ interface BookManagerModalProps {
 function BookManagerModal({books, onDelete, onClose}: BookManagerModalProps): React.JSX.Element {
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content modal-content-large" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content modal-content-large" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Manage Books</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
         <div className="modal-body">
           {books.length === 0 ? (
@@ -654,10 +748,7 @@ function BookManagerModal({books, onDelete, onClose}: BookManagerModalProps): Re
                     <span className="book-manager-title">{book.title}</span>
                     <span className="book-manager-author">{book.author}</span>
                   </div>
-                  <button
-                    className="book-manager-delete"
-                    onClick={() => onDelete(book.id)}
-                  >
+                  <button className="book-manager-delete" onClick={() => onDelete(book.id)}>
                     Delete
                   </button>
                 </div>
@@ -666,7 +757,9 @@ function BookManagerModal({books, onDelete, onClose}: BookManagerModalProps): Re
           )}
         </div>
         <div className="modal-footer">
-          <Button variant="primary" onClick={onClose}>Done</Button>
+          <Button variant="primary" onClick={onClose}>
+            Done
+          </Button>
         </div>
       </div>
     </div>

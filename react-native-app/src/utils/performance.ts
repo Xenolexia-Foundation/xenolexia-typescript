@@ -181,11 +181,14 @@ export function throttle<T extends (...args: any[]) => any>(
       func(...args);
       lastTime = now;
     } else if (!timeoutId) {
-      timeoutId = setTimeout(() => {
-        func(...args);
-        lastTime = Date.now();
-        timeoutId = null;
-      }, wait - (now - lastTime));
+      timeoutId = setTimeout(
+        () => {
+          func(...args);
+          lastTime = Date.now();
+          timeoutId = null;
+        },
+        wait - (now - lastTime)
+      );
     }
   };
 }
@@ -212,7 +215,7 @@ export function logMemoryUsage(label: string = 'Memory'): void {
 /**
  * Create a stable key extractor for FlatList
  */
-export function createKeyExtractor<T extends { id: string }>(
+export function createKeyExtractor<T extends {id: string}>(
   prefix: string = 'item'
 ): (item: T, index: number) => string {
   return (item: T, index: number) => {
@@ -235,10 +238,7 @@ export function calculateInitialNumToRender(
  * Calculate optimal windowSize for FlatList
  * windowSize determines how many screens worth of content to render
  */
-export function calculateWindowSize(
-  screenHeight: number,
-  itemHeight: number
-): number {
+export function calculateWindowSize(screenHeight: number, itemHeight: number): number {
   const itemsPerScreen = screenHeight / itemHeight;
   // Render 5 screens worth (2 before, current, 2 after)
   return Math.ceil(itemsPerScreen * 5);
@@ -256,7 +256,7 @@ export function calculateImageDimensions(
   originalHeight: number,
   containerWidth: number,
   containerHeight?: number
-): { width: number; height: number } {
+): {width: number; height: number} {
   const aspectRatio = originalWidth / originalHeight;
 
   let width = containerWidth;
@@ -277,6 +277,4 @@ export function calculateImageDimensions(
 // Exports
 // ============================================================================
 
-export {
-  PerformanceMark,
-};
+export {PerformanceMark};
