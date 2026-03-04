@@ -12,10 +12,12 @@
  * - JSON - Full data export with metadata
  */
 
-import { format } from 'date-fns';
-import type { VocabularyItem, Language } from '../../types';
-import { getLanguageInfo } from '../../types';
-import type { IFileSystem } from '../../adapters';
+import {format} from 'date-fns';
+
+import {getLanguageInfo} from '../../types';
+
+import type {IFileSystem} from '../../adapters';
+import type {VocabularyItem, Language} from '../../types';
 
 // ============================================================================
 // Types
@@ -29,7 +31,7 @@ export interface ExportOptions {
   includeSRSData?: boolean;
   includeBookInfo?: boolean;
   filterByStatus?: string[];
-  filterByLanguage?: { source?: Language; target?: Language };
+  filterByLanguage?: {source?: Language; target?: Language};
 }
 
 export interface ExportResult {
@@ -54,26 +56,26 @@ export class ExportService {
     vocabulary: VocabularyItem[],
     options: ExportOptions,
     fileSystem?: IFileSystem,
-    exportDir?: string,
+    exportDir?: string
   ): Promise<ExportResult> {
     try {
       let filteredVocabulary = [...vocabulary];
 
       if (options.filterByStatus && options.filterByStatus.length > 0) {
-        filteredVocabulary = filteredVocabulary.filter(
-          (v) => options.filterByStatus!.includes(v.status)
+        filteredVocabulary = filteredVocabulary.filter(v =>
+          options.filterByStatus!.includes(v.status)
         );
       }
 
       if (options.filterByLanguage) {
         if (options.filterByLanguage.source) {
           filteredVocabulary = filteredVocabulary.filter(
-            (v) => v.sourceLanguage === options.filterByLanguage!.source
+            v => v.sourceLanguage === options.filterByLanguage!.source
           );
         }
         if (options.filterByLanguage.target) {
           filteredVocabulary = filteredVocabulary.filter(
-            (v) => v.targetLanguage === options.filterByLanguage!.target
+            v => v.targetLanguage === options.filterByLanguage!.target
           );
         }
       }
@@ -113,9 +115,9 @@ export class ExportService {
       if (fileSystem?.writeFile && exportDir) {
         const filePath = `${exportDir.replace(/\/$/, '')}/${fileName}`;
         await fileSystem.writeFile(filePath, content, 'utf8');
-        return { success: true, filePath, fileName, itemCount: filteredVocabulary.length };
+        return {success: true, filePath, fileName, itemCount: filteredVocabulary.length};
       }
-      return { success: true, fileName, content, itemCount: filteredVocabulary.length };
+      return {success: true, fileName, content, itemCount: filteredVocabulary.length};
     } catch (error) {
       console.error('Export failed:', error);
       return {
@@ -134,7 +136,7 @@ export class ExportService {
     vocabulary: VocabularyItem[],
     options: ExportOptions,
     fileSystem?: IFileSystem,
-    exportDir?: string,
+    exportDir?: string
   ): Promise<ExportResult> {
     return this.export(vocabulary, options, fileSystem, exportDir);
   }
@@ -155,7 +157,7 @@ export class ExportService {
       headers.push('status', 'review_count', 'ease_factor', 'interval', 'added_at');
     }
 
-    const rows = vocabulary.map((item) => {
+    const rows = vocabulary.map(item => {
       const row: string[] = [
         this.escapeCSV(item.sourceWord),
         this.escapeCSV(item.targetWord),
@@ -194,7 +196,7 @@ export class ExportService {
    * - Tags: language pair + proficiency level
    */
   private generateAnki(vocabulary: VocabularyItem[], options: ExportOptions): string {
-    const rows = vocabulary.map((item) => {
+    const rows = vocabulary.map(item => {
       // Front of card (foreign word)
       const front = item.targetWord;
 
@@ -208,10 +210,7 @@ export class ExportService {
       }
 
       // Tags
-      const tags = [
-        `${item.sourceLanguage}-${item.targetLanguage}`,
-        item.status,
-      ];
+      const tags = [`${item.sourceLanguage}-${item.targetLanguage}`, item.status];
 
       return `${front}\t${back}\t${tags.join(' ')}`;
     });
@@ -229,7 +228,7 @@ export class ExportService {
       exportedAt: new Date().toISOString(),
       itemCount: vocabulary.length,
       format: 'xenolexia-vocabulary-v1',
-      items: vocabulary.map((item) => {
+      items: vocabulary.map(item => {
         const exportItem: Record<string, any> = {
           sourceWord: item.sourceWord,
           targetWord: item.targetWord,

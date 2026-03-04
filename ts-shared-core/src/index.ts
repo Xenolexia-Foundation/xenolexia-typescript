@@ -26,6 +26,7 @@ export type {
   ReaderTheme,
   ReaderSettings,
   ForeignWordData,
+  FavouriteWord,
   ProcessedChapter,
   ReadingSession,
   ReadingStats,
@@ -34,11 +35,7 @@ export type {
   AchievementDefinition,
   Achievement,
 } from './types';
-export {
-  SUPPORTED_LANGUAGES,
-  getLanguageInfo,
-  getLanguageName,
-} from './types';
+export {SUPPORTED_LANGUAGES, getLanguageInfo, getLanguageName} from './types';
 
 // Adapters (interfaces + in-memory defaults)
 export * from './adapters';
@@ -70,7 +67,7 @@ export {
   getAchievementProgress,
   getAllAchievementsWithProgress,
 } from './gamification';
-export type { AchievementWithProgress } from './gamification';
+export type {AchievementWithProgress} from './gamification';
 
 // Storage (host provides IDataStore)
 export {
@@ -118,9 +115,13 @@ export {
   injectedScript,
   foreignWordStyles,
 } from './services/TranslationEngine';
-export type { TranslationOptions, ProcessedText, InjectedScriptOptions } from './services/TranslationEngine';
+export type {
+  TranslationOptions,
+  ProcessedText,
+  InjectedScriptOptions,
+} from './services/TranslationEngine';
 
-export type { ExportFormat, ExportOptions, ExportResult } from './services/ExportService';
+export type {ExportFormat, ExportOptions, ExportResult} from './services/ExportService';
 
 // Book parser (host provides IFileSystem)
 export {
@@ -137,7 +138,7 @@ export {
   extractEPUBInfo,
   extractEPUBCover,
 } from './services/BookParser';
-export type { IBookParser, ParserOptions, SearchResult } from './services/BookParser';
+export type {IBookParser, ParserOptions, SearchResult} from './services/BookParser';
 
 /** Create a BookParserService instance with the given IFileSystem (for platforms that only need parsing). */
 export function createBookParserService(fileSystem: IFileSystem): BookParserService {
@@ -145,22 +146,26 @@ export function createBookParserService(fileSystem: IFileSystem): BookParserServ
 }
 
 // Hooks (optional peer: react)
-export { useAsync, useDebounce } from './hooks';
-export type { UseAsyncReturn } from './hooks';
+export {useAsync, useDebounce} from './hooks';
+export type {UseAsyncReturn} from './hooks';
 
 // Factory: create core services with host adapters
-import type { IFileSystem, IDataStore, IKeyValueStore } from './adapters';
-import { memoryKeyValueStore } from './adapters';
-import { StorageService, createStorageService } from './services/StorageService';
-import { BookParserService } from './services/BookParser';
-import { TranslationAPIService } from './services/TranslationEngine/TranslationAPIService';
-import { FrequencyListService } from './services/TranslationEngine/FrequencyListService';
-import { DynamicWordDatabase } from './services/TranslationEngine/DynamicWordDatabase';
-import { TranslationEngine, createTranslationEngine } from './services/TranslationEngine/TranslationEngine';
-import { WordMatcher } from './services/TranslationEngine/WordMatcher';
-import { ExportService } from './services/ExportService/ExportService';
-import { ChapterContentService } from './services/BookParser/ChapterContentService';
-import type { TranslationOptions } from './services/TranslationEngine/types';
+import {memoryKeyValueStore} from './adapters';
+import {BookParserService} from './services/BookParser';
+import {ChapterContentService} from './services/BookParser/ChapterContentService';
+import {ExportService} from './services/ExportService/ExportService';
+import {StorageService, createStorageService} from './services/StorageService';
+import {DynamicWordDatabase} from './services/TranslationEngine/DynamicWordDatabase';
+import {FrequencyListService} from './services/TranslationEngine/FrequencyListService';
+import {TranslationAPIService} from './services/TranslationEngine/TranslationAPIService';
+import {
+  TranslationEngine,
+  createTranslationEngine,
+} from './services/TranslationEngine/TranslationEngine';
+import {WordMatcher} from './services/TranslationEngine/WordMatcher';
+
+import type {IFileSystem, IDataStore, IKeyValueStore} from './adapters';
+import type {TranslationOptions} from './services/TranslationEngine/types';
 
 export interface XenolexiaCoreAdapters {
   fileSystem: IFileSystem;
@@ -175,11 +180,13 @@ export interface XenolexiaCore {
   frequencyListService: FrequencyListService;
   createDynamicWordDatabase: () => DynamicWordDatabase;
   createTranslationEngine: (options: TranslationOptions) => TranslationEngine;
-  createChapterContentService: (engineFactory?: (opts: TranslationOptions) => TranslationEngine) => ChapterContentService;
+  createChapterContentService: (
+    engineFactory?: (opts: TranslationOptions) => TranslationEngine
+  ) => ChapterContentService;
   exportService: ExportService;
 }
 
-export { ExportService, exportService } from './services/ExportService';
+export {ExportService, exportService} from './services/ExportService';
 export {
   ReaderStyleService,
   setReaderStyleStorage,
@@ -195,14 +202,14 @@ export {
   resetSettings,
   resetBookSettings,
 } from './services/ReaderStyleService';
-export type { ReaderStyleConfig, ThemeColors } from './services/ReaderStyleService';
+export type {ReaderStyleConfig, ThemeColors} from './services/ReaderStyleService';
 
 /**
  * Create core services with host-provided adapters.
  * Call this once at app startup with your IFileSystem, IDataStore, and optional IKeyValueStore.
  */
 export function createXenolexiaCore(adapters: XenolexiaCoreAdapters): XenolexiaCore {
-  const { fileSystem, dataStore, keyValueStore } = adapters;
+  const {fileSystem, dataStore, keyValueStore} = adapters;
   const kv = keyValueStore ?? memoryKeyValueStore;
 
   const storageService = createStorageService(dataStore);
@@ -221,8 +228,9 @@ export function createXenolexiaCore(adapters: XenolexiaCoreAdapters): XenolexiaC
     return new TranslationEngine(options, db, wordMatcher);
   };
 
-  const createChapterContentService = (engineFactory?: (opts: TranslationOptions) => TranslationEngine) =>
-    new ChapterContentService(fileSystem, engineFactory);
+  const createChapterContentService = (
+    engineFactory?: (opts: TranslationOptions) => TranslationEngine
+  ) => new ChapterContentService(fileSystem, engineFactory);
 
   const exportService = new ExportService();
 

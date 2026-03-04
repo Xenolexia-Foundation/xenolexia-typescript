@@ -4,8 +4,9 @@
  * English-FR dictionary: 500 beginner words (frequency-ranked).
  */
 
-import type { WordData } from '../types';
-import { ENGLISH_BEGINNER_500 } from './englishBeginner500';
+import {ENGLISH_BEGINNER_500} from './englishBeginner500';
+
+import type {WordData} from '../types';
 
 const TARGETS: string[] = [
   'le',
@@ -77,7 +78,7 @@ const TARGETS: string[] = [
   'pourrait',
   'maintenant',
   'que',
-  'j\'aime',
+  "j'aime",
   'autre',
   'comment',
   'puis les',
@@ -123,7 +124,7 @@ const TARGETS: string[] = [
   'devrais',
   'call',
   'w',
-  'finie/terminée/plus de/dessus/pendant / au cours de /encore/de son côté/série de six balles/de l\'autre côté /par-dessus/jusqu\'à /tout droit /tout près',
+  "finie/terminée/plus de/dessus/pendant / au cours de /encore/de son côté/série de six balles/de l'autre côté /par-dessus/jusqu'à /tout droit /tout près",
   'école',
   'toujours',
   'juger',
@@ -202,7 +203,7 @@ const TARGETS: string[] = [
   'Point',
   'croire',
   'maintenir',
-  'aujourd\'hui',
+  "aujourd'hui",
   'apporter',
   'arriver',
   'suiv',
@@ -254,7 +255,7 @@ const TARGETS: string[] = [
   'le père---',
   'asseoir',
   'loin',
-  'jusque/jusqu\'à ce que/jusqu\'en/jusqu\'à /jusqu\'au/avant/avant que/tant que/en attendant que',
+  "jusque/jusqu'à ce que/jusqu'en/jusqu'à /jusqu'au/avant/avant que/tant que/en attendant que",
   'une puissance',
   'heure',
   'jeu',
@@ -303,17 +304,17 @@ const TARGETS: string[] = [
   'lead',
   'social',
   'comprendre',
-  'qu\'il s\'agisse',
+  "qu'il s'agisse",
   'Regardez',
   '.',
   'suivre',
   'parent',
   'Leughenaer',
   'visage',
-  'pour autant que ça soit/quoi que ce soit/n\'importe quoi/quelque chose/ des sources/rien/tout/ trouvé quelque chose?/vous avez trouvé quelque chose?',
+  "pour autant que ça soit/quoi que ce soit/n'importe quoi/quelque chose/ des sources/rien/tout/ trouvé quelque chose?/vous avez trouvé quelque chose?",
   'créer',
   'publique',
-  'dit, tous les compilateurs l\'ont déjà implémenté.',
+  "dit, tous les compilateurs l'ont déjà implémenté.",
   'parlez',
   'autres….',
   'read',
@@ -325,12 +326,12 @@ const TARGETS: string[] = [
   'porte',
   'La santé',
   'physique',
-  'de l\'art',
+  "de l'art",
   'Bien sûr',
   'guerre',
   'historique /histoire/l’histoire',
   'faire la fête',
-  'à l\'intérieur',
+  "à l'intérieur",
   'grandir',
   'résultat',
   'ouvert',
@@ -389,10 +390,10 @@ const TARGETS: string[] = [
   'des symptômes',
   'Coupez.',
   'université',
-  'l\'intérêt',
+  "l'intérêt",
   'Le décès ;',
   'devoir',
-  'Quelqu\'un a demandé une réinitialisation du mot de passe pour le compte suivant:',
+  "Quelqu'un a demandé une réinitialisation du mot de passe pour le compte suivant:",
   'expérience',
   'derrière',
   'de tous',
@@ -424,7 +425,7 @@ const TARGETS: string[] = [
   'report',
   'rôle',
   'meilleur que',
-  'd\'ordre économique',
+  "d'ordre économique",
   'durée',
   'décider',
   'tarif',
@@ -438,7 +439,7 @@ const TARGETS: string[] = [
   'épouse',
   'entier',
   'police',
-  'l\'esprit',
+  "l'esprit",
   'il y a encore',
   'tirer',
   'Retour',
@@ -471,14 +472,14 @@ const TARGETS: string[] = [
   'action',
   'complet',
   'modèle',
-  'rejoindre /rejoignez/s\'engager dans/se joindre/se joindre à /entrer dans/s\'inscrire /d\'adhésion/unissez vous/remplir l\'objet/devenir membre',
+  "rejoindre /rejoignez/s'engager dans/se joindre/se joindre à /entrer dans/s'inscrire /d'adhésion/unissez vous/remplir l'objet/devenir membre",
   'saison',
   'la société',
   'taxe',
   'directeur',
   '.',
   'player',
-  'D\'accord',
+  "D'accord",
   'en particulier chez',
   'enregistrer',
   'prendre',
@@ -511,12 +512,25 @@ const TARGETS: string[] = [
 ];
 
 const LEN = 500;
-export const BEGINNER_WORDS: WordData[] = ENGLISH_BEGINNER_500.slice(0, LEN).map((e, i) => ({ ...e, target: TARGETS[i] ?? e.source }));
+export const BEGINNER_WORDS: WordData[] = ENGLISH_BEGINNER_500.slice(0, LEN).map((e, i) => ({
+  ...e,
+  target: TARGETS[i] ?? e.source,
+}));
 export const INTERMEDIATE_WORDS: WordData[] = [];
 export const ADVANCED_WORDS: WordData[] = [];
 export const ALL_WORDS_EN_FR: WordData[] = [...BEGINNER_WORDS];
 
 export function getWordsByLevel(level: 'beginner' | 'intermediate' | 'advanced'): WordData[] {
-  switch (level) { case 'beginner': return BEGINNER_WORDS; case 'intermediate': case 'advanced': return []; default: return []; }
+  switch (level) {
+    case 'beginner':
+      return BEGINNER_WORDS;
+    case 'intermediate':
+    case 'advanced':
+      return [];
+    default:
+      return [];
+  }
 }
-export function getTotalWordCount(): number { return ALL_WORDS_EN_FR.length; }
+export function getTotalWordCount(): number {
+  return ALL_WORDS_EN_FR.length;
+}

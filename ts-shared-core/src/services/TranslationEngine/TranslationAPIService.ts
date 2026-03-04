@@ -18,9 +18,10 @@
  * - Offline mode with cached translations
  */
 
-import type { Language } from '../../types';
-import type { IKeyValueStore } from '../../adapters';
-import { memoryKeyValueStore } from '../../adapters';
+import {memoryKeyValueStore} from '../../adapters';
+
+import type {IKeyValueStore} from '../../adapters';
+import type {Language} from '../../types';
 
 // ============================================================================
 // Types
@@ -90,37 +91,37 @@ const LIBRETRANSLATE_MIRRORS = [
 /**
  * Maps our internal language codes to API-specific codes
  */
-const LANGUAGE_CODES: Record<Language, { iso639_1: string; name: string }> = {
-  en: { iso639_1: 'en', name: 'English' },
-  el: { iso639_1: 'el', name: 'Greek' },
-  es: { iso639_1: 'es', name: 'Spanish' },
-  fr: { iso639_1: 'fr', name: 'French' },
-  de: { iso639_1: 'de', name: 'German' },
-  it: { iso639_1: 'it', name: 'Italian' },
-  pt: { iso639_1: 'pt', name: 'Portuguese' },
-  ru: { iso639_1: 'ru', name: 'Russian' },
-  ja: { iso639_1: 'ja', name: 'Japanese' },
-  zh: { iso639_1: 'zh', name: 'Chinese' },
-  ko: { iso639_1: 'ko', name: 'Korean' },
-  ar: { iso639_1: 'ar', name: 'Arabic' },
-  nl: { iso639_1: 'nl', name: 'Dutch' },
-  pl: { iso639_1: 'pl', name: 'Polish' },
-  tr: { iso639_1: 'tr', name: 'Turkish' },
-  sv: { iso639_1: 'sv', name: 'Swedish' },
-  da: { iso639_1: 'da', name: 'Danish' },
-  fi: { iso639_1: 'fi', name: 'Finnish' },
-  no: { iso639_1: 'no', name: 'Norwegian' },
-  cs: { iso639_1: 'cs', name: 'Czech' },
-  hu: { iso639_1: 'hu', name: 'Hungarian' },
-  ro: { iso639_1: 'ro', name: 'Romanian' },
-  uk: { iso639_1: 'uk', name: 'Ukrainian' },
-  hi: { iso639_1: 'hi', name: 'Hindi' },
-  th: { iso639_1: 'th', name: 'Thai' },
-  vi: { iso639_1: 'vi', name: 'Vietnamese' },
-  id: { iso639_1: 'id', name: 'Indonesian' },
-  arm: { iso639_1: 'arm', name: 'Aramaic' },
-  am: { iso639_1: 'am', name: 'Amharic' },
-  fa: { iso639_1: 'fa', name: 'Persian' },
+const LANGUAGE_CODES: Record<Language, {iso639_1: string; name: string}> = {
+  en: {iso639_1: 'en', name: 'English'},
+  el: {iso639_1: 'el', name: 'Greek'},
+  es: {iso639_1: 'es', name: 'Spanish'},
+  fr: {iso639_1: 'fr', name: 'French'},
+  de: {iso639_1: 'de', name: 'German'},
+  it: {iso639_1: 'it', name: 'Italian'},
+  pt: {iso639_1: 'pt', name: 'Portuguese'},
+  ru: {iso639_1: 'ru', name: 'Russian'},
+  ja: {iso639_1: 'ja', name: 'Japanese'},
+  zh: {iso639_1: 'zh', name: 'Chinese'},
+  ko: {iso639_1: 'ko', name: 'Korean'},
+  ar: {iso639_1: 'ar', name: 'Arabic'},
+  nl: {iso639_1: 'nl', name: 'Dutch'},
+  pl: {iso639_1: 'pl', name: 'Polish'},
+  tr: {iso639_1: 'tr', name: 'Turkish'},
+  sv: {iso639_1: 'sv', name: 'Swedish'},
+  da: {iso639_1: 'da', name: 'Danish'},
+  fi: {iso639_1: 'fi', name: 'Finnish'},
+  no: {iso639_1: 'no', name: 'Norwegian'},
+  cs: {iso639_1: 'cs', name: 'Czech'},
+  hu: {iso639_1: 'hu', name: 'Hungarian'},
+  ro: {iso639_1: 'ro', name: 'Romanian'},
+  uk: {iso639_1: 'uk', name: 'Ukrainian'},
+  hi: {iso639_1: 'hi', name: 'Hindi'},
+  th: {iso639_1: 'th', name: 'Thai'},
+  vi: {iso639_1: 'vi', name: 'Vietnamese'},
+  id: {iso639_1: 'id', name: 'Indonesian'},
+  arm: {iso639_1: 'arm', name: 'Aramaic'},
+  am: {iso639_1: 'am', name: 'Amharic'},
+  fa: {iso639_1: 'fa', name: 'Persian'},
 };
 
 // ============================================================================
@@ -137,14 +138,14 @@ interface LibreTranslateResponse {
 interface MyMemoryResponse {
   responseStatus: number;
   responseDetails?: string;
-  responseData: { translatedText: string; match?: number };
+  responseData: {translatedText: string; match?: number};
 }
 interface LingvaResponse {
   translation: string;
 }
-type LibreTranslateLanguagesResponse = Array<{ code: string; name?: string }>;
+type LibreTranslateLanguagesResponse = Array<{code: string; name?: string}>;
 interface LingvaLanguagesResponse {
-  languages: { code: string; name?: string }[];
+  languages: {code: string; name?: string}[];
 }
 
 // ============================================================================
@@ -154,7 +155,7 @@ interface LingvaLanguagesResponse {
 export class TranslationAPIService {
   private providers: TranslationAPIConfig[];
   private cache: Map<string, TranslationResult> = new Map();
-  private rateLimitCounters: Map<string, { count: number; resetTime: number }> = new Map();
+  private rateLimitCounters: Map<string, {count: number; resetTime: number}> = new Map();
   private currentMirrorIndex: number = 0;
   private storage: IKeyValueStore;
 
@@ -175,7 +176,7 @@ export class TranslationAPIService {
     const cacheKey = this.getCacheKey(text, sourceLanguage, targetLanguage);
     const cached = await this.getFromCache(cacheKey);
     if (cached) {
-      return { ...cached, cached: true };
+      return {...cached, cached: true};
     }
 
     // Try each provider in order
@@ -251,7 +252,7 @@ export class TranslationAPIService {
       }
     }
 
-    return { translations, provider: usedProvider, failed };
+    return {translations, provider: usedProvider, failed};
   }
 
   /**
@@ -430,9 +431,7 @@ export class TranslationAPIService {
 
       const supported: Language[] = [];
       for (const lang of data) {
-        const match = Object.entries(LANGUAGE_CODES).find(
-          ([, v]) => v.iso639_1 === lang.code
-        );
+        const match = Object.entries(LANGUAGE_CODES).find(([, v]) => v.iso639_1 === lang.code);
         if (match) {
           supported.push(match[0] as Language);
         }
@@ -450,9 +449,7 @@ export class TranslationAPIService {
 
       const supported: Language[] = [];
       for (const lang of data.languages) {
-        const match = Object.entries(LANGUAGE_CODES).find(
-          ([, v]) => v.iso639_1 === lang.code
-        );
+        const match = Object.entries(LANGUAGE_CODES).find(([, v]) => v.iso639_1 === lang.code);
         if (match) {
           supported.push(match[0] as Language);
         }
@@ -522,7 +519,7 @@ export class TranslationAPIService {
    */
   async clearCache(): Promise<void> {
     this.cache.clear();
-    
+
     try {
       const keys = this.storage.getAllKeys ? await this.storage.getAllKeys() : [];
       const cacheKeys = keys.filter((k: string) => k.startsWith(CACHE_PREFIX));
@@ -535,9 +532,9 @@ export class TranslationAPIService {
   /**
    * Get cache statistics
    */
-  async getCacheStats(): Promise<{ memorySize: number; persistentSize: number }> {
+  async getCacheStats(): Promise<{memorySize: number; persistentSize: number}> {
     let persistentSize = 0;
-    
+
     try {
       const keys = this.storage.getAllKeys ? await this.storage.getAllKeys() : [];
       persistentSize = keys.filter((k: string) => k.startsWith(CACHE_PREFIX)).length;
@@ -564,7 +561,7 @@ export class TranslationAPIService {
       return false;
     }
 
-    const config = this.providers.find((p) => p.provider === provider);
+    const config = this.providers.find(p => p.provider === provider);
     return counter.count >= (config?.rateLimit || 60);
   }
 
@@ -587,14 +584,14 @@ export class TranslationAPIService {
   // ============================================================================
 
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
    * Enable or disable a provider
    */
   setProviderEnabled(provider: TranslationProvider, enabled: boolean): void {
-    const config = this.providers.find((p) => p.provider === provider);
+    const config = this.providers.find(p => p.provider === provider);
     if (config) {
       config.enabled = enabled;
     }
@@ -604,7 +601,7 @@ export class TranslationAPIService {
    * Set API key for a provider
    */
   setApiKey(provider: TranslationProvider, apiKey: string): void {
-    const config = this.providers.find((p) => p.provider === provider);
+    const config = this.providers.find(p => p.provider === provider);
     if (config) {
       config.apiKey = apiKey;
     }
@@ -620,7 +617,7 @@ export class TranslationAPIService {
   /**
    * Get all supported language codes
    */
-  static getAllLanguages(): Array<{ code: Language; name: string }> {
+  static getAllLanguages(): Array<{code: Language; name: string}> {
     return Object.entries(LANGUAGE_CODES).map(([code, data]) => ({
       code: code as Language,
       name: data.name,

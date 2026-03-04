@@ -107,7 +107,10 @@ function rowToBook(row: BookRow): Book {
 // Book Repository Class
 // ============================================================================
 
-export type RepoBookSort = {by: 'title' | 'author' | 'addedAt' | 'lastReadAt' | 'progress'; order: 'asc' | 'desc'};
+export type RepoBookSort = {
+  by: 'title' | 'author' | 'addedAt' | 'lastReadAt' | 'progress';
+  order: 'asc' | 'desc';
+};
 
 export class BookRepository {
   constructor(private db: IDataStore) {}
@@ -128,7 +131,8 @@ export class BookRepository {
     if (updates.totalChapters !== undefined) set.total_chapters = updates.totalChapters;
     if (updates.currentPage !== undefined) set.current_page = updates.currentPage;
     if (updates.totalPages !== undefined) set.total_pages = updates.totalPages;
-    if (updates.readingTimeMinutes !== undefined) set.reading_time_minutes = updates.readingTimeMinutes;
+    if (updates.readingTimeMinutes !== undefined)
+      set.reading_time_minutes = updates.readingTimeMinutes;
     if (updates.proficiencyLevel !== undefined) set.proficiency = updates.proficiencyLevel;
     if (updates.wordDensity !== undefined) set.word_density = updates.wordDensity;
     if (updates.isDownloaded !== undefined) set.is_downloaded = updates.isDownloaded ? 1 : 0;

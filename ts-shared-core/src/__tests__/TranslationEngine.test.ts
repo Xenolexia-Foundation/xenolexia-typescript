@@ -7,18 +7,18 @@
  * Unit tests for TranslationEngine - processContent with mocked database
  */
 
-import { TranslationEngine } from '../services/TranslationEngine/TranslationEngine';
-import type { DynamicWordDatabase } from '../services/TranslationEngine/DynamicWordDatabase';
-import type { WordEntry } from '../types';
+import {TranslationEngine} from '../services/TranslationEngine/TranslationEngine';
+import type {DynamicWordDatabase} from '../services/TranslationEngine/DynamicWordDatabase';
+import type {WordEntry} from '../types';
 
 function createMockDatabase(lookupMap: Map<string, WordEntry | null>): DynamicWordDatabase {
   return {
     initialize: jest.fn().mockResolvedValue(undefined),
     lookupWords: jest.fn().mockImplementation(async (words: string[]) => {
-      const result = new Map<string, { entry: WordEntry | null }>();
+      const result = new Map<string, {entry: WordEntry | null}>();
       for (const w of words) {
         const key = w.toLowerCase();
-        result.set(w, { entry: lookupMap.get(key) ?? null });
+        result.set(w, {entry: lookupMap.get(key) ?? null});
       }
       return result;
     }),
@@ -66,7 +66,7 @@ describe('TranslationEngine', () => {
     it('should include foreign word markers when matches exist', async () => {
       const lookupMap = new Map<string, WordEntry | null>([['house', houseEntry]]);
       const database = createMockDatabase(lookupMap);
-      const engine = new TranslationEngine({ ...defaultOptions, density: 1 }, database);
+      const engine = new TranslationEngine({...defaultOptions, density: 1}, database);
 
       const html = '<p>The house is big.</p>';
       const result = await engine.processContent(html);

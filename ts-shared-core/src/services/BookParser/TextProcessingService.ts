@@ -18,16 +18,15 @@
  * - Maintains word positions for tap detection
  */
 
-import type {
-  Chapter,
-  WordEntry,
-  ProficiencyLevel,
-  ForeignWordData,
-  Language,
-} from '../../types';
 import {Tokenizer, type Token, type TokenizerOptions} from '../TranslationEngine/Tokenizer';
-import {WordReplacer, type ReplacerOptions, type ReplacementStats} from '../TranslationEngine/WordReplacer';
-import type { DynamicWordDatabase } from '../TranslationEngine/DynamicWordDatabase';
+import {
+  WordReplacer,
+  type ReplacerOptions,
+  type ReplacementStats,
+} from '../TranslationEngine/WordReplacer';
+
+import type {Chapter, WordEntry, ProficiencyLevel, ForeignWordData, Language} from '../../types';
+import type {DynamicWordDatabase} from '../TranslationEngine/DynamicWordDatabase';
 
 // ============================================================================
 // Types
@@ -106,10 +105,7 @@ export class TextProcessingService {
   /**
    * Process chapter content and replace words with foreign equivalents
    */
-  async processChapter(
-    chapter: Chapter,
-    options: ProcessingOptions
-  ): Promise<ProcessedContent> {
+  async processChapter(chapter: Chapter, options: ProcessingOptions): Promise<ProcessedContent> {
     const startTime = Date.now();
 
     // Extract clean HTML from chapter content
@@ -270,9 +266,7 @@ export class TextProcessingService {
     }
 
     // Handle numeric entities
-    decoded = decoded.replace(/&#(\d+);/g, (_, code) =>
-      String.fromCharCode(parseInt(code, 10))
-    );
+    decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
     decoded = decoded.replace(/&#x([0-9a-f]+);/gi, (_, code) =>
       String.fromCharCode(parseInt(code, 16))
     );
@@ -309,11 +303,7 @@ export class TextProcessingService {
       lookups++;
 
       try {
-        const result = await this.wordDatabase.lookupWord(
-          word,
-          sourceLanguage,
-          targetLanguage
-        );
+        const result = await this.wordDatabase.lookupWord(word, sourceLanguage, targetLanguage);
 
         if (result?.entry) {
           const e = result.entry;
@@ -361,9 +351,7 @@ export class TextProcessingService {
    * Get words in a range of positions
    */
   getWordsInRange(tokens: Token[], start: number, end: number): Token[] {
-    return tokens.filter(
-      token => token.startIndex >= start && token.endIndex <= end
-    );
+    return tokens.filter(token => token.startIndex >= start && token.endIndex <= end);
   }
 
   /**
@@ -428,4 +416,3 @@ export class TextProcessingService {
 // ============================================================================
 // Export singleton instance
 // ============================================================================
-

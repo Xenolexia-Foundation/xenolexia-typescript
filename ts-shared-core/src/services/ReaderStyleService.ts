@@ -7,9 +7,10 @@
  * Reader Style Service - Generates CSS styles for the EPUB reader
  */
 
-import type { ReaderSettings, ReaderTheme } from '../types';
-import { memoryKeyValueStore } from '../adapters';
-import type { IKeyValueStore } from '../adapters';
+import {memoryKeyValueStore} from '../adapters';
+
+import type {IKeyValueStore} from '../adapters';
+import type {ReaderSettings, ReaderTheme} from '../types';
 
 // ============================================================================
 // Types
@@ -146,7 +147,7 @@ export class ReaderStyleService {
    * Get font CSS for a font ID
    */
   static getFontCSS(fontId: string): string {
-    const font = READER_FONTS.find((f) => f.id === fontId);
+    const font = READER_FONTS.find(f => f.id === fontId);
     return font?.family || 'Georgia, serif';
   }
 
@@ -453,7 +454,7 @@ export class ReaderStyleService {
   static async saveSettings(settings: Partial<ReaderSettings>): Promise<void> {
     try {
       const existing = await this.loadSettings();
-      const merged = { ...existing, ...settings };
+      const merged = {...existing, ...settings};
       await _storage.setItem(STORAGE_KEY, JSON.stringify(merged));
     } catch (error) {
       console.error('Failed to save reader settings:', error);
@@ -478,10 +479,7 @@ export class ReaderStyleService {
   /**
    * Save book-specific settings
    */
-  static async saveBookSettings(
-    bookId: string,
-    settings: Partial<ReaderSettings>
-  ): Promise<void> {
+  static async saveBookSettings(bookId: string, settings: Partial<ReaderSettings>): Promise<void> {
     try {
       const key = BOOK_SETTINGS_PREFIX + bookId;
       await _storage.setItem(key, JSON.stringify(settings));
@@ -493,9 +491,7 @@ export class ReaderStyleService {
   /**
    * Load book-specific settings
    */
-  static async loadBookSettings(
-    bookId: string
-  ): Promise<Partial<ReaderSettings>> {
+  static async loadBookSettings(bookId: string): Promise<Partial<ReaderSettings>> {
     try {
       const key = BOOK_SETTINGS_PREFIX + bookId;
       const stored = await _storage.getItem(key);
@@ -517,7 +513,7 @@ export class ReaderStyleService {
   ): Promise<ReaderSettings> {
     const globalSettings = await this.loadSettings();
     const bookSettings = await this.loadBookSettings(bookId);
-    return { ...defaults, ...globalSettings, ...bookSettings };
+    return {...defaults, ...globalSettings, ...bookSettings};
   }
 
   /**

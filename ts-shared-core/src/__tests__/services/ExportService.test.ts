@@ -7,8 +7,8 @@
  * Unit tests for ExportService (CSV, Anki, JSON output)
  */
 
-import { ExportService } from '../../services/ExportService/ExportService';
-import type { VocabularyItem } from '../../types';
+import {ExportService} from '../../services/ExportService/ExportService';
+import type {VocabularyItem} from '../../types';
 
 function makeVocabularyItem(overrides: Partial<VocabularyItem> = {}): VocabularyItem {
   return {
@@ -35,8 +35,8 @@ describe('ExportService', () => {
 
   describe('CSV export', () => {
     it('returns content with header and rows when no fileSystem', async () => {
-      const items = [makeVocabularyItem({ sourceWord: 'test', targetWord: 'δοκιμή' })];
-      const result = await service.export(items, { format: 'csv' });
+      const items = [makeVocabularyItem({sourceWord: 'test', targetWord: 'δοκιμή'})];
+      const result = await service.export(items, {format: 'csv'});
 
       expect(result.success).toBe(true);
       expect(result.content).toBeDefined();
@@ -80,7 +80,7 @@ describe('ExportService', () => {
           targetWord: 'word "quoted"',
         }),
       ];
-      const result = await service.export(items, { format: 'csv' });
+      const result = await service.export(items, {format: 'csv'});
 
       expect(result.success).toBe(true);
       expect(result.content).toContain('"word, with comma"');
@@ -90,8 +90,8 @@ describe('ExportService', () => {
 
   describe('Anki export', () => {
     it('returns tab-separated content with Anki header', async () => {
-      const items = [makeVocabularyItem({ sourceWord: 'front', targetWord: 'back' })];
-      const result = await service.export(items, { format: 'anki' });
+      const items = [makeVocabularyItem({sourceWord: 'front', targetWord: 'back'})];
+      const result = await service.export(items, {format: 'anki'});
 
       expect(result.success).toBe(true);
       expect(result.content).toContain('#separator:tab');
@@ -128,7 +128,7 @@ describe('ExportService', () => {
   describe('JSON export', () => {
     it('returns JSON with exportedAt, itemCount, and items', async () => {
       const items = [makeVocabularyItem()];
-      const result = await service.export(items, { format: 'json' });
+      const result = await service.export(items, {format: 'json'});
 
       expect(result.success).toBe(true);
       const parsed = JSON.parse(result.content!);
@@ -172,8 +172,8 @@ describe('ExportService', () => {
   describe('filtering', () => {
     it('filters by status when filterByStatus provided', async () => {
       const items = [
-        makeVocabularyItem({ id: 'a', status: 'new' }),
-        makeVocabularyItem({ id: 'b', status: 'learned' }),
+        makeVocabularyItem({id: 'a', status: 'new'}),
+        makeVocabularyItem({id: 'b', status: 'learned'}),
       ];
       const result = await service.export(items, {
         format: 'json',
@@ -189,12 +189,12 @@ describe('ExportService', () => {
 
     it('filters by language when filterByLanguage provided', async () => {
       const items = [
-        makeVocabularyItem({ id: 'a', sourceLanguage: 'en', targetLanguage: 'el' }),
-        makeVocabularyItem({ id: 'b', sourceLanguage: 'en', targetLanguage: 'es' }),
+        makeVocabularyItem({id: 'a', sourceLanguage: 'en', targetLanguage: 'el'}),
+        makeVocabularyItem({id: 'b', sourceLanguage: 'en', targetLanguage: 'es'}),
       ];
       const result = await service.export(items, {
         format: 'json',
-        filterByLanguage: { source: 'en', target: 'el' },
+        filterByLanguage: {source: 'en', target: 'el'},
       });
 
       expect(result.success).toBe(true);
@@ -204,7 +204,7 @@ describe('ExportService', () => {
     });
 
     it('returns error when no items match criteria', async () => {
-      const items = [makeVocabularyItem({ status: 'new' })];
+      const items = [makeVocabularyItem({status: 'new'})];
       const result = await service.export(items, {
         format: 'csv',
         filterByStatus: ['learned'],

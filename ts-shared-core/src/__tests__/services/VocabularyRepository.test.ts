@@ -7,9 +7,9 @@
  * Unit tests for VocabularyRepository (getDueForReview, recordReview, CRUD)
  */
 
-import { VocabularyRepository } from '../../services/StorageService/repositories/VocabularyRepository';
-import type { IDataStore, VocabularyRow } from '../../adapters';
-import type { VocabularyItem } from '../../types';
+import {VocabularyRepository} from '../../services/StorageService/repositories/VocabularyRepository';
+import type {IDataStore, VocabularyRow} from '../../adapters';
+import type {VocabularyItem} from '../../types';
 
 function makeVocabularyRow(overrides: Partial<VocabularyRow> = {}): VocabularyRow {
   return {
@@ -31,10 +31,12 @@ function makeVocabularyRow(overrides: Partial<VocabularyRow> = {}): VocabularyRo
   };
 }
 
-function createMockDataStore(initial: {
-  vocabularyById?: Record<string, VocabularyRow>;
-  vocabularyList?: VocabularyRow[];
-} = {}): IDataStore {
+function createMockDataStore(
+  initial: {
+    vocabularyById?: Record<string, VocabularyRow>;
+    vocabularyList?: VocabularyRow[];
+  } = {}
+): IDataStore {
   const vocabularyById = new Map<string, VocabularyRow>();
   (initial.vocabularyById && Object.entries(initial.vocabularyById))?.forEach(([id, row]) =>
     vocabularyById.set(id, row)
@@ -58,32 +60,40 @@ function createMockDataStore(initial: {
     deleteBook: noop,
     deleteAllBooks: noop,
     getBookCount: noopNumber,
-    getBookStatistics: jest.fn().mockResolvedValue({ total: 0, in_progress: 0, completed: 0, total_time: 0 }),
-    getVocabularyById: jest.fn().mockImplementation((id: string) =>
-      Promise.resolve(vocabularyById.get(id) ?? null)
-    ),
-    getVocabulary: jest.fn().mockImplementation((options?: { dueForReview?: { now: number; limit: number }; limit?: number }) => {
-      if (options?.dueForReview) {
-        const { limit = 20 } = options.dueForReview;
-        return Promise.resolve(vocabularyList.slice(0, limit));
-      }
-      return Promise.resolve(vocabularyList);
-    }),
+    getBookStatistics: jest
+      .fn()
+      .mockResolvedValue({total: 0, in_progress: 0, completed: 0, total_time: 0}),
+    getVocabularyById: jest
+      .fn()
+      .mockImplementation((id: string) => Promise.resolve(vocabularyById.get(id) ?? null)),
+    getVocabulary: jest
+      .fn()
+      .mockImplementation(
+        (options?: {dueForReview?: {now: number; limit: number}; limit?: number}) => {
+          if (options?.dueForReview) {
+            const {limit = 20} = options.dueForReview;
+            return Promise.resolve(vocabularyList.slice(0, limit));
+          }
+          return Promise.resolve(vocabularyList);
+        }
+      ),
     addVocabulary: jest.fn().mockImplementation((row: VocabularyRow) => {
       vocabularyById.set(row.id, row);
       vocabularyList.push(row);
       return Promise.resolve();
     }),
-    updateVocabulary: jest.fn().mockImplementation((id: string, updates: Partial<VocabularyRow>) => {
-      const row = vocabularyById.get(id);
-      if (row) {
-        const updated = { ...row, ...updates };
-        vocabularyById.set(id, updated);
-        const idx = vocabularyList.findIndex((r) => r.id === id);
-        if (idx >= 0) vocabularyList[idx] = updated;
-      }
-      return Promise.resolve();
-    }),
+    updateVocabulary: jest
+      .fn()
+      .mockImplementation((id: string, updates: Partial<VocabularyRow>) => {
+        const row = vocabularyById.get(id);
+        if (row) {
+          const updated = {...row, ...updates};
+          vocabularyById.set(id, updated);
+          const idx = vocabularyList.findIndex(r => r.id === id);
+          if (idx >= 0) vocabularyList[idx] = updated;
+        }
+        return Promise.resolve();
+      }),
     deleteVocabulary: noop,
     deleteAllVocabulary: noop,
     getVocabularyDueCount: jest.fn().mockResolvedValue(vocabularyList.length),
@@ -129,7 +139,7 @@ function createMockDataStore(initial: {
     deleteWordListByPair: noop,
     getWordListProficiencyCounts: jest.fn().mockResolvedValue({}),
     getWordListPosCounts: jest.fn().mockResolvedValue({}),
-    getWordListStats: jest.fn().mockResolvedValue({ total: 0, pairs: [] }),
+    getWordListStats: jest.fn().mockResolvedValue({total: 0, pairs: []}),
     getWordListSearch: noopArray,
     runTransaction: noop,
   } as IDataStore;
@@ -138,13 +148,15 @@ function createMockDataStore(initial: {
 describe('VocabularyRepository', () => {
   describe('getDueForReview', () => {
     it('returns items from db.getVocabulary with dueForReview option', async () => {
-      const dueRow = makeVocabularyRow({ id: 'due1', source_word: 'word', status: 'review' });
-      const db = createMockDataStore({ vocabularyList: [dueRow] });
+      const dueRow = makeVocabularyRow({id: 'due1', source_word: 'word', status: 'review'});
+      const db = createMockDataStore({vocabularyList: [dueRow]});
       const repo = new VocabularyRepository(db);
 
       const result = await repo.getDueForReview(10);
 
-      expect(db.getVocabulary).toHaveBeenCalledWith({ dueForReview: { now: expect.any(Number), limit: 10 } });
+      expect(db.getVocabulary).toHaveBeenCalledWith({
+        dueForReview: {now: expect.any(Number), limit: 10},
+      });
       expect(result).toHaveLength(1);
       expect(result[0].id).toBe('due1');
       expect(result[0].sourceWord).toBe('word');
@@ -152,12 +164,14 @@ describe('VocabularyRepository', () => {
     });
 
     it('defaults limit to 20', async () => {
-      const db = createMockDataStore({ vocabularyList: [] });
+      const db = createMockDataStore({vocabularyList: []});
       const repo = new VocabularyRepository(db);
 
       await repo.getDueForReview();
 
-      expect(db.getVocabulary).toHaveBeenCalledWith({ dueForReview: { now: expect.any(Number), limit: 20 } });
+      expect(db.getVocabulary).toHaveBeenCalledWith({
+        dueForReview: {now: expect.any(Number), limit: 20},
+      });
     });
   });
 
@@ -170,7 +184,7 @@ describe('VocabularyRepository', () => {
         ease_factor: 2.5,
         status: 'new',
       });
-      const db = createMockDataStore({ vocabularyById: { v1: row }, vocabularyList: [row] });
+      const db = createMockDataStore({vocabularyById: {v1: row}, vocabularyList: [row]});
       const repo = new VocabularyRepository(db);
 
       await repo.recordReview('v1', 4);
@@ -196,7 +210,7 @@ describe('VocabularyRepository', () => {
         ease_factor: 2.6,
         status: 'review',
       });
-      const db = createMockDataStore({ vocabularyById: { v2: row }, vocabularyList: [row] });
+      const db = createMockDataStore({vocabularyById: {v2: row}, vocabularyList: [row]});
       const repo = new VocabularyRepository(db);
 
       await repo.recordReview('v2', 2);

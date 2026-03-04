@@ -14,8 +14,10 @@
  * - Supports configurable replacement strategies
  */
 
-import type { WordEntry, ProficiencyLevel, ForeignWordData } from '../../types';
-import type { Token } from './Tokenizer';
+import {parseTargetOptions} from './ParagraphWordReplacer';
+
+import type {Token} from './Tokenizer';
+import type {WordEntry, ProficiencyLevel, ForeignWordData} from '../../types';
 
 // ============================================================================
 // Types
@@ -109,26 +111,24 @@ export class WordReplacer {
     // Perform replacements
     let modifiedHtml = html;
     const foreignWords: ForeignWordData[] = [];
-    let offset = 0;
+    const offset = 0;
 
     for (const candidate of selected) {
-      const { token, entry } = candidate;
+      const {token, entry} = candidate;
 
+      const {primary, alternatives} = parseTargetOptions(entry.targetWord);
       // Preserve original case
-      const foreignWord = this.preserveCase(token.original, entry.targetWord);
+      const foreignWord = this.preserveCase(token.original, primary);
 
       // Create the foreign word marker HTML
-      const marker = this.createMarker(foreignWord, entry, token);
+      const marker = this.createMarker(foreignWord, entry, token, alternatives);
 
       // Calculate positions
       const start = token.startIndex;
       const end = token.endIndex;
 
       // Replace in HTML
-      modifiedHtml =
-        modifiedHtml.substring(0, start) +
-        marker +
-        modifiedHtml.substring(end);
+      modifiedHtml = modifiedHtml.substring(0, start) + marker + modifiedHtml.substring(end);
 
       // Track foreign word data
       foreignWords.push({
@@ -137,6 +137,7 @@ export class WordReplacer {
         startIndex: start,
         endIndex: start + marker.length,
         wordEntry: entry,
+        ...(alternatives.length > 0 && {alternatives}),
       });
     }
 
@@ -192,7 +193,7 @@ export class WordReplacer {
       // Calculate replacement score
       const score = this.calculateScore(token, entry);
 
-      candidates.push({ token, entry, score });
+      candidates.push({token, entry, score});
     }
 
     return candidates;
@@ -242,9 +243,7 @@ export class WordReplacer {
     targetCount: number
   ): ReplacementCandidate[] {
     // Sort by frequency rank (lower = more common)
-    const sorted = [...candidates].sort(
-      (a, b) => a.entry.frequencyRank - b.entry.frequencyRank
-    );
+    const sorted = [...candidates].sort((a, b) => a.entry.frequencyRank - b.entry.frequencyRank);
     return this.applySpacingConstraint(sorted, targetCount);
   }
 
@@ -260,9 +259,7 @@ export class WordReplacer {
     }
 
     // Sort by position
-    const sorted = [...candidates].sort(
-      (a, b) => a.token.startIndex - b.token.startIndex
-    );
+    const sorted = [...candidates].sort((a, b) => a.token.startIndex - b.token.startIndex);
 
     // Select evenly distributed indices
     const step = sorted.length / targetCount;
@@ -290,9 +287,7 @@ export class WordReplacer {
     }
 
     // Sort by position
-    const sorted = [...candidates].sort(
-      (a, b) => a.token.startIndex - b.token.startIndex
-    );
+    const sorted = [...candidates].sort((a, b) => a.token.startIndex - b.token.startIndex);
 
     const selected: ReplacementCandidate[] = [];
     let lastPosition = -Infinity;
@@ -387,7 +382,8 @@ export class WordReplacer {
   private createMarker(
     foreignWord: string,
     entry: WordEntry,
-    token: Token
+    token: Token,
+    alternatives: string[] = []
   ): string {
     const attrs = [
       `class="foreign-word"`,
@@ -398,6 +394,9 @@ export class WordReplacer {
 
     if (entry.pronunciation) {
       attrs.push(`data-pronunciation="${this.escapeHtml(entry.pronunciation)}"`);
+    }
+    if (alternatives.length > 0) {
+      attrs.push(`data-alternatives="${this.escapeHtml(alternatives.join('|'))}"`);
     }
 
     return `<span ${attrs.join(' ')}>${this.escapeHtml(foreignWord)}</span>`;
@@ -419,14 +418,14 @@ export class WordReplacer {
    * Update replacer options
    */
   updateOptions(options: Partial<ReplacerOptions>): void {
-    this.options = { ...this.options, ...options };
+    this.options = {...this.options, ...options};
   }
 
   /**
    * Get current options
    */
   getOptions(): Required<ReplacerOptions> {
-    return { ...this.options };
+    return {...this.options};
   }
 }
 

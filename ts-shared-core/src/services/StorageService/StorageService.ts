@@ -8,11 +8,12 @@
  * Facade that delegates to repositories. Host provides IDataStore.
  */
 
-import type {Book, VocabularyItem, ReadingStats, UserPreferences} from '../../types';
-import type {BookRow, VocabularyRow, IDataStore} from './DataStore.types';
 import {BookRepository} from './repositories/BookRepository';
-import {VocabularyRepository} from './repositories/VocabularyRepository';
 import {SessionRepository} from './repositories/SessionRepository';
+import {VocabularyRepository} from './repositories/VocabularyRepository';
+
+import type {BookRow, VocabularyRow, IDataStore} from './DataStore.types';
+import type {Book, VocabularyItem, ReadingStats, UserPreferences} from '../../types';
 
 export class StorageService {
   private bookRepository: BookRepository;
@@ -99,7 +100,7 @@ export class StorageService {
 
   async endSession(
     sessionId: string,
-    stats: {pagesRead: number; wordsRevealed: number; wordsSaved: number},
+    stats: {pagesRead: number; wordsRevealed: number; wordsSaved: number}
   ): Promise<void> {
     await this.initialize();
     await this.sessionRepository.endSession(sessionId, stats);
@@ -108,6 +109,12 @@ export class StorageService {
   async getReadingStats(): Promise<ReadingStats> {
     await this.initialize();
     return await this.sessionRepository.getStatistics();
+  }
+
+  /** Daily reading time in minutes for the last N days (for charts) */
+  async getDailyReadingTime(days: number): Promise<Array<{date: string; minutes: number}>> {
+    await this.initialize();
+    return this.sessionRepository.getDailyReadingTime(days);
   }
 
   async savePreferences(preferences: UserPreferences): Promise<void> {
@@ -119,6 +126,18 @@ export class StorageService {
     await this.initialize();
     const value = await this.db.getPreference('userPreferences');
     return value ? JSON.parse(value) : null;
+  }
+
+  /** Get a raw preference value by key (for app-specific data e.g. favourite words) */
+  async getPreference(key: string): Promise<string | null> {
+    await this.initialize();
+    return this.db.getPreference(key);
+  }
+
+  /** Set a raw preference value (for app-specific data e.g. favourite words) */
+  async setPreference(key: string, value: string): Promise<void> {
+    await this.initialize();
+    await this.db.setPreference(key, value);
   }
 
   async exportData(): Promise<string> {

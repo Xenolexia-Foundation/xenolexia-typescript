@@ -13,7 +13,7 @@
  * - Proficiency level filtering
  */
 
-import { getBundledWordsVerified } from '../../data/bundledDictionaries';
+import {getBundledWordsVerified} from '../../data/bundledDictionaries';
 
 import type {WordDatabaseService} from './WordDatabase';
 import type {Language, ProficiencyLevel, WordEntry} from '../../types';
@@ -32,7 +32,11 @@ export class WordMatcher {
   private fallbackWordList: Map<string, WordEntry> = new Map();
   private fallbackVariants: Map<string, string> = new Map();
 
-  constructor(sourceLanguage: Language, targetLanguage: Language, database?: WordDatabaseService | null) {
+  constructor(
+    sourceLanguage: Language,
+    targetLanguage: Language,
+    database?: WordDatabaseService | null
+  ) {
     this.sourceLanguage = sourceLanguage;
     this.targetLanguage = targetLanguage;
     this.database = database ?? null;

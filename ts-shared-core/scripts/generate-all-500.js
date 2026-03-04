@@ -8,9 +8,39 @@ const fs = require('fs');
 const path = require('path');
 
 const DATA_DIR = path.join(__dirname, '../src/data');
-const LANGS = ['el','es','fr','de','it','pt','ru','ja','zh','ko','ar','nl','pl','tr','sv','da','fi','no','cs','hu','ro','uk','hi','th','vi','id','arm','am','fa'];
+const LANGS = [
+  'el',
+  'es',
+  'fr',
+  'de',
+  'it',
+  'pt',
+  'ru',
+  'ja',
+  'zh',
+  'ko',
+  'ar',
+  'nl',
+  'pl',
+  'tr',
+  'sv',
+  'da',
+  'fi',
+  'no',
+  'cs',
+  'hu',
+  'ro',
+  'uk',
+  'hi',
+  'th',
+  'vi',
+  'id',
+  'arm',
+  'am',
+  'fa',
+];
 
-const template = (langCode) => `/**
+const template = langCode => `/**
  * Copyright (C) 2016-2026 Husain Alamri (H4n) and Xenolexia Foundation.
  * Licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). See LICENSE.
  * English-${langCode.toUpperCase()} dictionary: 500 beginner words (frequency-ranked).
@@ -37,8 +67,10 @@ export function getTotalWordCount(): number {
 }
 `;
 
-LANGS.forEach((lang) => {
+LANGS.forEach(lang => {
   fs.writeFileSync(path.join(DATA_DIR, `words_en_${lang}.ts`), template(lang) + '\n');
   console.log('Wrote words_en_' + lang + '.ts');
 });
-console.log('Done. Run fetch-translations.js <lang> then build-words-from-translations.js <lang> for real translations.');
+console.log(
+  'Done. Run fetch-translations.js <lang> then build-words-from-translations.js <lang> for real translations.'
+);

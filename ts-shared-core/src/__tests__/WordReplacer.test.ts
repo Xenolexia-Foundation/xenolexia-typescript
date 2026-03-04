@@ -7,9 +7,9 @@
  * Unit tests for WordReplacer - word replacement with density and proficiency
  */
 
-import { WordReplacer } from '../services/TranslationEngine/WordReplacer';
-import type { Token } from '../services/TranslationEngine/Tokenizer';
-import type { WordEntry } from '../types';
+import {WordReplacer} from '../services/TranslationEngine/WordReplacer';
+import type {Token} from '../services/TranslationEngine/Tokenizer';
+import type {WordEntry} from '../types';
 
 describe('WordReplacer', () => {
   let replacer: WordReplacer;
@@ -27,11 +27,51 @@ describe('WordReplacer', () => {
     it('should replace words and add foreign-word markers', () => {
       const html = '<p>This is a simple sentence.</p>';
       const tokens: Token[] = [
-        { word: 'this', original: 'This', startIndex: 3, endIndex: 7, prefix: '<p>', suffix: ' ', isProtected: false },
-        { word: 'is', original: 'is', startIndex: 8, endIndex: 10, prefix: ' ', suffix: ' ', isProtected: false },
-        { word: 'a', original: 'a', startIndex: 11, endIndex: 12, prefix: ' ', suffix: ' ', isProtected: false },
-        { word: 'simple', original: 'simple', startIndex: 13, endIndex: 19, prefix: ' ', suffix: ' ', isProtected: false },
-        { word: 'sentence', original: 'sentence', startIndex: 20, endIndex: 28, prefix: ' ', suffix: '.', isProtected: false },
+        {
+          word: 'this',
+          original: 'This',
+          startIndex: 3,
+          endIndex: 7,
+          prefix: '<p>',
+          suffix: ' ',
+          isProtected: false,
+        },
+        {
+          word: 'is',
+          original: 'is',
+          startIndex: 8,
+          endIndex: 10,
+          prefix: ' ',
+          suffix: ' ',
+          isProtected: false,
+        },
+        {
+          word: 'a',
+          original: 'a',
+          startIndex: 11,
+          endIndex: 12,
+          prefix: ' ',
+          suffix: ' ',
+          isProtected: false,
+        },
+        {
+          word: 'simple',
+          original: 'simple',
+          startIndex: 13,
+          endIndex: 19,
+          prefix: ' ',
+          suffix: ' ',
+          isProtected: false,
+        },
+        {
+          word: 'sentence',
+          original: 'sentence',
+          startIndex: 20,
+          endIndex: 28,
+          prefix: ' ',
+          suffix: '.',
+          isProtected: false,
+        },
       ];
       const wordEntries = new Map<string, WordEntry | null>([
         [
@@ -75,7 +115,7 @@ describe('WordReplacer', () => {
 
     it('should respect density setting', () => {
       const html = '<p>One two three four five six seven eight nine ten.</p>';
-      const tokens: Token[] = Array.from({ length: 10 }, (_, i) => ({
+      const tokens: Token[] = Array.from({length: 10}, (_, i) => ({
         word: `word${i}`,
         original: `word${i}`,
         startIndex: i * 6,
@@ -99,7 +139,7 @@ describe('WordReplacer', () => {
         });
       });
 
-      replacer = new WordReplacer({ density: 0.3 });
+      replacer = new WordReplacer({density: 0.3});
       const result = replacer.replace(html, tokens, wordEntries);
 
       expect(result.stats.replacedTokens).toBeGreaterThanOrEqual(2);
@@ -109,8 +149,24 @@ describe('WordReplacer', () => {
     it('should not replace protected words', () => {
       const html = '<p>Hello world!</p>';
       const tokens: Token[] = [
-        { word: 'hello', original: 'Hello', startIndex: 3, endIndex: 8, prefix: '<p>', suffix: ' ', isProtected: true },
-        { word: 'world', original: 'world', startIndex: 9, endIndex: 14, prefix: ' ', suffix: '!', isProtected: false },
+        {
+          word: 'hello',
+          original: 'Hello',
+          startIndex: 3,
+          endIndex: 8,
+          prefix: '<p>',
+          suffix: ' ',
+          isProtected: true,
+        },
+        {
+          word: 'world',
+          original: 'world',
+          startIndex: 9,
+          endIndex: 14,
+          prefix: ' ',
+          suffix: '!',
+          isProtected: false,
+        },
       ];
       const wordEntries = new Map<string, WordEntry | null>([
         [
@@ -152,9 +208,33 @@ describe('WordReplacer', () => {
     it('should respect max proficiency level', () => {
       const html = '<p>Simple advanced word.</p>';
       const tokens: Token[] = [
-        { word: 'simple', original: 'Simple', startIndex: 3, endIndex: 9, prefix: '<p>', suffix: ' ', isProtected: false },
-        { word: 'advanced', original: 'advanced', startIndex: 10, endIndex: 18, prefix: ' ', suffix: ' ', isProtected: false },
-        { word: 'word', original: 'word', startIndex: 19, endIndex: 23, prefix: ' ', suffix: '.', isProtected: false },
+        {
+          word: 'simple',
+          original: 'Simple',
+          startIndex: 3,
+          endIndex: 9,
+          prefix: '<p>',
+          suffix: ' ',
+          isProtected: false,
+        },
+        {
+          word: 'advanced',
+          original: 'advanced',
+          startIndex: 10,
+          endIndex: 18,
+          prefix: ' ',
+          suffix: ' ',
+          isProtected: false,
+        },
+        {
+          word: 'word',
+          original: 'word',
+          startIndex: 19,
+          endIndex: 23,
+          prefix: ' ',
+          suffix: '.',
+          isProtected: false,
+        },
       ];
       const wordEntries = new Map<string, WordEntry | null>([
         [
@@ -187,10 +267,74 @@ describe('WordReplacer', () => {
         ],
       ]);
 
-      replacer = new WordReplacer({ maxProficiency: 'beginner' });
+      replacer = new WordReplacer({maxProficiency: 'beginner'});
       const result = replacer.replace(html, tokens, wordEntries);
 
       expect(result.html).not.toContain('data-original="advanced"');
+    });
+
+    it('should show first option for slash-delimited translation and expose alternatives in data attribute and foreignWords', () => {
+      const html = '<p>His house.</p>';
+      const tokens: Token[] = [
+        {
+          word: 'his',
+          original: 'His',
+          startIndex: 3,
+          endIndex: 6,
+          prefix: '<p>',
+          suffix: ' ',
+          isProtected: false,
+        },
+        {
+          word: 'house',
+          original: 'house',
+          startIndex: 7,
+          endIndex: 12,
+          prefix: ' ',
+          suffix: '.',
+          isProtected: false,
+        },
+      ];
+      const wordEntries = new Map<string, WordEntry | null>([
+        [
+          'his',
+          {
+            id: '1',
+            sourceWord: 'his',
+            targetWord: 'son/sa',
+            sourceLanguage: 'en',
+            targetLanguage: 'fr',
+            proficiencyLevel: 'beginner',
+            frequencyRank: 1,
+            partOfSpeech: 'pronoun',
+            variants: [],
+          },
+        ],
+        [
+          'house',
+          {
+            id: '2',
+            sourceWord: 'house',
+            targetWord: 'maison',
+            sourceLanguage: 'en',
+            targetLanguage: 'fr',
+            proficiencyLevel: 'beginner',
+            frequencyRank: 2,
+            partOfSpeech: 'noun',
+            variants: [],
+          },
+        ],
+      ]);
+
+      replacer = new WordReplacer({density: 1, maxProficiency: 'beginner', minWordSpacing: 0});
+      const result = replacer.replace(html, tokens, wordEntries);
+
+      expect(result.html).toContain('data-alternatives="sa"');
+      expect(result.html).toContain('>Son<');
+      const hisEntry = result.foreignWords.find(f => f.originalWord === 'His');
+      expect(hisEntry).toBeDefined();
+      expect(hisEntry!.foreignWord).toBe('Son');
+      expect(hisEntry!.alternatives).toEqual(['sa']);
     });
   });
 });

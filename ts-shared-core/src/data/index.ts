@@ -7,8 +7,8 @@
  * Data exports - Bundled word lists and dictionary registry
  */
 
-export { ENGLISH_BEGINNER_500 } from './englishBeginner500';
-export type { EnglishWordEntry } from './englishBeginner500';
+export {ENGLISH_BEGINNER_500} from './englishBeginner500';
+export type {EnglishWordEntry} from './englishBeginner500';
 
 export {
   ALL_WORDS_EN_EL,
@@ -19,7 +19,12 @@ export {
   getTotalWordCount,
 } from './words_en_el';
 
-export type { WordData } from '../types';
+export type {WordData} from '../types';
 
-export { getBundledWords, hasBundledWords, getBundledWordsVerified, getVerificationReport } from './bundledDictionaries';
-export type { VerificationEntry, VerificationReport } from './bundledDictionaries';
+export {
+  getBundledWords,
+  hasBundledWords,
+  getBundledWordsVerified,
+  getVerificationReport,
+} from './bundledDictionaries';
+export type {VerificationEntry, VerificationReport} from './bundledDictionaries';

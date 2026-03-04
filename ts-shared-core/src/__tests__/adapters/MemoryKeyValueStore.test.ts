@@ -7,7 +7,7 @@
  * Unit tests for MemoryKeyValueStore (in-memory IKeyValueStore)
  */
 
-import { memoryKeyValueStore } from '../../adapters';
+import {memoryKeyValueStore} from '../../adapters';
 
 describe('memoryKeyValueStore', () => {
   beforeEach(async () => {

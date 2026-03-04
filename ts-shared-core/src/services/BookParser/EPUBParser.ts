@@ -10,23 +10,18 @@
  * and MetadataExtractor for high-level metadata extraction.
  */
 
-import type {
-  BookMetadata,
-  Chapter,
-  TableOfContentsItem,
-  ParsedBook,
-} from '../../types';
-
 import {EPUBExtractor} from './EPUBExtractor';
-import type {EPUBPackage, EPUBManifestItem} from './EPUBExtractor';
 import {parseNCX, parseNAV, flattenTOC} from './TOCParser';
+
+import type {EPUBPackage, EPUBManifestItem} from './EPUBExtractor';
 import type {IBookParser, SearchResult, ParserOptions} from './types';
 
 // ============================================================================
 // EPUB Parser Implementation
 // ============================================================================
 
-import type { IFileSystem } from '../../adapters';
+import type {IFileSystem} from '../../adapters';
+import type {BookMetadata, Chapter, TableOfContentsItem, ParsedBook} from '../../types';
 
 export class EPUBParser implements IBookParser {
   private extractor: EPUBExtractor;
@@ -38,7 +33,8 @@ export class EPUBParser implements IBookParser {
   private loaded: boolean = false;
 
   constructor(options?: ParserOptions, fileSystem?: IFileSystem) {
-    if (!fileSystem) throw new Error('EPUBParser requires IFileSystem (from xenolexia-typescript adapters)');
+    if (!fileSystem)
+      throw new Error('EPUBParser requires IFileSystem (from xenolexia-typescript adapters)');
     this.extractor = new EPUBExtractor(fileSystem);
     this.options = {
       extractImages: true,
@@ -71,10 +67,7 @@ export class EPUBParser implements IBookParser {
       this.chapters = await this.extractChapters();
 
       // Calculate total word count
-      const totalWordCount = this.chapters.reduce(
-        (sum, ch) => sum + ch.wordCount,
-        0,
-      );
+      const totalWordCount = this.chapters.reduce((sum, ch) => sum + ch.wordCount, 0);
 
       this.loaded = true;
 
@@ -86,9 +79,7 @@ export class EPUBParser implements IBookParser {
       };
     } catch (error) {
       console.error('Failed to parse EPUB:', error);
-      throw new Error(
-        `Failed to parse EPUB: ${error instanceof Error ? error.message : error}`,
-      );
+      throw new Error(`Failed to parse EPUB: ${error instanceof Error ? error.message : error}`);
     }
   }
 
@@ -155,10 +146,7 @@ export class EPUBParser implements IBookParser {
       const tocContent = await this.extractor.getFile(tocItem.href);
 
       // Parse based on format
-      if (
-        tocItem.mediaType === 'application/x-dtbncx+xml' ||
-        tocItem.href.endsWith('.ncx')
-      ) {
+      if (tocItem.mediaType === 'application/x-dtbncx+xml' || tocItem.href.endsWith('.ncx')) {
         // NCX format (EPUB 2)
         return parseNCX(tocContent).items;
       } else {
@@ -217,10 +205,7 @@ export class EPUBParser implements IBookParser {
         let content = await this.extractor.getFile(manifestItem.href);
 
         // Resolve and inline stylesheets
-        content = await this.extractor.resolveStylesheets(
-          content,
-          this.epubPackage.manifest
-        );
+        content = await this.extractor.resolveStylesheets(content, this.epubPackage.manifest);
 
         // Find title from TOC or generate one
         const tocEntry = flatToc.find(item => {
@@ -228,7 +213,10 @@ export class EPUBParser implements IBookParser {
           return tocHref === manifestItem.href;
         });
 
-        const title = tocEntry?.title || this.extractTitleFromContent(content) || `Chapter ${chapters.length + 1}`;
+        const title =
+          tocEntry?.title ||
+          this.extractTitleFromContent(content) ||
+          `Chapter ${chapters.length + 1}`;
 
         // Count words
         const wordCount = this.countWords(content);
@@ -330,6 +318,7 @@ export class EPUBParser implements IBookParser {
       const plainText = this.stripHtml(chapter.content);
       let position = 0;
 
+      // eslint-disable-next-line no-constant-condition -- search loop
       while (true) {
         const foundPos = plainText.toLowerCase().indexOf(lowerQuery, position);
         if (foundPos === -1) break;
@@ -342,10 +331,7 @@ export class EPUBParser implements IBookParser {
         results.push({
           chapterIndex: chapter.index,
           chapterTitle: chapter.title,
-          excerpt:
-            (start > 0 ? '...' : '') +
-            excerpt +
-            (end < plainText.length ? '...' : ''),
+          excerpt: (start > 0 ? '...' : '') + excerpt + (end < plainText.length ? '...' : ''),
           position: foundPos,
         });
 

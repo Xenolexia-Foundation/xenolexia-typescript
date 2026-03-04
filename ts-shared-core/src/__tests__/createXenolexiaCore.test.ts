@@ -7,8 +7,8 @@
  * Unit tests for createXenolexiaCore - factory with mock adapters
  */
 
-import { createXenolexiaCore } from '../index';
-import type { IFileSystem, IDataStore } from '../adapters';
+import {createXenolexiaCore} from '../index';
+import type {IFileSystem, IDataStore} from '../adapters';
 
 const mockFileSystem: IFileSystem = {
   readFile: jest.fn().mockResolvedValue(new ArrayBuffer(0)),
@@ -36,7 +36,9 @@ function createMockDataStore(): IDataStore {
     deleteBook: noop,
     deleteAllBooks: noop,
     getBookCount: noopNumber,
-    getBookStatistics: jest.fn().mockResolvedValue({ total: 0, in_progress: 0, completed: 0, total_time: 0 }),
+    getBookStatistics: jest
+      .fn()
+      .mockResolvedValue({total: 0, in_progress: 0, completed: 0, total_time: 0}),
     getVocabularyById: noopNull,
     getVocabulary: noopArray,
     addVocabulary: noop,
@@ -86,7 +88,7 @@ function createMockDataStore(): IDataStore {
     deleteWordListByPair: noop,
     getWordListProficiencyCounts: jest.fn().mockResolvedValue({}),
     getWordListPosCounts: jest.fn().mockResolvedValue({}),
-    getWordListStats: jest.fn().mockResolvedValue({ total: 0, pairs: [] }),
+    getWordListStats: jest.fn().mockResolvedValue({total: 0, pairs: []}),
     getWordListSearch: noopArray,
     runTransaction: noop,
   } as IDataStore;

@@ -26,7 +26,7 @@ if (!getVerificationReport || !SUPPORTED_LANGUAGES) {
   process.exit(1);
 }
 
-const nonEn = SUPPORTED_LANGUAGES.map((l) => l.code).filter((c) => c !== 'en');
+const nonEn = SUPPORTED_LANGUAGES.map(l => l.code).filter(c => c !== 'en');
 const reports = [];
 let totalPairs = 0;
 let totalPassed = 0;
@@ -55,16 +55,35 @@ for (let i = 0; i < nonEn.length; i++) {
 }
 
 const outPath = path.join(__dirname, 'verification-report.json');
-fs.writeFileSync(outPath, JSON.stringify({ generatedAt: new Date().toISOString(), reports }, null, 2));
+fs.writeFileSync(
+  outPath,
+  JSON.stringify({generatedAt: new Date().toISOString(), reports}, null, 2)
+);
 console.log('Verification report written to', outPath);
 console.log('');
 console.log('Summary:');
-console.log('  All pairs (en included):', totalPairs, 'pairs,', totalPassed, 'passed,', totalFailed, 'failed');
-console.log('  Bridge-only (S→T, both non-en):', bridgePairs, 'pairs,', bridgePassed, 'passed,', bridgeFailed, 'failed');
+console.log(
+  '  All pairs (en included):',
+  totalPairs,
+  'pairs,',
+  totalPassed,
+  'passed,',
+  totalFailed,
+  'failed'
+);
+console.log(
+  '  Bridge-only (S→T, both non-en):',
+  bridgePairs,
+  'pairs,',
+  bridgePassed,
+  'passed,',
+  bridgeFailed,
+  'failed'
+);
 if (bridgePairs > 0 && bridgeFailed > 0) {
-  const failedReports = reports.filter((r) => r.failed > 0 && r.source !== 'en' && r.target !== 'en');
+  const failedReports = reports.filter(r => r.failed > 0 && r.source !== 'en' && r.target !== 'en');
   console.log('  Pairs with at least one failed entry:', failedReports.length);
-  failedReports.slice(0, 10).forEach((r) => {
+  failedReports.slice(0, 10).forEach(r => {
     console.log('    ', r.source, '→', r.target, ':', r.passed, '/', r.total, 'passed');
   });
   if (failedReports.length > 10) {

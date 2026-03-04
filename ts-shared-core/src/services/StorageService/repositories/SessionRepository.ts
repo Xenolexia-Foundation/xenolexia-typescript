@@ -8,9 +8,10 @@
  * Uses direct LowDB data API (no SQL).
  */
 
+import {v4 as uuidv4} from 'uuid';
+
 import type {ReadingSession, ReadingStats} from '../../../types';
 import type {SessionRow, IDataStore} from '../DataStore.types';
-import {v4 as uuidv4} from 'uuid';
 
 // ============================================================================
 // Session Repository Class
@@ -57,17 +58,17 @@ export class SessionRepository {
 
   async getByBookId(bookId: string): Promise<ReadingSession[]> {
     const rows = await this.db.getSessionsByBookId(bookId);
-    return rows.map((row) => this.rowToSession(row));
+    return rows.map(row => this.rowToSession(row));
   }
 
   async getRecent(limit: number = 10): Promise<ReadingSession[]> {
     const rows = await this.db.getRecentSessions(limit);
-    return rows.map((row) => this.rowToSession(row));
+    return rows.map(row => this.rowToSession(row));
   }
 
   async getToday(): Promise<ReadingSession[]> {
     const rows = await this.db.getTodaySessions();
-    return rows.map((row) => this.rowToSession(row));
+    return rows.map(row => this.rowToSession(row));
   }
 
   async delete(sessionId: string): Promise<void> {

@@ -7,9 +7,9 @@
  * Unit tests for StorageService using a stateful in-memory IDataStore mock
  */
 
-import { StorageService, createStorageService } from '../../services/StorageService/StorageService';
-import type { IDataStore, BookRow, VocabularyRow, SessionRow } from '../../adapters';
-import type { Book, VocabularyItem, UserPreferences, ReadingStats } from '../../types';
+import {StorageService, createStorageService} from '../../services/StorageService/StorageService';
+import type {IDataStore, BookRow, VocabularyRow, SessionRow} from '../../adapters';
+import type {Book, VocabularyItem, UserPreferences, ReadingStats} from '../../types';
 
 function createInMemoryDataStore(): IDataStore {
   const books = new Map<string, BookRow>();
@@ -34,10 +34,10 @@ function createInMemoryDataStore(): IDataStore {
     isReady: jest.fn().mockReturnValue(true),
     getSchemaVersion: jest.fn().mockResolvedValue(1),
 
-    getBookById: jest.fn().mockImplementation((id: string) =>
-      Promise.resolve(books.get(id) ?? null)
-    ),
-    getBooks: jest.fn().mockImplementation((options?: { limit?: number }) => {
+    getBookById: jest
+      .fn()
+      .mockImplementation((id: string) => Promise.resolve(books.get(id) ?? null)),
+    getBooks: jest.fn().mockImplementation((options?: {limit?: number}) => {
       const limit = options?.limit ?? 999;
       const list = Array.from(books.values()).slice(0, limit);
       return Promise.resolve(list);
@@ -48,7 +48,7 @@ function createInMemoryDataStore(): IDataStore {
     }),
     updateBook: jest.fn().mockImplementation((id: string, updates: Partial<BookRow>) => {
       const row = books.get(id);
-      if (row) books.set(id, { ...row, ...updates });
+      if (row) books.set(id, {...row, ...updates});
       return Promise.resolve();
     }),
     deleteBook: jest.fn().mockImplementation((id: string) => {
@@ -67,27 +67,37 @@ function createInMemoryDataStore(): IDataStore {
       total_time: 0,
     }),
 
-    getVocabularyById: jest.fn().mockImplementation((id: string) =>
-      Promise.resolve(vocabulary.get(id) ?? null)
-    ),
-    getVocabulary: jest.fn().mockImplementation((options?: { dueForReview?: { now: number; limit: number }; limit?: number; sort?: unknown }) => {
-      const list = Array.from(vocabulary.values());
-      if (options?.dueForReview) {
-        const { limit = 20 } = options.dueForReview;
-        return Promise.resolve(list.slice(0, limit));
-      }
-      const limit = options?.limit ?? 999;
-      return Promise.resolve(list.slice(0, limit));
-    }),
+    getVocabularyById: jest
+      .fn()
+      .mockImplementation((id: string) => Promise.resolve(vocabulary.get(id) ?? null)),
+    getVocabulary: jest
+      .fn()
+      .mockImplementation(
+        (options?: {
+          dueForReview?: {now: number; limit: number};
+          limit?: number;
+          sort?: unknown;
+        }) => {
+          const list = Array.from(vocabulary.values());
+          if (options?.dueForReview) {
+            const {limit = 20} = options.dueForReview;
+            return Promise.resolve(list.slice(0, limit));
+          }
+          const limit = options?.limit ?? 999;
+          return Promise.resolve(list.slice(0, limit));
+        }
+      ),
     addVocabulary: jest.fn().mockImplementation((row: VocabularyRow) => {
       vocabulary.set(row.id, row);
       return Promise.resolve();
     }),
-    updateVocabulary: jest.fn().mockImplementation((id: string, updates: Partial<VocabularyRow>) => {
-      const row = vocabulary.get(id);
-      if (row) vocabulary.set(id, { ...row, ...updates });
-      return Promise.resolve();
-    }),
+    updateVocabulary: jest
+      .fn()
+      .mockImplementation((id: string, updates: Partial<VocabularyRow>) => {
+        const row = vocabulary.get(id);
+        if (row) vocabulary.set(id, {...row, ...updates});
+        return Promise.resolve();
+      }),
     deleteVocabulary: jest.fn().mockImplementation((id: string) => {
       vocabulary.delete(id);
       return Promise.resolve();
@@ -96,9 +106,7 @@ function createInMemoryDataStore(): IDataStore {
       vocabulary.clear();
       return Promise.resolve();
     }),
-    getVocabularyDueCount: jest.fn().mockImplementation(() =>
-      Promise.resolve(vocabulary.size)
-    ),
+    getVocabularyDueCount: jest.fn().mockImplementation(() => Promise.resolve(vocabulary.size)),
     getVocabularyStatistics: jest.fn().mockImplementation(() =>
       Promise.resolve({
         total: vocabulary.size,
@@ -111,9 +119,9 @@ function createInMemoryDataStore(): IDataStore {
     ),
     getVocabularyCountByStatus: jest.fn().mockResolvedValue(0),
 
-    getSessionById: jest.fn().mockImplementation((id: string) =>
-      Promise.resolve(sessions.get(id) ?? null)
-    ),
+    getSessionById: jest
+      .fn()
+      .mockImplementation((id: string) => Promise.resolve(sessions.get(id) ?? null)),
     getSessionsByBookId: jest.fn().mockResolvedValue([]),
     getRecentSessions: jest.fn().mockImplementation((limit: number) => {
       const list = Array.from(sessions.values()).slice(0, limit);
@@ -126,7 +134,7 @@ function createInMemoryDataStore(): IDataStore {
     }),
     updateSession: jest.fn().mockImplementation((id: string, updates: Partial<SessionRow>) => {
       const row = sessions.get(id);
-      if (row) sessions.set(id, { ...row, ...updates });
+      if (row) sessions.set(id, {...row, ...updates});
       return Promise.resolve();
     }),
     deleteSession: jest.fn().mockImplementation((id: string) => {
@@ -143,9 +151,9 @@ function createInMemoryDataStore(): IDataStore {
     getDailyReadingTime: jest.fn().mockResolvedValue([]),
     getDistinctSessionDays: jest.fn().mockResolvedValue([]),
 
-    getPreference: jest.fn().mockImplementation((key: string) =>
-      Promise.resolve(preferences.get(key) ?? null)
-    ),
+    getPreference: jest
+      .fn()
+      .mockImplementation((key: string) => Promise.resolve(preferences.get(key) ?? null)),
     setPreference: jest.fn().mockImplementation((key: string, value: string) => {
       preferences.set(key, value);
       return Promise.resolve();
@@ -160,7 +168,7 @@ function createInMemoryDataStore(): IDataStore {
     deleteWordListByPair: jest.fn().mockResolvedValue(undefined),
     getWordListProficiencyCounts: jest.fn().mockResolvedValue({}),
     getWordListPosCounts: jest.fn().mockResolvedValue({}),
-    getWordListStats: jest.fn().mockResolvedValue({ total: 0, pairs: [] }),
+    getWordListStats: jest.fn().mockResolvedValue({total: 0, pairs: []}),
     getWordListSearch: jest.fn().mockResolvedValue([]),
 
     runTransaction: jest.fn(),
@@ -168,8 +176,8 @@ function createInMemoryDataStore(): IDataStore {
 
   // runTransaction applies ops using the same store
   (store.runTransaction as jest.Mock).mockImplementation(
-    async (ops: Array<{ method: string; args: unknown[] }>) => {
-      for (const { method, args } of ops) {
+    async (ops: Array<{method: string; args: unknown[]}>) => {
+      for (const {method, args} of ops) {
         if (method === 'addBook') await store.addBook(args[0] as BookRow);
         else if (method === 'addVocabulary') await store.addVocabulary(args[0] as VocabularyRow);
         else if (method === 'deleteAllVocabulary') await store.deleteAllVocabulary();
@@ -192,7 +200,7 @@ function makeBook(overrides: Partial<Book> = {}): Book {
     fileSize: 1000,
     addedAt: new Date(),
     lastReadAt: null,
-    languagePair: { sourceLanguage: 'en', targetLanguage: 'el' },
+    languagePair: {sourceLanguage: 'en', targetLanguage: 'el'},
     proficiencyLevel: 'intermediate',
     wordDensity: 0.3,
     progress: 0,
@@ -255,7 +263,7 @@ describe('StorageService', () => {
     it('addBook and getBook round-trip', async () => {
       const db = createInMemoryDataStore();
       const service = createStorageService(db);
-      const book = makeBook({ id: 'b1', title: 'My Book' });
+      const book = makeBook({id: 'b1', title: 'My Book'});
 
       await service.addBook(book);
       const got = await service.getBook('b1');
@@ -268,13 +276,13 @@ describe('StorageService', () => {
     it('getAllBooks returns added books', async () => {
       const db = createInMemoryDataStore();
       const service = createStorageService(db);
-      await service.addBook(makeBook({ id: 'b1' }));
-      await service.addBook(makeBook({ id: 'b2', title: 'Second' }));
+      await service.addBook(makeBook({id: 'b1'}));
+      await service.addBook(makeBook({id: 'b2', title: 'Second'}));
 
       const list = await service.getAllBooks();
 
       expect(list.length).toBe(2);
-      expect(list.some((b) => b.title === 'Second')).toBe(true);
+      expect(list.some(b => b.title === 'Second')).toBe(true);
     });
   });
 
@@ -282,7 +290,7 @@ describe('StorageService', () => {
     it('addVocabulary and getAllVocabulary round-trip', async () => {
       const db = createInMemoryDataStore();
       const service = createStorageService(db);
-      const item = makeVocabularyItem({ id: 'v1', sourceWord: 'test' });
+      const item = makeVocabularyItem({id: 'v1', sourceWord: 'test'});
 
       await service.addVocabulary(item);
       const list = await service.getAllVocabulary();
@@ -294,12 +302,12 @@ describe('StorageService', () => {
     it('getVocabularyDueForReview returns items from repository', async () => {
       const db = createInMemoryDataStore();
       const service = createStorageService(db);
-      await service.addVocabulary(makeVocabularyItem({ id: 'v1' }));
+      await service.addVocabulary(makeVocabularyItem({id: 'v1'}));
 
       const due = await service.getVocabularyDueForReview();
 
       expect(db.getVocabulary).toHaveBeenCalledWith(
-        expect.objectContaining({ dueForReview: { now: expect.any(Number), limit: 20 } })
+        expect.objectContaining({dueForReview: {now: expect.any(Number), limit: 20}})
       );
       expect(Array.isArray(due)).toBe(true);
     });
@@ -309,7 +317,7 @@ describe('StorageService', () => {
     it('startSession returns session id', async () => {
       const db = createInMemoryDataStore();
       const service = createStorageService(db);
-      await service.addBook(makeBook({ id: 'b1' }));
+      await service.addBook(makeBook({id: 'b1'}));
 
       const sessionId = await service.startSession('b1');
 
@@ -321,11 +329,11 @@ describe('StorageService', () => {
     it('endSession does not throw', async () => {
       const db = createInMemoryDataStore();
       const service = createStorageService(db);
-      await service.addBook(makeBook({ id: 'b1' }));
+      await service.addBook(makeBook({id: 'b1'}));
       const sessionId = await service.startSession('b1');
 
       await expect(
-        service.endSession(sessionId, { pagesRead: 1, wordsRevealed: 5, wordsSaved: 2 })
+        service.endSession(sessionId, {pagesRead: 1, wordsRevealed: 5, wordsSaved: 2})
       ).resolves.not.toThrow();
     });
   });
@@ -367,8 +375,8 @@ describe('StorageService', () => {
     it('exportData returns JSON with books, vocabulary, sessions', async () => {
       const db = createInMemoryDataStore();
       const service = createStorageService(db);
-      await service.addBook(makeBook({ id: 'b1' }));
-      await service.addVocabulary(makeVocabularyItem({ id: 'v1' }));
+      await service.addBook(makeBook({id: 'b1'}));
+      await service.addVocabulary(makeVocabularyItem({id: 'v1'}));
 
       const json = await service.exportData();
       const parsed = JSON.parse(json);
@@ -383,15 +391,15 @@ describe('StorageService', () => {
     it('clearAllData calls runTransaction with delete operations', async () => {
       const db = createInMemoryDataStore();
       const service = createStorageService(db);
-      await service.addBook(makeBook({ id: 'b1' }));
+      await service.addBook(makeBook({id: 'b1'}));
 
       await service.clearAllData();
 
       expect(db.runTransaction).toHaveBeenCalledWith(
         expect.arrayContaining([
-          { method: 'deleteAllVocabulary', args: [] },
-          { method: 'deleteAllSessions', args: [] },
-          { method: 'deleteAllBooks', args: [] },
+          {method: 'deleteAllVocabulary', args: []},
+          {method: 'deleteAllSessions', args: []},
+          {method: 'deleteAllBooks', args: []},
         ])
       );
     });

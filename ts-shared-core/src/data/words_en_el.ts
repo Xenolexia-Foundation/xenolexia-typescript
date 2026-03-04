@@ -4,8 +4,9 @@
  * English-EL dictionary: 500 beginner words (frequency-ranked).
  */
 
-import type { WordData } from '../types';
-import { ENGLISH_BEGINNER_500 } from './englishBeginner500';
+import {ENGLISH_BEGINNER_500} from './englishBeginner500';
+
+import type {WordData} from '../types';
 
 const TARGETS: string[] = [
   'το',
@@ -89,7 +90,7 @@ const TARGETS: string[] = [
   'επιθυμία',
   'τρόπος',
   'Κοιτάξτε παρακάτω για τη λίστα των δημιουργημένων διαφημίσεων.',
-  'πάνω απ\' όλα',
+  "πάνω απ' όλα",
   'επίσης',
   'νέο',
   'επειδή',
@@ -406,7 +407,7 @@ const TARGETS: string[] = [
   'Κατηγορία γκαλερί / αναγνωριστικό',
   'κυκλοφορίας',
   'ανύψωση',
-  'παροχή συνδρομής σε επιβάτες\' φροντίς επιβατών',
+  "παροχή συνδρομής σε επιβάτες' φροντίς επιβατών",
   'Ίσως',
   'αργά',
   'σκληρό',
@@ -511,12 +512,25 @@ const TARGETS: string[] = [
 ];
 
 const LEN = 500;
-export const BEGINNER_WORDS: WordData[] = ENGLISH_BEGINNER_500.slice(0, LEN).map((e, i) => ({ ...e, target: TARGETS[i] ?? e.source }));
+export const BEGINNER_WORDS: WordData[] = ENGLISH_BEGINNER_500.slice(0, LEN).map((e, i) => ({
+  ...e,
+  target: TARGETS[i] ?? e.source,
+}));
 export const INTERMEDIATE_WORDS: WordData[] = [];
 export const ADVANCED_WORDS: WordData[] = [];
 export const ALL_WORDS_EN_EL: WordData[] = [...BEGINNER_WORDS];
 
 export function getWordsByLevel(level: 'beginner' | 'intermediate' | 'advanced'): WordData[] {
-  switch (level) { case 'beginner': return BEGINNER_WORDS; case 'intermediate': case 'advanced': return []; default: return []; }
+  switch (level) {
+    case 'beginner':
+      return BEGINNER_WORDS;
+    case 'intermediate':
+    case 'advanced':
+      return [];
+    default:
+      return [];
+  }
 }
-export function getTotalWordCount(): number { return ALL_WORDS_EN_EL.length; }
+export function getTotalWordCount(): number {
+  return ALL_WORDS_EN_EL.length;
+}

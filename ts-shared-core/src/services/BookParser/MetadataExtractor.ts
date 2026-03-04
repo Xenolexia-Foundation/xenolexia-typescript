@@ -10,12 +10,13 @@
  * Combines EPUBExtractor with TOC parsing to provide a unified API.
  */
 
-import type {BookMetadata, TableOfContentsItem} from '../../types';
-import type { IFileSystem } from '../../adapters';
 import {EPUBExtractor} from './EPUBExtractor';
-import type {EPUBPackage, EPUBManifestItem} from './EPUBExtractor';
 import {parseNCX, parseNAV} from './TOCParser';
+
+import type {EPUBPackage, EPUBManifestItem} from './EPUBExtractor';
 import type {TOCParseResult} from './TOCParser';
+import type {IFileSystem} from '../../adapters';
+import type {BookMetadata, TableOfContentsItem} from '../../types';
 
 // ============================================================================
 // Types
@@ -82,9 +83,7 @@ export class MetadataExtractor {
     };
 
     // Count chapters (spine items)
-    const chapterCount = this.epubPackage.spine.filter(
-      item => item.linear,
-    ).length;
+    const chapterCount = this.epubPackage.spine.filter(item => item.linear).length;
 
     return {
       metadata,
@@ -123,7 +122,7 @@ export class MetadataExtractor {
       const outputPath = `${outputDir}/${fileName}`;
 
       if (this.fileSystem.mkdir) {
-        await this.fileSystem.mkdir(outputDir, { recursive: true });
+        await this.fileSystem.mkdir(outputDir, {recursive: true});
       }
       const binaryString = atob(base64Data);
       const bytes = new Uint8Array(binaryString.length);
@@ -197,10 +196,7 @@ export class MetadataExtractor {
       const tocContent = await this.extractor.getFile(tocItem.href);
 
       // Determine format and parse
-      if (
-        tocItem.mediaType === 'application/x-dtbncx+xml' ||
-        tocItem.href.endsWith('.ncx')
-      ) {
+      if (tocItem.mediaType === 'application/x-dtbncx+xml' || tocItem.href.endsWith('.ncx')) {
         // NCX format (EPUB 2)
         return parseNCX(tocContent);
       } else {
@@ -277,9 +273,7 @@ export class MetadataExtractor {
     const isbn13Match = identifier.match(/(?:ISBN[:\s-]?)?(\d{13})/i);
     if (isbn13Match) return isbn13Match[1];
 
-    const isbn10Match = identifier.match(
-      /(?:ISBN[:\s-]?)?(\d{9}[\dXx])/i,
-    );
+    const isbn10Match = identifier.match(/(?:ISBN[:\s-]?)?(\d{9}[\dXx])/i);
     if (isbn10Match) return isbn10Match[1];
 
     // If it looks like a URN, try to extract ISBN
@@ -322,7 +316,7 @@ export class MetadataExtractor {
 /** Extract basic metadata; requires IFileSystem from host. */
 export async function extractEPUBMetadata(
   fileSystem: IFileSystem,
-  filePath: string,
+  filePath: string
 ): Promise<BookMetadata> {
   const extractor = new MetadataExtractor(fileSystem);
   try {
@@ -336,7 +330,7 @@ export async function extractEPUBMetadata(
 /** Extract metadata and TOC; requires IFileSystem from host. */
 export async function extractEPUBInfo(
   fileSystem: IFileSystem,
-  filePath: string,
+  filePath: string
 ): Promise<ExtractedMetadata> {
   const extractor = new MetadataExtractor(fileSystem);
   try {
@@ -350,7 +344,7 @@ export async function extractEPUBInfo(
 export async function extractEPUBCover(
   fileSystem: IFileSystem,
   filePath: string,
-  outputDir: string,
+  outputDir: string
 ): Promise<string | null> {
   const extractor = new MetadataExtractor(fileSystem);
   try {

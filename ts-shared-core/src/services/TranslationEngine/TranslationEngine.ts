@@ -15,13 +15,14 @@
  * Supports any language pair through the DynamicWordDatabase.
  */
 
-import type { Language, ProficiencyLevel, ForeignWordData, WordEntry } from '../../types';
-import type { TranslationOptions, ProcessedText, ProcessingStats } from './types';
-import { Tokenizer, Token } from './Tokenizer';
-import { WordReplacer, ReplacerOptions } from './WordReplacer';
-import type { DynamicWordDatabase } from './DynamicWordDatabase';
-import { WordMatcher } from './WordMatcher';
-import { ParagraphWordReplacer } from './ParagraphWordReplacer';
+import {ParagraphWordReplacer} from './ParagraphWordReplacer';
+import {Tokenizer, Token} from './Tokenizer';
+import {WordMatcher} from './WordMatcher';
+import {WordReplacer, ReplacerOptions} from './WordReplacer';
+
+import type {DynamicWordDatabase} from './DynamicWordDatabase';
+import type {TranslationOptions, ProcessedText, ProcessingStats} from './types';
+import type {Language, ProficiencyLevel, ForeignWordData, WordEntry} from '../../types';
 
 // ============================================================================
 // Translation Engine
@@ -38,11 +39,12 @@ export class TranslationEngine {
   constructor(
     options: TranslationOptions,
     database: DynamicWordDatabase,
-    wordMatcher?: WordMatcher,
+    wordMatcher?: WordMatcher
   ) {
     this.options = options;
     this.database = database;
-    this.wordMatcher = wordMatcher ?? new WordMatcher(options.sourceLanguage, options.targetLanguage);
+    this.wordMatcher =
+      wordMatcher ?? new WordMatcher(options.sourceLanguage, options.targetLanguage);
 
     this.tokenizer = new Tokenizer({
       skipQuotes: true,
@@ -159,7 +161,7 @@ export class TranslationEngine {
     content: string,
     overrides: Partial<TranslationOptions>
   ): Promise<ProcessedText> {
-    const mergedOptions = { ...this.options, ...overrides };
+    const mergedOptions = {...this.options, ...overrides};
 
     // Create temporary replacer with overridden options
     const tempReplacer = new WordReplacer({
@@ -207,10 +209,7 @@ export class TranslationEngine {
         results.set(word, result.entry);
       } else {
         // Fallback to WordMatcher for bundled data
-        const fallbackEntry = await this.wordMatcher.findMatch(
-          word,
-          this.options.proficiencyLevel
-        );
+        const fallbackEntry = await this.wordMatcher.findMatch(word, this.options.proficiencyLevel);
         results.set(word, fallbackEntry);
       }
     }
@@ -222,7 +221,7 @@ export class TranslationEngine {
    * Update translation options
    */
   updateOptions(options: Partial<TranslationOptions>): void {
-    this.options = { ...this.options, ...options };
+    this.options = {...this.options, ...options};
 
     // Update tokenizer if exclude words changed
     if (options.excludeWords) {
@@ -261,7 +260,7 @@ export class TranslationEngine {
    * Get current options
    */
   getOptions(): TranslationOptions {
-    return { ...this.options };
+    return {...this.options};
   }
 
   /**
@@ -270,7 +269,7 @@ export class TranslationEngine {
   async getStats(): Promise<{
     cachedWords: number;
     availableWords: number;
-    byProficiency: { beginner: number; intermediate: number; advanced: number };
+    byProficiency: {beginner: number; intermediate: number; advanced: number};
   }> {
     await this.initialize();
 
@@ -291,7 +290,7 @@ export class TranslationEngine {
   /**
    * Pre-cache common words for better offline performance
    */
-  async preCacheWords(count: number = 500): Promise<{ cached: number; failed: number }> {
+  async preCacheWords(count: number = 500): Promise<{cached: number; failed: number}> {
     await this.initialize();
 
     return this.database.preCacheCommonWords(
@@ -329,10 +328,7 @@ export class TranslationEngine {
   /**
    * Get words for vocabulary practice
    */
-  async getWordsForPractice(
-    level: ProficiencyLevel,
-    count: number
-  ): Promise<WordEntry[]> {
+  async getWordsForPractice(level: ProficiencyLevel, count: number): Promise<WordEntry[]> {
     await this.initialize();
 
     return this.database.getWordsByProficiency(
@@ -354,7 +350,7 @@ export class TranslationEngine {
 export function createTranslationEngine(
   options: TranslationOptions,
   database: DynamicWordDatabase,
-  wordMatcher?: WordMatcher,
+  wordMatcher?: WordMatcher
 ): TranslationEngine {
   return new TranslationEngine(options, database, wordMatcher);
 }
@@ -366,11 +362,11 @@ export function createDefaultEngine(
   sourceLanguage: Language,
   targetLanguage: Language,
   database: DynamicWordDatabase,
-  wordMatcher?: WordMatcher,
+  wordMatcher?: WordMatcher
 ): TranslationEngine {
   return new TranslationEngine(
-    { sourceLanguage, targetLanguage, proficiencyLevel: 'beginner', density: 0.15 },
+    {sourceLanguage, targetLanguage, proficiencyLevel: 'beginner', density: 0.15},
     database,
-    wordMatcher,
+    wordMatcher
   );
 }

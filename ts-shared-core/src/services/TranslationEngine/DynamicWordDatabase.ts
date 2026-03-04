@@ -18,12 +18,10 @@
  * - Caches translations for offline use
  */
 
-import type {IDataStore, WordListRow} from '../../adapters';
-import {
-  FrequencyListService,
-  PROFICIENCY_THRESHOLDS,
-} from './FrequencyListService';
+import {FrequencyListService, PROFICIENCY_THRESHOLDS} from './FrequencyListService';
+
 import type {TranslationAPIService} from './TranslationAPIService';
+import type {IDataStore, WordListRow} from '../../adapters';
 import type {Language, ProficiencyLevel, WordEntry, PartOfSpeech} from '../../types';
 
 // ============================================================================
@@ -58,7 +56,7 @@ export class DynamicWordDatabase {
   constructor(
     private db: IDataStore,
     private translationAPI: TranslationAPIService,
-    private frequencyService: FrequencyListService,
+    private frequencyService: FrequencyListService
   ) {}
 
   /**
@@ -74,7 +72,7 @@ export class DynamicWordDatabase {
   static create(
     db: IDataStore,
     translationAPI: TranslationAPIService,
-    frequencyService: FrequencyListService,
+    frequencyService: FrequencyListService
   ): DynamicWordDatabase {
     return new DynamicWordDatabase(db, translationAPI, frequencyService);
   }
@@ -159,7 +157,7 @@ export class DynamicWordDatabase {
     if (toTranslate.length > 0) {
       const win = (typeof globalThis !== 'undefined' && (globalThis as any).window) ?? undefined;
       const useMainProcess = win?.electronAPI?.translateBulk;
-      let bulkResult: { translations: Map<string, string>; provider: string; failed: string[] };
+      let bulkResult: {translations: Map<string, string>; provider: string; failed: string[]};
 
       if (useMainProcess) {
         const raw = await win.electronAPI.translateBulk(
@@ -263,7 +261,7 @@ export class DynamicWordDatabase {
   async getStats(): Promise<DatabaseStats> {
     await this.initialize();
     const stats = await this.db.getWordListStats();
-    const languagePairs = stats.pairs.map((row) => ({
+    const languagePairs = stats.pairs.map(row => ({
       source: row.source_lang as Language,
       target: row.target_lang as Language,
       count: row.count,
@@ -425,7 +423,7 @@ export class DynamicWordDatabase {
       limit,
       random: true,
     });
-    return rows.map((row) => this.rowToEntry(row));
+    return rows.map(row => this.rowToEntry(row));
   }
 
   private rowToEntry(row: WordListRow): DynamicWordEntry {

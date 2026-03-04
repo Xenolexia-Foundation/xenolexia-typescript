@@ -19,13 +19,17 @@ export interface IFileSystem {
   readFileAsBase64?(filePath: string): Promise<string>;
 
   /** Write file. Optional; used by import/export. */
-  writeFile?(filePath: string, content: string | ArrayBuffer, encoding?: 'utf8' | 'base64'): Promise<void>;
+  writeFile?(
+    filePath: string,
+    content: string | ArrayBuffer,
+    encoding?: 'utf8' | 'base64'
+  ): Promise<void>;
 
   /** Check if path exists */
   fileExists?(filePath: string): Promise<boolean>;
 
   /** Create directory. Optional. */
-  mkdir?(dirPath: string, options?: { recursive?: boolean }): Promise<void>;
+  mkdir?(dirPath: string, options?: {recursive?: boolean}): Promise<void>;
 
   /** Get app data / user data directory. Optional. */
   getAppDataPath?(): Promise<string>;

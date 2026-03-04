@@ -14,7 +14,7 @@ const PATTERNS = ['mymemory', 'used all available free', 'next available in', 'u
 function isWarning(text) {
   if (typeof text !== 'string' || !text.trim()) return false;
   const u = text.trim().toUpperCase();
-  return PATTERNS.some((p) => u.includes(p.toUpperCase()));
+  return PATTERNS.some(p => u.includes(p.toUpperCase()));
 }
 
 function main() {
@@ -22,13 +22,15 @@ function main() {
     console.log(JSON.stringify([]));
     return;
   }
-  const files = fs.readdirSync(TRANSLATIONS_DIR).filter((f) => f.endsWith('.json'));
+  const files = fs.readdirSync(TRANSLATIONS_DIR).filter(f => f.endsWith('.json'));
   const bad = files
-    .map((f) => f.replace('.json', ''))
-    .filter((lang) => {
+    .map(f => f.replace('.json', ''))
+    .filter(lang => {
       try {
-        const arr = JSON.parse(fs.readFileSync(path.join(TRANSLATIONS_DIR, `${lang}.json`), 'utf8'));
-        return Array.isArray(arr) && arr.some((t) => isWarning(String(t)));
+        const arr = JSON.parse(
+          fs.readFileSync(path.join(TRANSLATIONS_DIR, `${lang}.json`), 'utf8')
+        );
+        return Array.isArray(arr) && arr.some(t => isWarning(String(t)));
       } catch {
         return false;
       }

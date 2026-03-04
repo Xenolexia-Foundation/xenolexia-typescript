@@ -10,13 +10,13 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { getBundledWordsVerified } from '../data/bundledDictionaries';
-import { SUPPORTED_LANGUAGES } from '../types';
-import type { Language, LanguageInfo } from '../types';
-import { WordMatcher } from '../services/TranslationEngine/WordMatcher';
-import { TranslationEngine } from '../services/TranslationEngine/TranslationEngine';
-import type { DynamicWordDatabase } from '../services/TranslationEngine/DynamicWordDatabase';
-import type { WordLookupResult } from '../services/TranslationEngine/DynamicWordDatabase';
+import {getBundledWordsVerified} from '../data/bundledDictionaries';
+import {SUPPORTED_LANGUAGES} from '../types';
+import type {Language, LanguageInfo} from '../types';
+import {WordMatcher} from '../services/TranslationEngine/WordMatcher';
+import {TranslationEngine} from '../services/TranslationEngine/TranslationEngine';
+import type {DynamicWordDatabase} from '../services/TranslationEngine/DynamicWordDatabase';
+import type {WordLookupResult} from '../services/TranslationEngine/DynamicWordDatabase';
 
 const FIXTURE_PATH = path.join(__dirname, 'fixtures', 'shortStory.html');
 
@@ -39,15 +39,12 @@ const TARGET_LANGUAGES: Language[] = SUPPORTED_LANGUAGES.filter(
 
 describe('Word replacement – bundled data and fallback', () => {
   describe('getBundledWordsVerified(en, target)', () => {
-    it.each(TARGET_LANGUAGES)(
-      'returns non-empty list for target %s',
-      (target: Language) => {
-        const words = getBundledWordsVerified('en', target);
-        expect(words).not.toBeNull();
-        expect(Array.isArray(words)).toBe(true);
-        expect((words as unknown[]).length).toBeGreaterThanOrEqual(1);
-      }
-    );
+    it.each(TARGET_LANGUAGES)('returns non-empty list for target %s', (target: Language) => {
+      const words = getBundledWordsVerified('en', target);
+      expect(words).not.toBeNull();
+      expect(Array.isArray(words)).toBe(true);
+      expect((words as unknown[]).length).toBeGreaterThanOrEqual(1);
+    });
   });
 
   describe('WordMatcher (no DB) findMatch', () => {

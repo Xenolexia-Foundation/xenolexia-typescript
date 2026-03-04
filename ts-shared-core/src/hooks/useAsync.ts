@@ -8,7 +8,7 @@
  * Shared between Electron and React Native. Requires React (peer).
  */
 
-import { useState, useCallback } from 'react';
+import {useState, useCallback} from 'react';
 
 interface AsyncState<T> {
   data: T | null;
@@ -22,7 +22,7 @@ export interface UseAsyncReturn<T, Args extends unknown[]> extends AsyncState<T>
 }
 
 export function useAsync<T, Args extends unknown[] = []>(
-  asyncFunction: (...args: Args) => Promise<T>,
+  asyncFunction: (...args: Args) => Promise<T>
 ): UseAsyncReturn<T, Args> {
   const [state, setState] = useState<AsyncState<T>>({
     data: null,
@@ -32,23 +32,23 @@ export function useAsync<T, Args extends unknown[] = []>(
 
   const execute = useCallback(
     async (...args: Args): Promise<T | null> => {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+      setState(prev => ({...prev, isLoading: true, error: null}));
 
       try {
         const result = await asyncFunction(...args);
-        setState({ data: result, isLoading: false, error: null });
+        setState({data: result, isLoading: false, error: null});
         return result;
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        setState({ data: null, isLoading: false, error: err });
+        setState({data: null, isLoading: false, error: err});
         return null;
       }
     },
-    [asyncFunction],
+    [asyncFunction]
   );
 
   const reset = useCallback(() => {
-    setState({ data: null, isLoading: false, error: null });
+    setState({data: null, isLoading: false, error: null});
   }, []);
 
   return {

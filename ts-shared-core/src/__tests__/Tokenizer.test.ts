@@ -7,7 +7,7 @@
  * Unit tests for Tokenizer - word extraction from HTML
  */
 
-import { Tokenizer } from '../services/TranslationEngine/Tokenizer';
+import {Tokenizer} from '../services/TranslationEngine/Tokenizer';
 
 describe('Tokenizer', () => {
   let tokenizer: Tokenizer;
@@ -46,7 +46,7 @@ describe('Tokenizer', () => {
     it('should skip script and style content', () => {
       const html = '<p>Visible</p><script>ignore this text</script><p>Again</p>';
       const tokens = tokenizer.tokenize(html);
-      const words = tokens.map((t) => t.original);
+      const words = tokens.map(t => t.original);
       expect(words).toContain('Visible');
       expect(words).toContain('Again');
       expect(words).not.toContain('ignore');
@@ -72,11 +72,11 @@ describe('Tokenizer', () => {
     });
 
     it('should exclude protected tokens when they are marked protected', () => {
-      tokenizer = new Tokenizer({ skipQuotes: true });
+      tokenizer = new Tokenizer({skipQuotes: true});
       const html = '<p>Word and "quoted" word.</p>';
       const tokens = tokenizer.tokenize(html);
       const unique = Tokenizer.getUniqueWords(tokens);
-      expect(unique.filter((w) => w === 'word').length).toBeLessThanOrEqual(2);
+      expect(unique.filter(w => w === 'word').length).toBeLessThanOrEqual(2);
     });
   });
 });

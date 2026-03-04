@@ -37,11 +37,7 @@ export interface InjectedScriptOptions {
  * Generate the JavaScript to inject into the WebView
  */
 export function generateInjectedScript(options: InjectedScriptOptions = {}): string {
-  const {
-    longPressDuration = 500,
-    progressThrottle = 100,
-    contextWords = 10,
-  } = options;
+  const {longPressDuration = 500, progressThrottle = 100, contextWords = 10} = options;
 
   return `
 (function() {

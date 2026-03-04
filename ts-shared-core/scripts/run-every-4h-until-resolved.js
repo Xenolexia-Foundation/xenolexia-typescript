@@ -4,7 +4,7 @@
  * MyMemory warning in its data. Run in background: node scripts/run-every-4h-until-resolved.js
  */
 
-const { execSync } = require('child_process');
+const {execSync} = require('child_process');
 const path = require('path');
 
 const SCRIPT = path.join(__dirname, 'ensure-translations-resolved.js');
@@ -19,10 +19,11 @@ function run() {
 }
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function main() {
+  // eslint-disable-next-line no-constant-condition -- run every 4h until stopped
   while (true) {
     try {
       run();

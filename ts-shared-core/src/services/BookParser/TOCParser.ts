@@ -50,9 +50,7 @@ export function parseNCX(ncxXml: string): TOCParseResult {
   const items: TableOfContentsItem[] = [];
 
   // Extract document title
-  const titleMatch = ncxXml.match(
-    /<docTitle>\s*<text>([^<]*)<\/text>\s*<\/docTitle>/i,
-  );
+  const titleMatch = ncxXml.match(/<docTitle>\s*<text>([^<]*)<\/text>\s*<\/docTitle>/i);
   const title = titleMatch?.[1]?.trim();
 
   // Extract navMap
@@ -111,9 +109,7 @@ function parseNavPoints(xml: string, level: number): TableOfContentsItem[] {
     const playOrder = playOrderMatch ? parseInt(playOrderMatch[1], 10) : undefined;
 
     // Extract label
-    const labelMatch = content.match(
-      /<navLabel>\s*<text>([^<]*)<\/text>\s*<\/navLabel>/i,
-    );
+    const labelMatch = content.match(/<navLabel>\s*<text>([^<]*)<\/text>\s*<\/navLabel>/i);
     const label = labelMatch?.[1]?.trim() || 'Untitled';
 
     // Extract content src
@@ -121,9 +117,7 @@ function parseNavPoints(xml: string, level: number): TableOfContentsItem[] {
     const href = srcMatch?.[1] || '';
 
     // Look for nested navPoints
-    const nestedNavPointsMatch = content.match(
-      /(<navPoint[\s\S]*<\/navPoint>)(?=\s*$)/i,
-    );
+    const nestedNavPointsMatch = content.match(/(<navPoint[\s\S]*<\/navPoint>)(?=\s*$)/i);
     let children: TableOfContentsItem[] | undefined;
 
     if (nestedNavPointsMatch) {
@@ -168,15 +162,11 @@ export function parseNAV(navHtml: string): TOCParseResult {
   const items: TableOfContentsItem[] = [];
 
   // Find the toc nav element
-  const tocNavMatch = navHtml.match(
-    /<nav[^>]+epub:type=["']toc["'][^>]*>([\s\S]*?)<\/nav>/i,
-  );
+  const tocNavMatch = navHtml.match(/<nav[^>]+epub:type=["']toc["'][^>]*>([\s\S]*?)<\/nav>/i);
 
   if (!tocNavMatch) {
     // Try without epub:type (some EPUBs use different formats)
-    const altNavMatch = navHtml.match(
-      /<nav[^>]*id=["']toc["'][^>]*>([\s\S]*?)<\/nav>/i,
-    );
+    const altNavMatch = navHtml.match(/<nav[^>]*id=["']toc["'][^>]*>([\s\S]*?)<\/nav>/i);
     if (altNavMatch) {
       const olMatch = altNavMatch[1].match(/<ol[^>]*>([\s\S]*?)<\/ol>/i);
       if (olMatch) {
@@ -199,7 +189,7 @@ export function parseNAV(navHtml: string): TOCParseResult {
   // Check for page-list nav
   const pageList: PageListItem[] = [];
   const pageNavMatch = navHtml.match(
-    /<nav[^>]+epub:type=["']page-list["'][^>]*>([\s\S]*?)<\/nav>/i,
+    /<nav[^>]+epub:type=["']page-list["'][^>]*>([\s\S]*?)<\/nav>/i
   );
   if (pageNavMatch) {
     const pagePattern = /<a\s+href=["']([^"']+)["'][^>]*>([^<]*)<\/a>/gi;
@@ -299,7 +289,7 @@ export function countTOCItems(items: TableOfContentsItem[]): number {
  */
 export function findTOCItemByHref(
   items: TableOfContentsItem[],
-  href: string,
+  href: string
 ): TableOfContentsItem | undefined {
   const normalizedHref = href.split('#')[0]; // Remove fragment
 
@@ -337,7 +327,5 @@ function decodeEntities(text: string): string {
     .replace(/&apos;/g, "'")
     .replace(/&nbsp;/g, ' ')
     .replace(/&#(\d+);/g, (_, num) => String.fromCharCode(parseInt(num, 10)))
-    .replace(/&#x([a-fA-F0-9]+);/g, (_, hex) =>
-      String.fromCharCode(parseInt(hex, 16)),
-    );
+    .replace(/&#x([a-fA-F0-9]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 }

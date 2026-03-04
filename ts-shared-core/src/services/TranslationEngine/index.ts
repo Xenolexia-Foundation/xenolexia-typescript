@@ -14,18 +14,14 @@
  */
 
 // Main engine
-export {
-  TranslationEngine,
-  createTranslationEngine,
-  createDefaultEngine,
-} from './TranslationEngine';
+export {TranslationEngine, createTranslationEngine, createDefaultEngine} from './TranslationEngine';
 
 // Tokenizer
-export { Tokenizer, tokenizer } from './Tokenizer';
-export type { Token, TextSegment, TokenizerOptions } from './Tokenizer';
+export {Tokenizer, tokenizer} from './Tokenizer';
+export type {Token, TextSegment, TokenizerOptions} from './Tokenizer';
 
 // Word Replacer
-export { WordReplacer, createWordReplacer } from './WordReplacer';
+export {WordReplacer, createWordReplacer} from './WordReplacer';
 export type {
   ReplacementCandidate,
   ReplacementResult,
@@ -41,16 +37,13 @@ export {
   injectedScript,
   foreignWordStyles,
 } from './InjectedScript';
-export type { InjectedScriptOptions } from './InjectedScript';
+export type {InjectedScriptOptions} from './InjectedScript';
 
 // Word matching (legacy, uses bundled data)
-export { WordMatcher } from './WordMatcher';
+export {WordMatcher} from './WordMatcher';
 
 // Translation API Service (multiple providers)
-export {
-  TranslationAPIService,
-  translationAPI,
-} from './TranslationAPIService';
+export {TranslationAPIService, translationAPI} from './TranslationAPIService';
 export type {
   TranslationProvider,
   TranslationResult,
@@ -64,26 +57,14 @@ export {
   frequencyListService,
   PROFICIENCY_THRESHOLDS,
 } from './FrequencyListService';
-export type {
-  FrequencyWord,
-  FrequencyList,
-  FrequencyListStats,
-} from './FrequencyListService';
+export type {FrequencyWord, FrequencyList, FrequencyListStats} from './FrequencyListService';
 
 // Dynamic Word Database (any language pair; host creates with IDataStore + services)
-export { DynamicWordDatabase } from './DynamicWordDatabase';
-export type {
-  DynamicWordEntry,
-  WordLookupResult,
-  DatabaseStats,
-} from './DynamicWordDatabase';
+export {DynamicWordDatabase} from './DynamicWordDatabase';
+export type {DynamicWordEntry, WordLookupResult, DatabaseStats} from './DynamicWordDatabase';
 
 // Legacy Word Database (bundled EN-EL data; host creates with IDataStore)
-export {
-  WordDatabaseService,
-  PROFICIENCY_RANKS,
-  getProficiencyFromRank,
-} from './WordDatabase';
+export {WordDatabaseService, PROFICIENCY_RANKS, getProficiencyFromRank} from './WordDatabase';
 export type {
   WordDatabaseEntry,
   WordLookupOptions,
@@ -92,7 +73,7 @@ export type {
 } from './WordDatabase';
 
 // Paragraph-based replacer (offline dictionary, 5-10 words/paragraph, 25-35% cap)
-export { ParagraphWordReplacer, createParagraphWordReplacer } from './ParagraphWordReplacer';
+export {ParagraphWordReplacer, createParagraphWordReplacer} from './ParagraphWordReplacer';
 export type {
   ParagraphWordReplacerOptions,
   ParagraphWordReplacerResult,
@@ -100,9 +81,4 @@ export type {
 } from './ParagraphWordReplacer';
 
 // Types
-export type {
-  TranslationOptions,
-  ProcessedText,
-  ProcessingStats,
-  WordMatch,
-} from './types';
+export type {TranslationOptions, ProcessedText, ProcessingStats, WordMatch} from './types';

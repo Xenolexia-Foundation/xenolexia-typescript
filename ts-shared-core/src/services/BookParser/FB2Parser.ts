@@ -8,10 +8,11 @@
  * Platform-agnostic: uses IFileSystem from host (Electron/React Native).
  */
 
-import { XMLParser } from 'fast-xml-parser';
-import type { BookMetadata, Chapter, TableOfContentsItem, ParsedBook } from '../../types';
-import type { IBookParser, SearchResult, ParserOptions } from './types';
-import type { IFileSystem } from '../../adapters';
+import {XMLParser} from 'fast-xml-parser';
+
+import type {IBookParser, SearchResult, ParserOptions} from './types';
+import type {IFileSystem} from '../../adapters';
+import type {BookMetadata, Chapter, TableOfContentsItem, ParsedBook} from '../../types';
 
 const DEFAULT_TITLE = 'Unknown';
 const DEFAULT_AUTHOR = 'Unknown Author';
@@ -52,7 +53,7 @@ export class FB2Parser implements IBookParser {
 
   constructor(
     private fileSystem: IFileSystem,
-    options?: ParserOptions,
+    options?: ParserOptions
   ) {
     this.options = options ?? {};
   }
@@ -63,8 +64,18 @@ export class FB2Parser implements IBookParser {
       const parser = new XMLParser({
         ignoreAttributes: false,
         attributeNamePrefix: '@_',
-        isArray: (name) =>
-          ['body', 'section', 'p', 'empty-line', 'title', 'v', 'stanza', 'author', 'genre'].includes(name),
+        isArray: name =>
+          [
+            'body',
+            'section',
+            'p',
+            'empty-line',
+            'title',
+            'v',
+            'stanza',
+            'author',
+            'genre',
+          ].includes(name),
       });
       const parsed = parser.parse(raw) as XmlObj;
       const fb = parsed?.FictionBook as XmlObj | undefined;
@@ -91,7 +102,7 @@ export class FB2Parser implements IBookParser {
             wordCount,
           },
         ];
-        this.toc = [{ id: 'ch0', title: this.chapters[0].title, href: '#ch0', level: 0 }];
+        this.toc = [{id: 'ch0', title: this.chapters[0].title, href: '#ch0', level: 0}];
       } else {
         this.chapters = [];
         this.toc = [];
@@ -108,7 +119,7 @@ export class FB2Parser implements IBookParser {
             content: html,
             wordCount,
           });
-          this.toc.push({ id, title: this.chapters[idx].title, href: `#${id}`, level: 0 });
+          this.toc.push({id, title: this.chapters[idx].title, href: `#${id}`, level: 0});
           idx++;
         }
       }
@@ -129,7 +140,7 @@ export class FB2Parser implements IBookParser {
   }
 
   private extractMetadata(titleInfo: XmlObj | undefined): BookMetadata {
-    if (!titleInfo) return { title: DEFAULT_TITLE, author: DEFAULT_AUTHOR };
+    if (!titleInfo) return {title: DEFAULT_TITLE, author: DEFAULT_AUTHOR};
     const title = textOf(titleInfo['book-title']) || DEFAULT_TITLE;
     const authors = arrayOf(titleInfo.author as XmlObj | XmlObj[]);
     const parts: string[] = [];
@@ -142,7 +153,9 @@ export class FB2Parser implements IBookParser {
     }
     const author = parts.length > 0 ? parts.join(', ') : DEFAULT_AUTHOR;
     const lang = textOf(titleInfo.lang);
-    const genres = arrayOf(titleInfo.genre as XmlValue[]).map((g) => textOf(g)).filter(Boolean);
+    const genres = arrayOf(titleInfo.genre as XmlValue[])
+      .map(g => textOf(g))
+      .filter(Boolean);
     return {
       title,
       author,
@@ -161,7 +174,7 @@ export class FB2Parser implements IBookParser {
   private bodyToHtml(body: XmlObj): string {
     const sections = arrayOf(body.section as XmlObj | XmlObj[]);
     if (sections.length === 0) return this.inlineContentToHtml(body);
-    return sections.map((s) => this.sectionToHtml(s)).join('\n');
+    return sections.map(s => this.sectionToHtml(s)).join('\n');
   }
 
   private sectionToHtml(section: XmlObj): string {
@@ -197,11 +210,13 @@ export class FB2Parser implements IBookParser {
       for (const item of items) {
         if (tag === 'p') parts.push('<p>' + this.inlineToHtml(item as XmlObj) + '</p>');
         else if (tag === 'empty-line') parts.push('<br/>');
-        else if (tag === 'subtitle') parts.push('<h2>' + this.inlineToHtml(item as XmlObj) + '</h2>');
+        else if (tag === 'subtitle')
+          parts.push('<h2>' + this.inlineToHtml(item as XmlObj) + '</h2>');
         else if (tag === 'section') parts.push(this.sectionToHtml(item as XmlObj));
         else if (tag === 'poem' || tag === 'cite' || tag === 'epigraph')
           parts.push('<blockquote>' + this.poemOrCiteToHtml(item as XmlObj) + '</blockquote>');
-        else if (typeof item === 'object' && item !== null) parts.push(this.inlineToHtml(item as XmlObj));
+        else if (typeof item === 'object' && item !== null)
+          parts.push(this.inlineToHtml(item as XmlObj));
       }
     }
     return parts.join('\n');
@@ -222,7 +237,7 @@ export class FB2Parser implements IBookParser {
   private inlineToHtml(node: XmlValue): string {
     if (node == null) return '';
     if (typeof node === 'string') return this.escapeHtml(node);
-    if (Array.isArray(node)) return node.map((n) => this.inlineToHtml(n as XmlObj)).join('');
+    if (Array.isArray(node)) return node.map(n => this.inlineToHtml(n as XmlObj)).join('');
     const obj = node as XmlObj;
     const text = textOf(obj['#text']);
     const parts: string[] = text ? [this.escapeHtml(text)] : [];
@@ -263,11 +278,14 @@ export class FB2Parser implements IBookParser {
   }
 
   private stripHtml(html: string): string {
-    return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return html
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   private countWords(text: string): number {
-    return text.split(/\s+/).filter((w) => w.length > 0).length;
+    return text.split(/\s+/).filter(w => w.length > 0).length;
   }
 
   async getChapter(index: number): Promise<Chapter> {

@@ -16,7 +16,7 @@ function getEnglishEntries() {
   const re = /\{\s*source:\s*'([^']*)',\s*rank:\s*(\d+),\s*pos:\s*'([^']*)'/g;
   let m;
   while ((m = re.exec(content)) !== null) {
-    entries.push({ source: m[1], rank: parseInt(m[2], 10), pos: m[3] });
+    entries.push({source: m[1], rank: parseInt(m[2], 10), pos: m[3]});
   }
   return entries;
 }
@@ -30,7 +30,11 @@ function escape(str) {
 function sanitizeTarget(translated, sourceWord) {
   if (typeof translated !== 'string' || !translated.trim()) return sourceWord;
   const t = translated.trim().toUpperCase();
-  if (t.includes('MYMEMORY') || t.includes('USED ALL AVAILABLE FREE') || t.includes('USAGELIMITS')) {
+  if (
+    t.includes('MYMEMORY') ||
+    t.includes('USED ALL AVAILABLE FREE') ||
+    t.includes('USAGELIMITS')
+  ) {
     return sourceWord;
   }
   return translated.trim();
@@ -84,5 +88,7 @@ if (langCode) {
     console.log('No translations dir. Run fetch-translations.js <lang> first.');
     process.exit(0);
   }
-  fs.readdirSync(TRANSLATIONS_DIR).filter((f) => f.endsWith('.json')).forEach((f) => buildWordsFile(f.replace('.json', '')));
+  fs.readdirSync(TRANSLATIONS_DIR)
+    .filter(f => f.endsWith('.json'))
+    .forEach(f => buildWordsFile(f.replace('.json', '')));
 }

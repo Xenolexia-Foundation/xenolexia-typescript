@@ -25,4 +25,9 @@ export type {
 } from './DataStore.types';
 
 export {BookRepository, VocabularyRepository, SessionRepository} from './repositories';
-export type {BookFilter as RepoBookFilter, BookSort as RepoBookSort, VocabularyFilter as RepoVocabularyFilter, VocabularySort as RepoVocabularySort} from './repositories';
+export type {
+  BookFilter as RepoBookFilter,
+  BookSort as RepoBookSort,
+  VocabularyFilter as RepoVocabularyFilter,
+  VocabularySort as RepoVocabularySort,
+} from './repositories';

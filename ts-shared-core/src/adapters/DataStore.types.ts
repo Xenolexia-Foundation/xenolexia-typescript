@@ -8,7 +8,7 @@
  * Host implements IDataStore (e.g. LowDB, SQLite).
  */
 
-import type { ReadingStats } from '../types';
+import type {ReadingStats} from '../types';
 
 export interface QueryResult<T = Record<string, unknown>> {
   rows: T[];
@@ -137,7 +137,7 @@ export interface IDataStore {
   getSchemaVersion(): Promise<number>;
 
   getBookById(id: string): Promise<BookRow | null>;
-  getBooks(options?: { sort?: BookSort; filter?: BookFilter; limit?: number }): Promise<BookRow[]>;
+  getBooks(options?: {sort?: BookSort; filter?: BookFilter; limit?: number}): Promise<BookRow[]>;
   addBook(row: BookRow): Promise<void>;
   updateBook(id: string, updates: Partial<BookRow>): Promise<void>;
   deleteBook(id: string): Promise<void>;
@@ -156,7 +156,7 @@ export interface IDataStore {
     sort?: VocabularySort;
     limit?: number;
     addedAtGte?: number;
-    dueForReview?: { now: number; limit: number };
+    dueForReview?: {now: number; limit: number};
   }): Promise<VocabularyRow[]>;
   addVocabulary(row: VocabularyRow): Promise<void>;
   updateVocabulary(id: string, updates: Partial<VocabularyRow>): Promise<void>;
@@ -184,29 +184,40 @@ export interface IDataStore {
   deleteAllSessions(): Promise<void>;
   getSessionStatistics(): Promise<ReadingStats>;
   getReadingTimeForPeriod(startMs: number, endMs: number): Promise<number>;
-  getDailyReadingTime(days: number): Promise<Array<{ date: string; minutes: number }>>;
+  getDailyReadingTime(days: number): Promise<Array<{date: string; minutes: number}>>;
   getDistinctSessionDays(): Promise<string[]>;
 
   getPreference(key: string): Promise<string | null>;
   setPreference(key: string, value: string): Promise<void>;
 
-  getWordListEntry(word: string, sourceLang: string, targetLang: string): Promise<WordListRow | null>;
-  getWordListEntryByVariant(word: string, sourceLang: string, targetLang: string): Promise<WordListRow | null>;
+  getWordListEntry(
+    word: string,
+    sourceLang: string,
+    targetLang: string
+  ): Promise<WordListRow | null>;
+  getWordListEntryByVariant(
+    word: string,
+    sourceLang: string,
+    targetLang: string
+  ): Promise<WordListRow | null>;
   getWordListByLevel(
     sourceLang: string,
     targetLang: string,
     proficiency: string,
-    options?: { limit?: number; random?: boolean }
+    options?: {limit?: number; random?: boolean}
   ): Promise<WordListRow[]>;
   getWordListByLangs(sourceLang: string, targetLang: string): Promise<WordListRow[]>;
   getWordListCount(sourceLang: string, targetLang: string): Promise<number>;
   addWordListEntry(row: WordListRow): Promise<void>;
   deleteWordListByPair(sourceLang?: string, targetLang?: string): Promise<void>;
-  getWordListProficiencyCounts(sourceLang: string, targetLang: string): Promise<Record<string, number>>;
+  getWordListProficiencyCounts(
+    sourceLang: string,
+    targetLang: string
+  ): Promise<Record<string, number>>;
   getWordListPosCounts(sourceLang: string, targetLang: string): Promise<Record<string, number>>;
   getWordListStats(): Promise<{
     total: number;
-    pairs: Array<{ source_lang: string; target_lang: string; count: number }>;
+    pairs: Array<{source_lang: string; target_lang: string; count: number}>;
   }>;
   getWordListSearch(
     sourceLang: string,
@@ -216,5 +227,5 @@ export interface IDataStore {
   ): Promise<WordListRow[]>;
 
   /** Batch operations; host applies all then persists once */
-  runTransaction(operations: Array<{ method: string; args: unknown[] }>): Promise<void>;
+  runTransaction(operations: Array<{method: string; args: unknown[]}>): Promise<void>;
 }

@@ -12,9 +12,36 @@
 // ============================================================================
 
 export type Language =
-  | 'en' | 'el' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ru' | 'ja' | 'zh' | 'ko' | 'ar'
-  | 'nl' | 'pl' | 'tr' | 'sv' | 'da' | 'fi' | 'no' | 'cs' | 'hu' | 'ro' | 'uk' | 'hi' | 'th' | 'vi' | 'id'
-  | 'arm' | 'am' | 'fa';
+  | 'en'
+  | 'el'
+  | 'es'
+  | 'fr'
+  | 'de'
+  | 'it'
+  | 'pt'
+  | 'ru'
+  | 'ja'
+  | 'zh'
+  | 'ko'
+  | 'ar'
+  | 'nl'
+  | 'pl'
+  | 'tr'
+  | 'sv'
+  | 'da'
+  | 'fi'
+  | 'no'
+  | 'cs'
+  | 'hu'
+  | 'ro'
+  | 'uk'
+  | 'hi'
+  | 'th'
+  | 'vi'
+  | 'id'
+  | 'arm'
+  | 'am'
+  | 'fa';
 
 export type ProficiencyLevel = 'beginner' | 'intermediate' | 'advanced';
 
@@ -34,36 +61,36 @@ export interface LanguageInfo {
 }
 
 export const SUPPORTED_LANGUAGES: LanguageInfo[] = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷' },
-  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
-  { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹' },
-  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹' },
-  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺' },
-  { code: 'el', name: 'Greek', nativeName: 'Ελληνικά', flag: '🇬🇷' },
-  { code: 'nl', name: 'Dutch', nativeName: 'Nederlands', flag: '🇳🇱' },
-  { code: 'pl', name: 'Polish', nativeName: 'Polski', flag: '🇵🇱' },
-  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
-  { code: 'sv', name: 'Swedish', nativeName: 'Svenska', flag: '🇸🇪' },
-  { code: 'da', name: 'Danish', nativeName: 'Dansk', flag: '🇩🇰' },
-  { code: 'fi', name: 'Finnish', nativeName: 'Suomi', flag: '🇫🇮' },
-  { code: 'no', name: 'Norwegian', nativeName: 'Norsk', flag: '🇳🇴' },
-  { code: 'cs', name: 'Czech', nativeName: 'Čeština', flag: '🇨🇿' },
-  { code: 'hu', name: 'Hungarian', nativeName: 'Magyar', flag: '🇭🇺' },
-  { code: 'ro', name: 'Romanian', nativeName: 'Română', flag: '🇷🇴' },
-  { code: 'uk', name: 'Ukrainian', nativeName: 'Українська', flag: '🇺🇦' },
-  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
-  { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
-  { code: 'ko', name: 'Korean', nativeName: '한국어', flag: '🇰🇵' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇵🇸', rtl: true },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'th', name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭' },
-  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳' },
-  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩' },
-  { code: 'arm', name: 'Aramaic', nativeName: 'ܐܪܡܝܐ', flag: '🏛️', rtl: true },
-  { code: 'am', name: 'Amharic', nativeName: 'አማርኛ', flag: '🇪🇹' },
-  { code: 'fa', name: 'Persian', nativeName: 'فارسی', flag: '🇮🇷', rtl: true },
+  {code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧'},
+  {code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸'},
+  {code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷'},
+  {code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪'},
+  {code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹'},
+  {code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹'},
+  {code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺'},
+  {code: 'el', name: 'Greek', nativeName: 'Ελληνικά', flag: '🇬🇷'},
+  {code: 'nl', name: 'Dutch', nativeName: 'Nederlands', flag: '🇳🇱'},
+  {code: 'pl', name: 'Polish', nativeName: 'Polski', flag: '🇵🇱'},
+  {code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷'},
+  {code: 'sv', name: 'Swedish', nativeName: 'Svenska', flag: '🇸🇪'},
+  {code: 'da', name: 'Danish', nativeName: 'Dansk', flag: '🇩🇰'},
+  {code: 'fi', name: 'Finnish', nativeName: 'Suomi', flag: '🇫🇮'},
+  {code: 'no', name: 'Norwegian', nativeName: 'Norsk', flag: '🇳🇴'},
+  {code: 'cs', name: 'Czech', nativeName: 'Čeština', flag: '🇨🇿'},
+  {code: 'hu', name: 'Hungarian', nativeName: 'Magyar', flag: '🇭🇺'},
+  {code: 'ro', name: 'Romanian', nativeName: 'Română', flag: '🇷🇴'},
+  {code: 'uk', name: 'Ukrainian', nativeName: 'Українська', flag: '🇺🇦'},
+  {code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵'},
+  {code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳'},
+  {code: 'ko', name: 'Korean', nativeName: '한국어', flag: '🇰🇵'},
+  {code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇵🇸', rtl: true},
+  {code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳'},
+  {code: 'th', name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭'},
+  {code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳'},
+  {code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩'},
+  {code: 'arm', name: 'Aramaic', nativeName: 'ܐܪܡܝܐ', flag: '🏛️', rtl: true},
+  {code: 'am', name: 'Amharic', nativeName: 'አማርኛ', flag: '🇪🇹'},
+  {code: 'fa', name: 'Persian', nativeName: 'فارسی', flag: '🇮🇷', rtl: true},
 ];
 
 export function getLanguageInfo(code: Language): LanguageInfo | undefined {
@@ -145,8 +172,16 @@ export interface ParsedBook {
 // ============================================================================
 
 export type PartOfSpeech =
-  | 'noun' | 'verb' | 'adjective' | 'adverb' | 'pronoun' | 'preposition'
-  | 'conjunction' | 'interjection' | 'article' | 'other';
+  | 'noun'
+  | 'verb'
+  | 'adjective'
+  | 'adverb'
+  | 'pronoun'
+  | 'preposition'
+  | 'conjunction'
+  | 'interjection'
+  | 'article'
+  | 'other';
 
 export interface WordEntry {
   id: string;
@@ -213,6 +248,20 @@ export interface ForeignWordData {
   startIndex: number;
   endIndex: number;
   wordEntry: WordEntry;
+  /** Other possible translations when target was slash/comma-delimited (e.g. "son/sa" → primary "son", alternatives ["sa"]) */
+  alternatives?: string[];
+}
+
+/** A starred/favourite word saved from the reader popup (stored separately from vocabulary) */
+export interface FavouriteWord {
+  id: string;
+  originalWord: string;
+  foreignWord: string;
+  sourceLanguage: Language;
+  targetLanguage: Language;
+  pronunciation?: string;
+  alternatives?: string[];
+  addedAt: number;
 }
 
 export interface ProcessedChapter extends Chapter {
@@ -256,7 +305,14 @@ export interface AchievementDefinition {
   icon: string;
   xpReward: number;
   /** Achievement type used to compute progress */
-  type: 'books_read' | 'words_learned' | 'reading_time' | 'streak' | 'streak_longest' | 'session_streak' | 'words_today';
+  type:
+    | 'books_read'
+    | 'words_learned'
+    | 'reading_time'
+    | 'streak'
+    | 'streak_longest'
+    | 'session_streak'
+    | 'words_today';
   threshold: number;
 }
 

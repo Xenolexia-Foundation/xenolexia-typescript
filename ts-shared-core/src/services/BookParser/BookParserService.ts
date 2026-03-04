@@ -8,13 +8,14 @@
  * Requires IFileSystem from host (Electron/React Native).
  */
 
-import type {BookFormat, ParsedBook} from '../../types';
-import type {IBookParser, ParserOptions} from './types';
-import type { IFileSystem } from '../../adapters';
 import {EPUBParser} from './EPUBParser';
 import {FB2Parser} from './FB2Parser';
-import {TXTParser} from './TXTParser';
 import {MOBIParser} from './MOBIParser';
+import {TXTParser} from './TXTParser';
+
+import type {IBookParser, ParserOptions} from './types';
+import type {IFileSystem} from '../../adapters';
+import type {BookFormat, ParsedBook} from '../../types';
 
 export class BookParserService {
   private parsers: Map<string, IBookParser> = new Map();
@@ -24,11 +25,7 @@ export class BookParserService {
   /**
    * Parse a book file based on its format
    */
-  async parse(
-    filePath: string,
-    format: BookFormat,
-    options?: ParserOptions,
-  ): Promise<ParsedBook> {
+  async parse(filePath: string, format: BookFormat, options?: ParserOptions): Promise<ParsedBook> {
     const parser = this.getParser(filePath, format, options);
     return parser.parse(filePath);
   }
@@ -36,11 +33,7 @@ export class BookParserService {
   /**
    * Get or create a parser for the given file
    */
-  getParser(
-    filePath: string,
-    format: BookFormat,
-    options?: ParserOptions,
-  ): IBookParser {
+  getParser(filePath: string, format: BookFormat, options?: ParserOptions): IBookParser {
     const existingParser = this.parsers.get(filePath);
     if (existingParser) return existingParser;
 

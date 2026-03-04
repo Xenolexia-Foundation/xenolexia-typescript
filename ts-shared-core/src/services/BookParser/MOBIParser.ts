@@ -5,14 +5,21 @@
 
 /**
  * MOBI Parser - Parses Mobipocket and Kindle (KF8/AZW3) format
- * 
+ *
  * Uses @lingo-reader/mobi-parser library for parsing MOBI files
  */
 
-import {initMobiFile, type Mobi, type MobiSpine, type MobiMetadata, type MobiToc} from '@lingo-reader/mobi-parser';
-import type {ParsedBook, Chapter, BookMetadata, TableOfContentsItem} from '../../types';
+import {
+  initMobiFile,
+  type Mobi,
+  type MobiSpine,
+  type MobiMetadata,
+  type MobiToc,
+} from '@lingo-reader/mobi-parser';
+
 import type {IBookParser} from './types';
-import type { IFileSystem } from '../../adapters';
+import type {IFileSystem} from '../../adapters';
+import type {ParsedBook, Chapter, BookMetadata, TableOfContentsItem} from '../../types';
 
 // ============================================================================
 // MOBI Parser Implementation
@@ -49,30 +56,36 @@ export class MOBIParser implements IBookParser {
           fileData[i] = binaryString.charCodeAt(i);
         }
       } catch (error) {
-        if (filePath.startsWith('http://') || filePath.startsWith('https://') || filePath.startsWith('blob:')) {
+        if (
+          filePath.startsWith('http://') ||
+          filePath.startsWith('https://') ||
+          filePath.startsWith('blob:')
+        ) {
           const response = await fetch(filePath);
           const arrayBuffer = await response.arrayBuffer();
           fileData = new Uint8Array(arrayBuffer);
         } else {
-          throw new Error(`Cannot read MOBI file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`);
+          throw new Error(
+            `Cannot read MOBI file: ${filePath}. ${error instanceof Error ? error.message : 'Unknown error'}`
+          );
         }
       }
-      
+
       // Initialize MOBI file
       this.mobi = await initMobiFile(fileData);
-      
+
       // Extract metadata
       this.metadata = this.extractMetadata();
-      
+
       // Extract chapters
       this.chapters = this.extractChapters();
-      
+
       // Extract table of contents
       this.toc = this.extractTableOfContents();
-      
+
       // Calculate total word count
       const totalWordCount = this.chapters.reduce((sum, ch) => sum + ch.wordCount, 0);
-      
+
       return {
         metadata: this.metadata,
         chapters: this.chapters,
@@ -94,13 +107,14 @@ export class MOBIParser implements IBookParser {
     if (!this.mobi) {
       return {title: 'Unknown', author: 'Unknown'};
     }
-    
+
     try {
       const metadata: MobiMetadata = this.mobi.getMetadata();
-      
+
       return {
         title: metadata.title || 'Untitled',
-        author: metadata.author && metadata.author.length > 0 ? metadata.author.join(', ') : undefined,
+        author:
+          metadata.author && metadata.author.length > 0 ? metadata.author.join(', ') : undefined,
         description: metadata.description || undefined,
         language: metadata.language || undefined,
       };
@@ -117,30 +131,30 @@ export class MOBIParser implements IBookParser {
     if (!this.mobi) {
       return [];
     }
-    
+
     try {
       // Get spine (ordered list of content sections)
       const spine: MobiSpine = this.mobi.getSpine();
       const chapters: Chapter[] = [];
-      
+
       if (spine && spine.length > 0) {
         // Process each section in the spine
         spine.forEach((chapterItem, index) => {
           try {
             // Load chapter content
             const processedChapter = this.mobi!.loadChapter(chapterItem.id);
-            
+
             if (processedChapter && processedChapter.html) {
               // Extract title from HTML (try h1, h2, or first text)
               const titleMatch = processedChapter.html.match(/<h[12][^>]*>(.*?)<\/h[12]>/i);
-              const title = titleMatch 
-                ? this.stripHtml(titleMatch[1]).trim() 
+              const title = titleMatch
+                ? this.stripHtml(titleMatch[1]).trim()
                 : `Chapter ${index + 1}`;
-              
+
               // Clean and process HTML content
               const content = this.cleanHtml(processedChapter.html);
               const wordCount = this.countWords(content);
-              
+
               chapters.push({
                 id: chapterItem.id || `chapter-${index}`,
                 title,
@@ -171,7 +185,7 @@ export class MOBIParser implements IBookParser {
           }
         });
       }
-      
+
       // Ensure at least one chapter
       if (chapters.length === 0) {
         chapters.push({
@@ -182,18 +196,20 @@ export class MOBIParser implements IBookParser {
           wordCount: 0,
         });
       }
-      
+
       return chapters;
     } catch (error) {
       console.error('Failed to extract chapters:', error);
       // Return empty chapter as fallback
-      return [{
-        id: 'chapter-0',
-        title: 'Chapter 1',
-        index: 0,
-        content: '<p>Failed to parse content</p>',
-        wordCount: 0,
-      }];
+      return [
+        {
+          id: 'chapter-0',
+          title: 'Chapter 1',
+          index: 0,
+          content: '<p>Failed to parse content</p>',
+          wordCount: 0,
+        },
+      ];
     }
   }
 
@@ -208,7 +224,7 @@ export class MOBIParser implements IBookParser {
       const toc = this.mobi.getToc();
       const tocItems: TableOfContentsItem[] = [];
       if (toc && toc.length > 0) {
-        toc.forEach((item: { title?: string; href?: string; level?: number }, index: number) => {
+        toc.forEach((item: {title?: string; href?: string; level?: number}, index: number) => {
           tocItems.push({
             id: `chapter-${index}`,
             title: item.title || `Chapter ${index + 1}`,
@@ -227,7 +243,7 @@ export class MOBIParser implements IBookParser {
           });
         });
       }
-      
+
       return tocItems;
     } catch (error) {
       console.warn('Failed to extract TOC, using chapter list:', error);
@@ -248,7 +264,7 @@ export class MOBIParser implements IBookParser {
     if (index < 0 || index >= this.chapters.length) {
       throw new Error(`Chapter index ${index} out of range`);
     }
-    
+
     return this.chapters[index];
   }
 
@@ -272,30 +288,39 @@ export class MOBIParser implements IBookParser {
   /**
    * Search within the book
    */
-  async search(query: string): Promise<Array<{chapterIndex: number; chapterTitle: string; excerpt: string; position: number}>> {
-    const results: Array<{chapterIndex: number; chapterTitle: string; excerpt: string; position: number}> = [];
+  async search(
+    query: string
+  ): Promise<
+    Array<{chapterIndex: number; chapterTitle: string; excerpt: string; position: number}>
+  > {
+    const results: Array<{
+      chapterIndex: number;
+      chapterTitle: string;
+      excerpt: string;
+      position: number;
+    }> = [];
     const lowerQuery = query.toLowerCase();
-    
+
     this.chapters.forEach((chapter, chapterIndex) => {
       const content = chapter.content.toLowerCase();
       let position = 0;
-      
+
       while ((position = content.indexOf(lowerQuery, position)) !== -1) {
         const start = Math.max(0, position - 50);
         const end = Math.min(content.length, position + query.length + 50);
         const excerpt = chapter.content.substring(start, end);
-        
+
         results.push({
           chapterIndex,
           chapterTitle: chapter.title,
           excerpt,
           position,
         });
-        
+
         position += query.length;
       }
     });
-    
+
     return results;
   }
 
@@ -306,13 +331,13 @@ export class MOBIParser implements IBookParser {
     // Remove script and style tags
     let cleaned = html.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
     cleaned = cleaned.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '');
-    
+
     // Ensure we have valid HTML structure
     if (!cleaned.trim().startsWith('<')) {
       // Wrap in paragraph if no HTML tags
       cleaned = `<p>${this.escapeHtml(cleaned)}</p>`;
     }
-    
+
     return cleaned;
   }
 

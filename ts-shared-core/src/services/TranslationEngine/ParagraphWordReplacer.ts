@@ -12,9 +12,10 @@
  * - Produces the same foreign-word markers for hover/click
  */
 
-import type { WordEntry, ForeignWordData } from '../../types';
-import type { Token } from './Tokenizer';
-import { Tokenizer } from './Tokenizer';
+import {Tokenizer} from './Tokenizer';
+
+import type {Token} from './Tokenizer';
+import type {WordEntry, ForeignWordData} from '../../types';
 
 // ============================================================================
 // Types
@@ -44,7 +45,12 @@ const DEFAULT_OPTIONS: Required<ParagraphWordReplacerOptions> = {
 export interface ParagraphWordReplacerResult {
   content: string;
   foreignWords: ForeignWordData[];
-  stats: { totalWords: number; eligibleWords: number; replacedWords: number; paragraphsProcessed: number };
+  stats: {
+    totalWords: number;
+    eligibleWords: number;
+    replacedWords: number;
+    paragraphsProcessed: number;
+  };
 }
 
 /** Offline lookup: only returns entries from the in-app dictionary (no API) */
@@ -60,7 +66,7 @@ export type OfflineLookup = (
 
 const BLOCK_BOUNDARY_REGEX = /<\s*\/?(?:p|div|h[1-6])(?:\s[^>]*)?\s*>/gi;
 
-function getParagraphRanges(html: string): Array<{ start: number; end: number }> {
+function getParagraphRanges(html: string): Array<{start: number; end: number}> {
   const boundaries: number[] = [0];
   let m: RegExpExecArray | null;
   BLOCK_BOUNDARY_REGEX.lastIndex = 0;
@@ -69,13 +75,26 @@ function getParagraphRanges(html: string): Array<{ start: number; end: number }>
   }
   boundaries.push(html.length);
 
-  const ranges: Array<{ start: number; end: number }> = [];
+  const ranges: Array<{start: number; end: number}> = [];
   for (let i = 0; i < boundaries.length - 1; i++) {
     const start = boundaries[i];
     const end = boundaries[i + 1];
-    if (end > start) ranges.push({ start, end });
+    if (end > start) ranges.push({start, end});
   }
   return ranges;
+}
+
+/** Split slash- or comma-delimited translation into primary (first) and other options */
+export function parseTargetOptions(targetWord: string): {primary: string; alternatives: string[]} {
+  const raw = targetWord.trim();
+  if (!raw) return {primary: '', alternatives: []};
+  const parts = raw
+    .split(/[/,]/)
+    .map(s => s.trim())
+    .filter(Boolean);
+  if (parts.length <= 1) return {primary: raw, alternatives: []};
+  const [primary, ...rest] = parts;
+  return {primary: primary ?? raw, alternatives: rest};
 }
 
 // ============================================================================
@@ -87,7 +106,7 @@ export class ParagraphWordReplacer {
   private options: Required<ParagraphWordReplacerOptions>;
 
   constructor(options: Partial<ParagraphWordReplacerOptions> = {}) {
-    this.options = { ...DEFAULT_OPTIONS, ...options };
+    this.options = {...DEFAULT_OPTIONS, ...options};
     this.tokenizer = new Tokenizer({
       skipQuotes: true,
       skipNames: true,
@@ -114,16 +133,14 @@ export class ParagraphWordReplacer {
     // Build token index by paragraph
     const tokensByParagraph: Token[][] = [];
     for (const range of ranges) {
-      const inRange = tokens.filter(
-        (t) => t.startIndex >= range.start && t.endIndex <= range.end
-      );
+      const inRange = tokens.filter(t => t.startIndex >= range.start && t.endIndex <= range.end);
       tokensByParagraph.push(inRange);
     }
 
     const proficiencyOrder = ['beginner', 'intermediate', 'advanced'];
     const maxLevelIndex = proficiencyOrder.indexOf(this.options.proficiencyLevel);
 
-    const allCandidates: Array<{ token: Token; entry: WordEntry }> = [];
+    const allCandidates: Array<{token: Token; entry: WordEntry}> = [];
     let totalWords = 0;
     let eligibleWords = 0;
 
@@ -131,11 +148,11 @@ export class ParagraphWordReplacer {
       if (paraTokens.length === 0) continue;
       totalWords += paraTokens.length;
 
-      const uniqueWords = [...new Set(paraTokens.filter((t) => !t.isProtected).map((t) => t.word))];
+      const uniqueWords = [...new Set(paraTokens.filter(t => !t.isProtected).map(t => t.word))];
       if (uniqueWords.length === 0) continue;
 
       const wordEntries = await lookup(uniqueWords, sourceLanguage, targetLanguage);
-      const paraCandidates: Array<{ token: Token; entry: WordEntry }> = [];
+      const paraCandidates: Array<{token: Token; entry: WordEntry}> = [];
 
       for (const token of paraTokens) {
         if (token.isProtected || this.options.excludeWords.has(token.word)) continue;
@@ -143,14 +160,17 @@ export class ParagraphWordReplacer {
         if (!entry) continue;
         const levelIndex = proficiencyOrder.indexOf(entry.proficiencyLevel);
         if (levelIndex > maxLevelIndex) continue;
-        paraCandidates.push({ token, entry });
+        paraCandidates.push({token, entry});
       }
 
       eligibleWords += paraCandidates.length;
 
       const cap = Math.min(
         this.options.wordsPerParagraphMax,
-        Math.max(this.options.wordsPerParagraphMin, Math.floor(paraTokens.length * this.options.maxFractionPerParagraph))
+        Math.max(
+          this.options.wordsPerParagraphMin,
+          Math.floor(paraTokens.length * this.options.maxFractionPerParagraph)
+        )
       );
       const toTake = Math.min(cap, paraCandidates.length);
       if (toTake === 0) continue;
@@ -159,10 +179,10 @@ export class ParagraphWordReplacer {
       const step = paraCandidates.length / toTake;
       const selected = new Set<number>();
       for (let i = 0; i < toTake; i++) {
-        const idx = Math.min(Math.floor(i * step + (step * 0.3)), paraCandidates.length - 1);
+        const idx = Math.min(Math.floor(i * step + step * 0.3), paraCandidates.length - 1);
         selected.add(idx);
       }
-      selected.forEach((idx) => allCandidates.push(paraCandidates[idx]));
+      selected.forEach(idx => allCandidates.push(paraCandidates[idx]));
     }
 
     const sortedCandidates = [...allCandidates].sort(
@@ -172,9 +192,10 @@ export class ParagraphWordReplacer {
     let modifiedHtml = html;
     const foreignWords: ForeignWordData[] = [];
 
-    for (const { token, entry } of sortedCandidates) {
-      const foreignWord = this.preserveCase(token.original, entry.targetWord);
-      const marker = this.createMarker(foreignWord, entry, token);
+    for (const {token, entry} of sortedCandidates) {
+      const {primary, alternatives} = parseTargetOptions(entry.targetWord);
+      const foreignWord = this.preserveCase(token.original, primary);
+      const marker = this.createMarker(foreignWord, entry, token, alternatives);
       modifiedHtml =
         modifiedHtml.substring(0, token.startIndex) +
         marker +
@@ -185,6 +206,7 @@ export class ParagraphWordReplacer {
         startIndex: token.startIndex,
         endIndex: token.startIndex + marker.length,
         wordEntry: entry,
+        ...(alternatives.length > 0 && {alternatives}),
       });
     }
     foreignWords.reverse();
@@ -203,14 +225,23 @@ export class ParagraphWordReplacer {
 
   private preserveCase(original: string, replacement: string): string {
     if (!original || !replacement) return replacement;
-    if (original === original.toUpperCase() && original.length > 1) return replacement.toUpperCase();
-    if (original[0] === original[0].toUpperCase() && original.slice(1) === original.slice(1).toLowerCase()) {
+    if (original === original.toUpperCase() && original.length > 1)
+      return replacement.toUpperCase();
+    if (
+      original[0] === original[0].toUpperCase() &&
+      original.slice(1) === original.slice(1).toLowerCase()
+    ) {
       return replacement[0].toUpperCase() + replacement.slice(1).toLowerCase();
     }
     return replacement.toLowerCase();
   }
 
-  private createMarker(foreignWord: string, entry: WordEntry, token: Token): string {
+  private createMarker(
+    foreignWord: string,
+    entry: WordEntry,
+    token: Token,
+    alternatives: string[] = []
+  ): string {
     const escape = (s: string) =>
       s
         .replace(/&/g, '&amp;')
@@ -225,6 +256,8 @@ export class ParagraphWordReplacer {
       `data-pos="${escape(entry.partOfSpeech)}"`,
     ];
     if (entry.pronunciation) attrs.push(`data-pronunciation="${escape(entry.pronunciation)}"`);
+    if (alternatives.length > 0)
+      attrs.push(`data-alternatives="${escape(alternatives.join('|'))}"`);
     return `<span ${attrs.join(' ')}>${escape(foreignWord)}</span>`;
   }
 }

@@ -9,7 +9,11 @@
  */
 
 import type {VocabularyItem, VocabularyStatus, Language} from '../../../types';
-import type {VocabularyRow, VocabularyFilter as DataVocabularyFilter, IDataStore} from '../DataStore.types';
+import type {
+  VocabularyRow,
+  VocabularyFilter as DataVocabularyFilter,
+  IDataStore,
+} from '../DataStore.types';
 
 // ============================================================================
 // Types
@@ -132,9 +136,13 @@ export class VocabularyRepository {
     const all = await this.db.getVocabulary({sort: {by: 'addedAt', order: 'desc'}, limit: 999});
     const q = (query || '').toLowerCase();
     const filtered = all.filter(
-      (r) =>
-        String(r.source_word || '').toLowerCase().includes(q) ||
-        String(r.target_word || '').toLowerCase().includes(q)
+      r =>
+        String(r.source_word || '')
+          .toLowerCase()
+          .includes(q) ||
+        String(r.target_word || '')
+          .toLowerCase()
+          .includes(q)
     );
     return filtered.map(rowToVocabulary);
   }

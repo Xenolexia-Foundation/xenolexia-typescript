@@ -20,7 +20,8 @@
  */
 
 import JSZip from 'jszip';
-import type { IFileSystem } from '../../adapters';
+
+import type {IFileSystem} from '../../adapters';
 
 // ============================================================================
 // Types
@@ -112,9 +113,7 @@ export class EPUBExtractor {
 
     // Parse rootfile path from container.xml
     // <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
-    const rootfileMatch = containerXml.match(
-      /rootfile[^>]+full-path=["']([^"']+)["']/i,
-    );
+    const rootfileMatch = containerXml.match(/rootfile[^>]+full-path=["']([^"']+)["']/i);
 
     if (!rootfileMatch) {
       throw new Error('Invalid EPUB: cannot find rootfile in container.xml');
@@ -153,9 +152,7 @@ export class EPUBExtractor {
     const version = versionMatch?.[1] || '2.0';
 
     // Extract unique identifier attribute
-    const uniqueIdMatch = opfXml.match(
-      /<package[^>]+unique-identifier=["']([^"']+)["']/i,
-    );
+    const uniqueIdMatch = opfXml.match(/<package[^>]+unique-identifier=["']([^"']+)["']/i);
     const uniqueIdentifier = uniqueIdMatch?.[1] || '';
 
     // Parse metadata
@@ -189,9 +186,7 @@ export class EPUBExtractor {
    */
   private parseMetadata(opfXml: string): EPUBRawMetadata {
     // Extract metadata block
-    const metadataMatch = opfXml.match(
-      /<metadata[^>]*>([\s\S]*?)<\/metadata>/i,
-    );
+    const metadataMatch = opfXml.match(/<metadata[^>]*>([\s\S]*?)<\/metadata>/i);
     const metadataXml = metadataMatch?.[1] || '';
 
     // Helper to extract tag content
@@ -250,14 +245,11 @@ export class EPUBExtractor {
     const manifest = new Map<string, EPUBManifestItem>();
 
     // Extract manifest block
-    const manifestMatch = opfXml.match(
-      /<manifest[^>]*>([\s\S]*?)<\/manifest>/i,
-    );
+    const manifestMatch = opfXml.match(/<manifest[^>]*>([\s\S]*?)<\/manifest>/i);
     const manifestXml = manifestMatch?.[1] || '';
 
     // Match each item
-    const itemPattern =
-      /<item\s+([^>]*)\/?>(?:<\/item>)?/gi;
+    const itemPattern = /<item\s+([^>]*)\/?>(?:<\/item>)?/gi;
     let match;
 
     while ((match = itemPattern.exec(manifestXml)) !== null) {
@@ -315,10 +307,7 @@ export class EPUBExtractor {
   /**
    * Find TOC document ID
    */
-  private findTocId(
-    opfXml: string,
-    manifest: Map<string, EPUBManifestItem>,
-  ): string | undefined {
+  private findTocId(opfXml: string, manifest: Map<string, EPUBManifestItem>): string | undefined {
     // EPUB 3: Look for nav document in manifest
     for (const [id, item] of manifest) {
       if (item.properties?.includes('nav')) {
@@ -334,10 +323,7 @@ export class EPUBExtractor {
 
     // Fallback: Look for ncx file in manifest
     for (const [id, item] of manifest) {
-      if (
-        item.mediaType === 'application/x-dtbncx+xml' ||
-        item.href.endsWith('.ncx')
-      ) {
+      if (item.mediaType === 'application/x-dtbncx+xml' || item.href.endsWith('.ncx')) {
         return id;
       }
     }
@@ -350,7 +336,7 @@ export class EPUBExtractor {
    */
   private findCoverImageId(
     opfXml: string,
-    manifest: Map<string, EPUBManifestItem>,
+    manifest: Map<string, EPUBManifestItem>
   ): string | undefined {
     // EPUB 3: Look for cover-image property
     for (const [id, item] of manifest) {
@@ -361,26 +347,21 @@ export class EPUBExtractor {
 
     // EPUB 2: Look for meta with name="cover"
     const coverMetaMatch = opfXml.match(
-      /<meta[^>]+name=["']cover["'][^>]+content=["']([^"']+)["']/i,
+      /<meta[^>]+name=["']cover["'][^>]+content=["']([^"']+)["']/i
     );
     if (coverMetaMatch) {
       return coverMetaMatch[1];
     }
 
     // Alternative meta format
-    const coverMetaAlt = opfXml.match(
-      /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']cover["']/i,
-    );
+    const coverMetaAlt = opfXml.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']cover["']/i);
     if (coverMetaAlt) {
       return coverMetaAlt[1];
     }
 
     // Fallback: Look for item with 'cover' in id
     for (const [id, item] of manifest) {
-      if (
-        id.toLowerCase().includes('cover') &&
-        item.mediaType.startsWith('image/')
-      ) {
+      if (id.toLowerCase().includes('cover') && item.mediaType.startsWith('image/')) {
         return id;
       }
     }
@@ -483,10 +464,7 @@ export class EPUBExtractor {
   /**
    * Resolve stylesheet links in HTML content
    */
-  async resolveStylesheets(
-    html: string,
-    manifest: Map<string, EPUBManifestItem>
-  ): Promise<string> {
+  async resolveStylesheets(html: string, manifest: Map<string, EPUBManifestItem>): Promise<string> {
     // Find all linked stylesheets
     const linkRegex = /<link[^>]*href=["']([^"']+\.css)["'][^>]*>/gi;
     let match;
@@ -526,7 +504,7 @@ export class EPUBExtractor {
     if (!this.zip) return [];
 
     const files: string[] = [];
-    this.zip.forEach((relativePath) => {
+    this.zip.forEach(relativePath => {
       files.push(relativePath);
     });
     return files;
@@ -551,9 +529,7 @@ export class EPUBExtractor {
       .replace(/&#39;/g, "'")
       .replace(/&apos;/g, "'")
       .replace(/&#(\d+);/g, (_, num) => String.fromCharCode(parseInt(num, 10)))
-      .replace(/&#x([a-fA-F0-9]+);/g, (_, hex) =>
-        String.fromCharCode(parseInt(hex, 16)),
-      );
+      .replace(/&#x([a-fA-F0-9]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
   }
 
   /**

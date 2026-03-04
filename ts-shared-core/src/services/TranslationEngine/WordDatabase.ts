@@ -203,7 +203,7 @@ export class WordDatabaseService {
     level: ProficiencyLevel
   ): Promise<WordEntry[]> {
     const rows = await this.db.getWordListByLevel(sourceLanguage, targetLanguage, level);
-    return rows.map((row) => this.rowToWordEntry(row));
+    return rows.map(row => this.rowToWordEntry(row));
   }
 
   /**
@@ -219,7 +219,7 @@ export class WordDatabaseService {
       limit: count,
       random: true,
     });
-    return rows.map((row) => this.rowToWordEntry(row));
+    return rows.map(row => this.rowToWordEntry(row));
   }
 
   /**
@@ -232,7 +232,7 @@ export class WordDatabaseService {
     limit: number = 20
   ): Promise<WordEntry[]> {
     const rows = await this.db.getWordListSearch(sourceLanguage, targetLanguage, query, limit);
-    return rows.map((row) => this.rowToWordEntry(row));
+    return rows.map(row => this.rowToWordEntry(row));
   }
 
   /**
@@ -247,7 +247,10 @@ export class WordDatabaseService {
    */
   async getStats(sourceLanguage: Language, targetLanguage: Language): Promise<WordDatabaseStats> {
     const total = await this.getWordCount(sourceLanguage, targetLanguage);
-    const byProficiencyRaw = await this.db.getWordListProficiencyCounts(sourceLanguage, targetLanguage);
+    const byProficiencyRaw = await this.db.getWordListProficiencyCounts(
+      sourceLanguage,
+      targetLanguage
+    );
     const byPartOfSpeech = await this.db.getWordListPosCounts(sourceLanguage, targetLanguage);
     const byProficiency = {
       beginner: byProficiencyRaw.beginner ?? 0,

@@ -84,27 +84,10 @@ const SKIP_TAGS = new Set([
 ]);
 
 /** Common English contractions to handle */
-const CONTRACTIONS = new Set([
-  "n't",
-  "'s",
-  "'re",
-  "'ve",
-  "'ll",
-  "'d",
-  "'m",
-]);
+const CONTRACTIONS = new Set(["n't", "'s", "'re", "'ve", "'ll", "'d", "'m"]);
 
 /** Common proper name prefixes */
-const NAME_PREFIXES = new Set([
-  'mr',
-  'mrs',
-  'ms',
-  'dr',
-  'prof',
-  'sir',
-  'lord',
-  'lady',
-]);
+const NAME_PREFIXES = new Set(['mr', 'mrs', 'ms', 'dr', 'prof', 'sir', 'lord', 'lady']);
 
 /** Common abbreviations that shouldn't be translated */
 const ABBREVIATIONS = new Set([
@@ -169,7 +152,7 @@ export class Tokenizer {
     let currentIndex = 0;
     let insideSkipTag = false;
     let skipTagName = '';
-    let quoteDepth = 0;
+    const quoteDepth = 0;
 
     // Regex to match HTML tags
     const tagRegex = /<\/?([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g;
@@ -191,7 +174,9 @@ export class Tokenizer {
             endIndex: tagStart,
             isProtected: insideSkipTag || quoteDepth > 0,
             protectionType: insideSkipTag
-              ? (skipTagName === 'code' || skipTagName === 'pre' ? 'code' : 'script')
+              ? skipTagName === 'code' || skipTagName === 'pre'
+                ? 'code'
+                : 'script'
               : quoteDepth > 0
                 ? 'quote'
                 : undefined,
@@ -239,7 +224,8 @@ export class Tokenizer {
 
     // Word pattern: supports Latin and common Unicode letters
     // Handles contractions and hyphenated words
-    const wordPattern = /([^\w\u00C0-\u024F\u1E00-\u1EFF]*)([\w\u00C0-\u024F\u1E00-\u1EFF]+(?:[''][\w\u00C0-\u024F\u1E00-\u1EFF]+)?(?:-[\w\u00C0-\u024F\u1E00-\u1EFF]+)*)([^\w\u00C0-\u024F\u1E00-\u1EFF]*)/g;
+    const wordPattern =
+      /([^\w\u00C0-\u024F\u1E00-\u1EFF]*)([\w\u00C0-\u024F\u1E00-\u1EFF]+(?:[''][\w\u00C0-\u024F\u1E00-\u1EFF]+)?(?:-[\w\u00C0-\u024F\u1E00-\u1EFF]+)*)([^\w\u00C0-\u024F\u1E00-\u1EFF]*)/g;
 
     let match;
     let inQuote = false;
@@ -252,7 +238,14 @@ export class Tokenizer {
 
       // Track quotes in prefix
       for (const char of prefix) {
-        if (char === '"' || char === '\u201C' || char === '\u201D' || char === "'" || char === '\u2018' || char === '\u2019') {
+        if (
+          char === '"' ||
+          char === '\u201C' ||
+          char === '\u201D' ||
+          char === "'" ||
+          char === '\u2018' ||
+          char === '\u2019'
+        ) {
           if (!inQuote) {
             inQuote = true;
             lastQuoteChar = char;
@@ -302,7 +295,14 @@ export class Tokenizer {
 
       // Track quotes in suffix
       for (const char of suffix) {
-        if (char === '"' || char === '\u201C' || char === '\u201D' || char === "'" || char === '\u2018' || char === '\u2019') {
+        if (
+          char === '"' ||
+          char === '\u201C' ||
+          char === '\u201D' ||
+          char === "'" ||
+          char === '\u2018' ||
+          char === '\u2019'
+        ) {
           if (inQuote && this.isMatchingQuote(lastQuoteChar, char)) {
             inQuote = false;
           }
@@ -398,7 +398,7 @@ export class Tokenizer {
    * Update tokenizer options
    */
   updateOptions(options: Partial<TokenizerOptions>): void {
-    this.options = { ...this.options, ...options };
+    this.options = {...this.options, ...options};
   }
 
   /**

@@ -10,37 +10,37 @@
  * getBundledWordsVerified() returns only entries that pass this check to reduce errors from the English bridge.
  */
 
-import type { Language } from '../types';
-import type { WordData } from '../types';
-import { ALL_WORDS_EN_EL } from './words_en_el';
-import { ALL_WORDS_EN_ES } from './words_en_es';
-import { ALL_WORDS_EN_FR } from './words_en_fr';
-import { ALL_WORDS_EN_DE } from './words_en_de';
-import { ALL_WORDS_EN_IT } from './words_en_it';
-import { ALL_WORDS_EN_PT } from './words_en_pt';
-import { ALL_WORDS_EN_RU } from './words_en_ru';
-import { ALL_WORDS_EN_JA } from './words_en_ja';
-import { ALL_WORDS_EN_ZH } from './words_en_zh';
-import { ALL_WORDS_EN_KO } from './words_en_ko';
-import { ALL_WORDS_EN_AR } from './words_en_ar';
-import { ALL_WORDS_EN_NL } from './words_en_nl';
-import { ALL_WORDS_EN_PL } from './words_en_pl';
-import { ALL_WORDS_EN_TR } from './words_en_tr';
-import { ALL_WORDS_EN_SV } from './words_en_sv';
-import { ALL_WORDS_EN_DA } from './words_en_da';
-import { ALL_WORDS_EN_FI } from './words_en_fi';
-import { ALL_WORDS_EN_NO } from './words_en_no';
-import { ALL_WORDS_EN_CS } from './words_en_cs';
-import { ALL_WORDS_EN_HU } from './words_en_hu';
-import { ALL_WORDS_EN_RO } from './words_en_ro';
-import { ALL_WORDS_EN_UK } from './words_en_uk';
-import { ALL_WORDS_EN_HI } from './words_en_hi';
-import { ALL_WORDS_EN_TH } from './words_en_th';
-import { ALL_WORDS_EN_VI } from './words_en_vi';
-import { ALL_WORDS_EN_ID } from './words_en_id';
-import { ALL_WORDS_EN_ARM } from './words_en_arm';
-import { ALL_WORDS_EN_AM } from './words_en_am';
-import { ALL_WORDS_EN_FA } from './words_en_fa';
+import {ALL_WORDS_EN_AM} from './words_en_am';
+import {ALL_WORDS_EN_AR} from './words_en_ar';
+import {ALL_WORDS_EN_ARM} from './words_en_arm';
+import {ALL_WORDS_EN_CS} from './words_en_cs';
+import {ALL_WORDS_EN_DA} from './words_en_da';
+import {ALL_WORDS_EN_DE} from './words_en_de';
+import {ALL_WORDS_EN_EL} from './words_en_el';
+import {ALL_WORDS_EN_ES} from './words_en_es';
+import {ALL_WORDS_EN_FA} from './words_en_fa';
+import {ALL_WORDS_EN_FI} from './words_en_fi';
+import {ALL_WORDS_EN_FR} from './words_en_fr';
+import {ALL_WORDS_EN_HI} from './words_en_hi';
+import {ALL_WORDS_EN_HU} from './words_en_hu';
+import {ALL_WORDS_EN_ID} from './words_en_id';
+import {ALL_WORDS_EN_IT} from './words_en_it';
+import {ALL_WORDS_EN_JA} from './words_en_ja';
+import {ALL_WORDS_EN_KO} from './words_en_ko';
+import {ALL_WORDS_EN_NL} from './words_en_nl';
+import {ALL_WORDS_EN_NO} from './words_en_no';
+import {ALL_WORDS_EN_PL} from './words_en_pl';
+import {ALL_WORDS_EN_PT} from './words_en_pt';
+import {ALL_WORDS_EN_RO} from './words_en_ro';
+import {ALL_WORDS_EN_RU} from './words_en_ru';
+import {ALL_WORDS_EN_SV} from './words_en_sv';
+import {ALL_WORDS_EN_TH} from './words_en_th';
+import {ALL_WORDS_EN_TR} from './words_en_tr';
+import {ALL_WORDS_EN_UK} from './words_en_uk';
+import {ALL_WORDS_EN_VI} from './words_en_vi';
+import {ALL_WORDS_EN_ZH} from './words_en_zh';
+
+import type {WordData, Language} from '../types';
 
 type NonEn = Exclude<Language, 'en'>;
 
@@ -93,7 +93,7 @@ export function getBundledWords(source: Language, target: Language): WordData[] 
   if (target === 'en') {
     const list = BUNDLED_EN[source as NonEn];
     if (!list || list.length === 0) return null;
-    return list.map((w) => ({
+    return list.map(w => ({
       ...w,
       source: w.target,
       target: w.source,
@@ -151,7 +151,10 @@ export interface VerificationReport {
  * For a derived pair (S, T) where both are non-English: checks round-trip S → T → S'.
  * Returns a report per entry. For en→T or T→en we return a report with all passed (stored data is canonical).
  */
-export function getVerificationReport(source: Language, target: Language): VerificationReport | null {
+export function getVerificationReport(
+  source: Language,
+  target: Language
+): VerificationReport | null {
   const list = getBundledWords(source, target);
   if (!list || list.length === 0) return null;
 
@@ -161,23 +164,29 @@ export function getVerificationReport(source: Language, target: Language): Verif
 
   if (source === 'en' || target === 'en') {
     list.forEach((w, i) => {
-      entries.push({ index: i, source: w.source, target: w.target, roundTripBack: w.source, ok: true });
+      entries.push({
+        index: i,
+        source: w.source,
+        target: w.target,
+        roundTripBack: w.source,
+        ok: true,
+      });
       passed++;
     });
-    return { source, target, total: list.length, passed, failed, entries };
+    return {source, target, total: list.length, passed, failed, entries};
   }
 
   const reverseList = getBundledWords(target, source);
   if (!reverseList || reverseList.length === 0) {
     list.forEach((w, i) => {
-      entries.push({ index: i, source: w.source, target: w.target, roundTripBack: null, ok: false });
+      entries.push({index: i, source: w.source, target: w.target, roundTripBack: null, ok: false});
       failed++;
     });
-    return { source, target, total: list.length, passed: 0, failed: list.length, entries };
+    return {source, target, total: list.length, passed: 0, failed: list.length, entries};
   }
 
   const targetToSource = new Map<string, string>();
-  reverseList.forEach((w) => {
+  reverseList.forEach(w => {
     const key = normalizeWord(w.source);
     if (!targetToSource.has(key)) targetToSource.set(key, w.target);
   });
@@ -186,11 +195,12 @@ export function getVerificationReport(source: Language, target: Language): Verif
     const key = normalizeWord(w.target);
     const roundTripBack = targetToSource.get(key) ?? null;
     const ok = roundTripBack !== null && normalizeWord(roundTripBack) === normalizeWord(w.source);
-    entries.push({ index: i, source: w.source, target: w.target, roundTripBack, ok });
-    if (ok) passed++; else failed++;
+    entries.push({index: i, source: w.source, target: w.target, roundTripBack, ok});
+    if (ok) passed++;
+    else failed++;
   });
 
-  return { source, target, total: list.length, passed, failed, entries };
+  return {source, target, total: list.length, passed, failed, entries};
 }
 
 /**
@@ -212,12 +222,12 @@ export function getBundledWordsVerified(source: Language, target: Language): Wor
   if (!reverseList || reverseList.length === 0) return list;
 
   const targetToSource = new Map<string, string>();
-  reverseList.forEach((w) => {
+  reverseList.forEach(w => {
     const key = normalizeWord(w.source);
     if (!targetToSource.has(key)) targetToSource.set(key, w.target);
   });
 
-  return list.filter((w) => {
+  return list.filter(w => {
     const key = normalizeWord(w.target);
     const roundTripBack = targetToSource.get(key);
     return roundTripBack !== undefined && normalizeWord(roundTripBack) === normalizeWord(w.source);

@@ -8,9 +8,9 @@
  * Requires IFileSystem from host (Electron/React Native).
  */
 
-import type {ParsedBook, Chapter, BookMetadata, TableOfContentsItem} from '../../types';
 import type {IBookParser} from './types';
-import type { IFileSystem } from '../../adapters';
+import type {IFileSystem} from '../../adapters';
+import type {ParsedBook, Chapter, BookMetadata, TableOfContentsItem} from '../../types';
 
 export class TXTParser implements IBookParser {
   private filePath: string | null = null;
@@ -25,19 +25,23 @@ export class TXTParser implements IBookParser {
     this.filePath = filePath;
     const content = await this.fileSystem.readFileAsText(filePath);
     this.content = content;
-    
+
     // Extract metadata from filename
-    const filename = filePath.split('/').pop()?.replace(/\.txt$/i, '') || 'Untitled';
+    const filename =
+      filePath
+        .split('/')
+        .pop()
+        ?.replace(/\.txt$/i, '') || 'Untitled';
     const metadata: BookMetadata = {
       title: filename,
       author: undefined,
       description: undefined,
       language: undefined,
     };
-    
+
     // Split into chapters (by double newlines or page breaks)
     const chapters = this.splitIntoChapters(this.content);
-    
+
     // Create simple TOC
     const tableOfContents: TableOfContentsItem[] = chapters.map((_, index) => ({
       id: `chapter-${index}`,
@@ -45,13 +49,10 @@ export class TXTParser implements IBookParser {
       href: `#chapter-${index}`,
       level: 1,
     }));
-    
+
     // Calculate word count
-    const totalWordCount = this.content
-      .split(/\s+/)
-      .filter(word => word.length > 0)
-      .length;
-    
+    const totalWordCount = this.content.split(/\s+/).filter(word => word.length > 0).length;
+
     return {
       metadata,
       chapters,
@@ -67,12 +68,12 @@ export class TXTParser implements IBookParser {
     if (!this.content) {
       throw new Error('Book not parsed. Call parse() first.');
     }
-    
+
     const chapters = this.splitIntoChapters(this.content);
     if (index < 0 || index >= chapters.length) {
       throw new Error(`Chapter index ${index} out of range`);
     }
-    
+
     return chapters[index];
   }
 
@@ -83,7 +84,7 @@ export class TXTParser implements IBookParser {
     if (!this.content) {
       return [];
     }
-    
+
     const chapters = this.splitIntoChapters(this.content);
     return chapters.map((_, index) => ({
       id: `chapter-${index}`,
@@ -100,8 +101,12 @@ export class TXTParser implements IBookParser {
     if (!this.content) {
       throw new Error('Book not parsed. Call parse() first.');
     }
-    
-    const filename = this.filePath?.split('/').pop()?.replace(/\.txt$/i, '') || 'Untitled';
+
+    const filename =
+      this.filePath
+        ?.split('/')
+        .pop()
+        ?.replace(/\.txt$/i, '') || 'Untitled';
     return {
       title: filename,
       author: undefined,
@@ -113,36 +118,45 @@ export class TXTParser implements IBookParser {
   /**
    * Search within the book
    */
-  async search(query: string): Promise<Array<{chapterIndex: number; chapterTitle: string; excerpt: string; position: number}>> {
+  async search(
+    query: string
+  ): Promise<
+    Array<{chapterIndex: number; chapterTitle: string; excerpt: string; position: number}>
+  > {
     if (!this.content) {
       return [];
     }
-    
-    const results: Array<{chapterIndex: number; chapterTitle: string; excerpt: string; position: number}> = [];
+
+    const results: Array<{
+      chapterIndex: number;
+      chapterTitle: string;
+      excerpt: string;
+      position: number;
+    }> = [];
     const chapters = this.splitIntoChapters(this.content);
     const lowerQuery = query.toLowerCase();
-    
+
     chapters.forEach((chapter, chapterIndex) => {
       const content = chapter.content.toLowerCase();
       let position = 0;
-      
+
       while ((position = content.indexOf(lowerQuery, position)) !== -1) {
         // Extract context (50 chars before and after)
         const start = Math.max(0, position - 50);
         const end = Math.min(content.length, position + query.length + 50);
         const excerpt = chapter.content.substring(start, end);
-        
+
         results.push({
           chapterIndex,
           chapterTitle: chapter.title,
           excerpt,
           position,
         });
-        
+
         position += query.length;
       }
     });
-    
+
     return results;
   }
 
@@ -153,17 +167,17 @@ export class TXTParser implements IBookParser {
   private splitIntoChapters(content: string): Chapter[] {
     // Split by double newlines, form feeds, or page breaks
     const splits = content.split(/\n\s*\n|\f/);
-    
+
     // If no clear chapter breaks, split by approximate page length (2000 chars)
     if (splits.length === 1 && content.length > 5000) {
       const pageSize = 2000;
       const chapters: Chapter[] = [];
       let index = 0;
-      
+
       for (let i = 0; i < content.length; i += pageSize) {
         const chapterContent = content.substring(i, i + pageSize);
         const wordCount = chapterContent.split(/\s+/).filter(w => w.length > 0).length;
-        
+
         chapters.push({
           id: `chapter-${index}`,
           title: `Chapter ${index + 1}`,
@@ -172,10 +186,10 @@ export class TXTParser implements IBookParser {
           wordCount,
         });
       }
-      
+
       return chapters;
     }
-    
+
     // Use natural splits
     return splits
       .filter(split => split.trim().length > 0)

@@ -17,7 +17,22 @@ const SCRIPTS_DIR = path.join(__dirname, '');
 const CSV_PATH = path.join(SCRIPTS_DIR, 'word-freq-top5000.csv');
 
 function mapPOS(code) {
-  const m = { n: 'noun', v: 'verb', j: 'adjective', r: 'adverb', p: 'pronoun', i: 'preposition', c: 'conjunction', u: 'interjection', a: 'article', d: 'other', t: 'other', e: 'other', x: 'other', m: 'other' };
+  const m = {
+    n: 'noun',
+    v: 'verb',
+    j: 'adjective',
+    r: 'adverb',
+    p: 'pronoun',
+    i: 'preposition',
+    c: 'conjunction',
+    u: 'interjection',
+    a: 'article',
+    d: 'other',
+    t: 'other',
+    e: 'other',
+    x: 'other',
+    m: 'other',
+  };
   return m[code] || 'other';
 }
 
@@ -40,11 +55,11 @@ for (const line of lines) {
   const parts = line.split(',');
   if (parts.length < 3) continue;
   const rank = parseInt(parts[0], 10);
-  let word = parts[1].trim().toLowerCase();
+  const word = parts[1].trim().toLowerCase();
   if (!word || word === "n't" || word === "'s" || word === "''" || seen.has(word)) continue;
   seen.add(word);
   const posCode = (parts[2] || 'n').trim().toLowerCase();
-  entries.push({ rank: entries.length + 1, source: word, pos: mapPOS(posCode) });
+  entries.push({rank: entries.length + 1, source: word, pos: mapPOS(posCode)});
 }
 let idx = 501;
 while (entries.length < 500) {
@@ -53,11 +68,11 @@ while (entries.length < 500) {
   idx++;
   if (!line) break;
   const parts = line.split(',');
-  let word = (parts[1] || 'word').trim().toLowerCase();
+  const word = (parts[1] || 'word').trim().toLowerCase();
   if (seen.has(word)) continue;
   seen.add(word);
   const posCode = (parts[2] || 'n').trim().toLowerCase();
-  entries.push({ rank: entries.length + 1, source: word, pos: mapPOS(posCode) });
+  entries.push({rank: entries.length + 1, source: word, pos: mapPOS(posCode)});
 }
 
 const enLines = [

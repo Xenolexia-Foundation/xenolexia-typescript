@@ -8,10 +8,11 @@
  */
 
 import JSZip from 'jszip';
-import type { Chapter, ReaderSettings, ForeignWordData } from '../../types';
-import type { TranslationOptions } from '../TranslationEngine/types';
-import type { IFileSystem } from '../../adapters';
-import type { TranslationEngine } from '../TranslationEngine/TranslationEngine';
+
+import type {IFileSystem} from '../../adapters';
+import type {Chapter, ReaderSettings, ForeignWordData} from '../../types';
+import type {TranslationEngine} from '../TranslationEngine/TranslationEngine';
+import type {TranslationOptions} from '../TranslationEngine/types';
 
 // ============================================================================
 // Types
@@ -71,7 +72,7 @@ export class ChapterContentService {
   /** engineFactory: host provides (opts) => TranslationEngine (created with their DynamicWordDatabase) */
   constructor(
     private fileSystem: IFileSystem,
-    private engineFactory?: (opts: TranslationOptions) => TranslationEngine,
+    private engineFactory?: (opts: TranslationOptions) => TranslationEngine
   ) {}
 
   /**
@@ -87,8 +88,8 @@ export class ChapterContentService {
         base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
       }
       const content = base64;
-      this.zip = await JSZip.loadAsync(content, { base64: true });
-      
+      this.zip = await JSZip.loadAsync(content, {base64: true});
+
       // Determine base path from container.xml
       const containerXml = await this.zip.file('META-INF/container.xml')?.async('string');
       if (containerXml) {
@@ -175,36 +176,29 @@ export class ChapterContentService {
 
     while ((match = imgRegex.exec(html)) !== null) {
       const [fullMatch, src] = match;
-      
+
       try {
         // Resolve relative path
         const imagePath = this.resolveImagePath(src);
         const imageFile = this.zip.file(imagePath);
-        
+
         if (imageFile) {
           const base64 = await imageFile.async('base64');
           const mimeType = this.getMimeType(imagePath);
           const dataUrl = `data:${mimeType};base64,${base64}`;
-          
-          processedHtml = processedHtml.replace(
-            fullMatch,
-            fullMatch.replace(src, dataUrl)
-          );
+
+          processedHtml = processedHtml.replace(fullMatch, fullMatch.replace(src, dataUrl));
         } else {
           // Image not in zip (e.g. absolute path like /reader/...); use placeholder to avoid file:// request
-          const placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-          processedHtml = processedHtml.replace(
-            fullMatch,
-            fullMatch.replace(src, placeholder)
-          );
+          const placeholder =
+            'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+          processedHtml = processedHtml.replace(fullMatch, fullMatch.replace(src, placeholder));
         }
       } catch (error) {
         console.warn('Failed to process image:', src, error);
-        const placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-        processedHtml = processedHtml.replace(
-          fullMatch,
-          fullMatch.replace(src, placeholder)
-        );
+        const placeholder =
+          'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        processedHtml = processedHtml.replace(fullMatch, fullMatch.replace(src, placeholder));
       }
     }
 
@@ -221,7 +215,10 @@ export class ChapterContentService {
   private stripReaderUrls(html: string): string {
     return html
       .replace(/src=["']\/reader\/[^"']*["']/gi, `src="${ChapterContentService.PLACEHOLDER_IMAGE}"`)
-      .replace(/url\(["']?\/reader\/[^"')]*["']?\)/gi, `url("${ChapterContentService.PLACEHOLDER_IMAGE}")`);
+      .replace(
+        /url\(["']?\/reader\/[^"')]*["']?\)/gi,
+        `url("${ChapterContentService.PLACEHOLDER_IMAGE}")`
+      );
   }
 
   /**
@@ -246,12 +243,12 @@ export class ChapterContentService {
   private getMimeType(path: string): string {
     const ext = path.split('.').pop()?.toLowerCase();
     const mimeTypes: Record<string, string> = {
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png',
-      'gif': 'image/gif',
-      'svg': 'image/svg+xml',
-      'webp': 'image/webp',
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif',
+      svg: 'image/svg+xml',
+      webp: 'image/webp',
     };
     return mimeTypes[ext || ''] || 'application/octet-stream';
   }
