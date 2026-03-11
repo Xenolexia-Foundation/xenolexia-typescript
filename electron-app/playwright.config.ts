@@ -16,5 +16,5 @@ export default defineConfig({
   use: {
     trace: 'on-first-retry',
   },
-  projects: [{name: 'electron', testMatch: /electron.*\.spec\.ts/}],
+  projects: [{name: 'electron', testMatch: /\.spec\.ts$/}],
 });
